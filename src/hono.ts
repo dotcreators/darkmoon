@@ -36,7 +36,7 @@ app.use(async (c, next) => {
   await next();
 });
 
-app.get("/api/", async (c) => {
+app.get("/*", async (c) => {
   if (await isRateLimited(c)) {
     return c.json({message: 'Too many requests'}, {status: 429})
   }
@@ -53,7 +53,7 @@ app.get("/api/", async (c) => {
   )
 });
 
-app.post("/api/fetch/", async(c) => {
+app.post("/artists/fetch/", async(c) => {
   if (await isRateLimited(c)) {
     return c.json({message: 'Too many requests'}, {status: 429})
   }
@@ -79,7 +79,7 @@ app.post("/api/fetch/", async(c) => {
 });
 
 // TODO: setup ratelimits later
-app.get("/api/get/users/", async(c) => {
+app.get("/artists/", async(c) => {
   try {
     const { q, tags, country, sort, page, count} = c.req.query();
 
@@ -101,5 +101,30 @@ app.get("/api/get/users/", async(c) => {
     return c.json({ success: false, message: e instanceof Error ? e.message : e, error: 400 }, { status: 400 });
   }
 });
+
+app.delete("/artists/delete/", async(c) => {
+  //...
+});
+
+app.patch("/artists/edit/", async(c) => {
+  //...
+});
+
+app.get("/artists/update/", async(c) => {
+  //...
+});
+
+app.get("/suggestions/", async(c) => {
+  //...
+});
+
+app.patch("/suggestions/edit/", async(c) => {
+  //...
+});
+
+app.post("/suggestions/create/", async(c) => {
+  //...
+});
+
 
 export default app;
