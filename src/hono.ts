@@ -4,11 +4,12 @@ import { Enviroment } from "./env.config";
 import { appendTrailingSlash } from 'hono/trailing-slash'
 import { cors } from "hono/cors";
 import { html } from 'hono/html'
-import { CreateArtists, EditArtist, GetArtistsPaginated } from "./api/supabase";
+import { CreateArtists, EditArtist, GetArtistsPaginated, UpdateArtist } from "./api/supabase";
 import { FetchedUserProfile } from "./models/Fetch/FetchedUserProfile";
 import { TwitterUserProfile } from "./models/Fetch/TwitterUserProfile";
 import { RedisRateLimiter, isRateLimited } from "./utils/redisRateLimiter";
 import { Ratelimit } from "@upstash/ratelimit";
+import { ArtistStats } from "./models/ArtistUpdateQuery";
 
 declare module "hono" {
   interface ContextVariableMap {
@@ -138,28 +139,19 @@ app.patch("/artists/edit/", async(c) => {
 
 app.post("/artists/update/", async(c) => {
   try {
-    const requestBody = await c.req.json<{data: string[]}>();
+    const requestBody = await c.req.json<{data: ArtistStats[]}>();
 
     if (!requestBody) {
       return c.json({ success: false, message: 'Invalid request body', error: 400 }, { status: 400 });
     }
 
-    // const getArtists = await UpdateArtist({
-    //   userId: userId,
-    //   edit: {
-    //     tags: tags != undefined ? tags.split('-') : undefined,
-    //     country: country,
-    //     bio: bio,
-    //     images: images ? JSON.parse(images) : undefined,
-    //     name: name,
-    //     url: url,
-    //     username: username
-    //   },
-    //   apiUrl: c.env.SUPABASE_URL, 
-    //   apiKey: c.env.SUPABASE_KEY
-    // });
+    const updatedArtists = await UpdateArtist({
+      artists: requestBody.data,
+      apiUrl: c.env.SUPABASE_URL, 
+      apiKey: c.env.SUPABASE_KEY
+    });
     
-    // return c.json({ success: true, data: getArtists });
+    return c.json({ success: true, data: updatedArtists });
   } catch(e) {
     return c.json({ success: false, message: e instanceof Error ? e.message : e, error: 400 }, { status: 400 });
   }

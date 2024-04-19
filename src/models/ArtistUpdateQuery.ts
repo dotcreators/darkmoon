@@ -4,7 +4,7 @@ export interface ArtistUpdateQuery {
     apiKey: string
 }
 
-interface ArtistStats {
+export interface ArtistStats {
     userId: string,
     followersCount: number,
     tweetsCount: number,
