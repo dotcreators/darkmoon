@@ -70,7 +70,11 @@ app.post("/artists/fetch/", async(c) => {
     const noErrorProfiles: TwitterUserProfile[] = userProfilesData
       .filter((data: FetchedUserProfile) => !data.hasError)
       .map((data: FetchedUserProfile) => data.profile!);
-    const createdArtistsCount = await CreateArtists(noErrorProfiles, c.env.SUPABASE_URL, c.env.SUPABASE_KEY);
+    const createdArtistsCount = await CreateArtists({
+      artists: noErrorProfiles, 
+      apiUrl: c.env.SUPABASE_URL, 
+      apiKey: c.env.SUPABASE_KEY
+    });
 
     return c.json({ success: true, message: 'Created profiles: ' + createdArtistsCount});
   } catch (e) {

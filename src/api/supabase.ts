@@ -6,6 +6,7 @@ import { createClient } from '@supabase/supabase-js';
 import { ArtistsQuery } from '../models/ArtistsQuery';
 import { ArtistEditQuery, ArtistEditableFields } from '../models/ArtistEditQuery';
 import { ArtistUpdateQuery } from '../models/ArtistUpdateQuery';
+import { ArtistCreateQuery } from '../models/ArtistsCreateQuery';
 
 /**
  * Create artists profiles
@@ -14,11 +15,11 @@ import { ArtistUpdateQuery } from '../models/ArtistUpdateQuery';
  * @param {string} key Api key
  * @returns {number} Number of successfully created artists profiles
  */
-export async function CreateArtists(artists: TwitterUserProfile[], url: string, key: string): Promise<number> {
-    const supabase = createClient<Database>(url, key);
+export async function CreateArtists(query: ArtistCreateQuery): Promise<number> {
+    const supabase = createClient<Database>(query.apiUrl, query.apiKey);
 
     try {
-        const changedArtists = artists.map(artist => ({
+        const changedArtists = query.artists.map(artist => ({
             name: artist.name,
             username: artist.username,
             userId: artist.userId,
