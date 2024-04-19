@@ -4,6 +4,7 @@ import { ArtistProfile } from '../models/ArtistProfile';
 import { Database } from '../models/Database';
 import { createClient } from '@supabase/supabase-js';
 import { ArtistsQuery } from '../models/ArtistsQuery';
+import { ArtistEditQuery, ArtistEditableFields } from '../models/ArtistEditQuery';
 
 export async function CreateArtists(_artists: TwitterUserProfile[], url: string, key: string): Promise<number> {
     const supabase = createClient<Database>(url, key);
@@ -36,86 +37,16 @@ export async function CreateArtists(_artists: TwitterUserProfile[], url: string,
     }
 }
 
-export async function FetchArtist(url: string, key: string) {
-    const supabase = createClient<Database>(url, key);
-    const { data, error } = await supabase
-        .from('artists')
-        .select('*');
-    console.log(error)
-    return data;
-}
-
-// export async function UpdateArtists(_artists: FetchUpdatedStats[]): Promise<number> {
-//     try {
-//         const updatePromises = _artists.map(artist => {
-//             return _prisma.artists.update({
-//                 where: {
-//                     userId: artist.userId
-//                 },
-//                 data: {
-//                     followersCount: artist.followersCount,
-//                     tweetsCount: artist.tweetsCount
-//                 }
-//             });
-//         });
-
-//         const results = await Promise.all(updatePromises);
-
-//         return results.length;
-//     } catch(e) {
-//         console.error('Failed to update artists:', e);
-//         return 0;
-//     }
-// }
-
-// export async function EditArtist(_artist: ArtistProfile): Promise<string | undefined> {
-//     try {
-//         const updatedProfile = await _prisma.artists.update({
-//             where: {
-//                 userId: _artist.userId
-//             },
-//             data: {
-//                 username: _artist.username,
-//                 images: _artist.images,
-//                 country: _artist.country,
-//                 tags: _artist.tags,
-//                 bio: _artist.bio,
-//                 url: _artist.url
-//             }
-//         });
-
-//         return updatedProfile.username;
-//     } catch(e) {
-//         console.error('Failed to edit artist:', e);
-//         return undefined;
-//     }
-// }
-
-// export async function DeleteArtist(_artistId: string): Promise<string | undefined> {
-//     try {
-//         const updatedProfile = await _prisma.artists.delete({
-//             where: {
-//                 userId: _artistId
-//             },
-//         });
-
-//         return updatedProfile.username;
-//     } catch(e) {
-//         console.error('Failed to delete artist:', e);
-//         return undefined;
-//     }
-// }
-
-export async function GetArtistsPaginated(query: ArtistsQuery): Promise<ArtistProfile | undefined> {
+export async function GetArtistsPaginated(_query: ArtistsQuery): Promise<ArtistProfile | undefined> {
     try {
-        const supabase = createClient<Database>(query.apiUrl, query.apiKey);
+        const supabase = createClient<Database>(_query.apiUrl, _query.apiKey);
 
         let filter: string[] = [];
 
-        if (query.options?.country) filter.push(`country.eq.${query.options.country}`);
-        if (query.options?.q) filter.push(`username.like.%${query.options.q}%`);
-        if (query.options?.tags) {
-            let tags = query.options.tags.split('-');
+        if (_query.options?.country) filter.push(`country.eq.${_query.options.country}`);
+        if (_query.options?.q) filter.push(`username.like.%${_query.options.q}%`);
+        if (_query.options?.tags) {
+            let tags = _query.options.tags.split('-');
             let formattedTags = `{${tags.map(tag => `"${tag.toString()}"`).join(', ')}}`;
             filter.push(`tags.cs.${formattedTags}`);
         }
@@ -125,17 +56,17 @@ export async function GetArtistsPaginated(query: ArtistsQuery): Promise<ArtistPr
         const baseQuery = supabase
             .from('artists')
             .select()
-            .limit(query.count - 1)
-            .range(query.count * (query.page - 1), query.count * query.page)
+            .limit(_query.count - 1)
+            .range(_query.count * (_query.page - 1), _query.count * _query.page)
             .order(
-                query.options?.sort == "followers" 
+                _query.options?.sort == "followers" 
                 ? "followersCount"
-                : query.options?.sort == "username"
+                : _query.options?.sort == "username"
                 ? "username"
-                : query.options?.sort == "posts"
+                : _query.options?.sort == "posts"
                 ? "tweetsCount"
                 : "followersCount", 
-                { ascending: query.options?.sort == "username" ? true : false, nullsFirst: false });
+                { ascending: _query.options?.sort == "username" ? true : false, nullsFirst: false });
 
         const finalQuery = filter.length > 0 ? baseQuery.or(filteredString) : baseQuery;
 
@@ -145,6 +76,51 @@ export async function GetArtistsPaginated(query: ArtistsQuery): Promise<ArtistPr
             throw error;
         }
     
+        return data;
+    } catch(e) {
+        console.error('Failed to get artists:', e);
+        return undefined
+    }
+}
+
+export async function EditArtist(_query: ArtistEditQuery) {
+    try {
+        const supabase = createClient<Database>(_query.apiUrl, _query.apiKey);
+
+        const {data: artistData, error: artistError} = await supabase
+            .from('artists')
+            .select('username, name, tags, country, images, bio, url')
+            .eq('userId', _query.userId)
+            .returns<ArtistEditableFields>();
+
+        if (artistError) throw artistError;
+
+        let updatedColumns: Partial<ArtistEditQuery['edit']> = {};
+
+        for (let key in _query.edit) {
+            if (_query.edit[key] !== undefined) {
+                if (key === 'images' && typeof _query.edit[key] === 'object' && artistData.images) {
+                    updatedColumns.images = {
+                        ...artistData.images,
+                        ..._query.edit[key]  
+                    };
+                } else {
+                    updatedColumns[key] = _query.edit[key];
+                }
+            }
+        }
+
+        console.log(updatedColumns)
+        console.log(artistData)
+
+        const { data, error } = await supabase
+            .from("artists")
+            .update(updatedColumns)
+            .eq('userId', _query.userId)
+            .select();
+
+        if (error) throw error;
+
         return data;
     } catch(e) {
         console.error('Failed to get artists:', e);

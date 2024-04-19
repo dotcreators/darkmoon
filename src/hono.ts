@@ -4,7 +4,7 @@ import { Enviroment } from "./env.config";
 import { appendTrailingSlash } from 'hono/trailing-slash'
 import { cors } from "hono/cors";
 import { html } from 'hono/html'
-import { CreateArtists, GetArtistsPaginated } from "./api/supabase";
+import { CreateArtists, EditArtist, GetArtistsPaginated } from "./api/supabase";
 import { FetchedUserProfile } from "./models/Fetch/FetchedUserProfile";
 import { TwitterUserProfile } from "./models/Fetch/TwitterUserProfile";
 import { RedisRateLimiter, isRateLimited } from "./utils/redisRateLimiter";
@@ -106,8 +106,30 @@ app.delete("/artists/delete/", async(c) => {
   //...
 });
 
+// TODO: setup ratelimits later
 app.patch("/artists/edit/", async(c) => {
-  //...
+  try {
+    const { userId, username, name, tags, country, images, bio, url} = c.req.query();
+
+    const getArtists = await EditArtist({
+      userId: userId,
+      edit: {
+        tags: tags != undefined ? tags.split('-') : undefined,
+        country: country,
+        bio: bio,
+        images: images ? JSON.parse(images) : undefined,
+        name: name,
+        url: url,
+        username: username
+      },
+      apiUrl: c.env.SUPABASE_URL, 
+      apiKey: c.env.SUPABASE_KEY
+    });
+    
+    return c.json({ success: true, data: getArtists });
+  } catch(e) {
+    return c.json({ success: false, message: e instanceof Error ? e.message : e, error: 400 }, { status: 400 });
+  }
 });
 
 app.get("/artists/update/", async(c) => {
