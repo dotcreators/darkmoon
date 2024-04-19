@@ -132,8 +132,33 @@ app.patch("/artists/edit/", async(c) => {
   }
 });
 
-app.get("/artists/update/", async(c) => {
-  //...
+app.post("/artists/update/", async(c) => {
+  try {
+    const requestBody = await c.req.json<{data: string[]}>();
+
+    if (!requestBody) {
+      return c.json({ success: false, message: 'Invalid request body', error: 400 }, { status: 400 });
+    }
+
+    // const getArtists = await UpdateArtist({
+    //   userId: userId,
+    //   edit: {
+    //     tags: tags != undefined ? tags.split('-') : undefined,
+    //     country: country,
+    //     bio: bio,
+    //     images: images ? JSON.parse(images) : undefined,
+    //     name: name,
+    //     url: url,
+    //     username: username
+    //   },
+    //   apiUrl: c.env.SUPABASE_URL, 
+    //   apiKey: c.env.SUPABASE_KEY
+    // });
+    
+    // return c.json({ success: true, data: getArtists });
+  } catch(e) {
+    return c.json({ success: false, message: e instanceof Error ? e.message : e, error: 400 }, { status: 400 });
+  }
 });
 
 app.get("/suggestions/", async(c) => {
