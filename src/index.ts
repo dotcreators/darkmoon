@@ -1,9 +1,7 @@
-import { ExecutionContext } from "hono/dist/types/context"
-import { Enviroment } from "./env.config";
-import app from "./hono"
+import { Elysia } from "elysia";
 
-export default {
-    fetch(request: Request, env: Enviroment, ctx: ExecutionContext) {
-      return app.fetch(request, env, ctx)
-    }
-}
+export const app: Elysia = new Elysia().listen(3000);
+
+console.log(
+  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+);
