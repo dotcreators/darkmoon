@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
-import { getArtistsPaginated } from "./handlers";
+import { editArtist, getArtistsPaginated } from "./handlers";
 import { ArtistsSearchDTO, ArtistsSearchQuery } from "../../models/query/ArtistsSearchQuery";
+import { ArtistEditDTO, ArtistEditQuery } from "../../models/query/ArtistEditQuery";
 
 const artistsRoutes = new Elysia({prefix: '/artists'})
     .get('/', ({ query }) => 
@@ -15,11 +16,22 @@ const artistsRoutes = new Elysia({prefix: '/artists'})
                 if (query.limit > 100) return error('Bad Request', 'Maximum artists query limit is 100!');
             }
         })
-    .get('/:artistId', ({ params: { artistId } }) => {'get artist by id'})
-    .post('/', () => {'create artist'})
-    .post('/many', () => {'create many artists'})
-    .patch('/:artistId', ({ params: { artistId } }) => {'update artist'})
-    .delete('/:artistId', ({ params: { artistId } }) => {'delete artist'})
-    .delete('/many', () => {'delete artist'});
+    .patch('/:artistId', ({ params: { artistId }, query }) => 
+        editArtist(artistId, <ArtistEditQuery>query), {
+            query: ArtistEditDTO,
+            transform({ query }) {
+                if (typeof query.tags === 'string') {
+                    query.tags = [query.tags];
+                }
+            },
+            beforeHandle({ query, error, params: { artistId } }) {
+                if (Object.keys(query).length == 0) return error('Bad Request', 'Specify at least 1 of user edit options are represented!');
+            }
+        })
+    // .post('/', () => {'create artist'})
+    // .post('/many', () => {'create many artists'})
+    // .patch('/:artistId', ({ params: { artistId } }) => {'update artist'})
+    // .delete('/:artistId', ({ params: { artistId } }) => {'delete artist'})
+    // .delete('/many', () => {'delete artist'});
 
 export default artistsRoutes;

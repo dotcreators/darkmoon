@@ -1,8 +1,7 @@
 import { t } from "elysia";
+import { Query } from "./Query";
 
-export interface ArtistsSearchQuery {
-    page: number,
-    limit: number,
+export interface ArtistsSearchQuery extends Query{
     username?: string,
     country?: string,
     tags?: string[],
