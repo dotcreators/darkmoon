@@ -7,10 +7,10 @@
   },
   "dependencies": {
     "elysia": "latest",
-    "@prisma/client": "^5.12.1"
+    "@prisma/client": "^5.12.1",
+    "prisma": "^5.12.1"
   },
   "devDependencies": {
-    "prisma": "^5.12.1",
     "bun-types": "latest"
   },
   "module": "src/index.js"

@@ -10,10 +10,10 @@ export interface ArtistsSearchQuery {
 }
 
 export const ArtistsSearchDTO = t.Object({
-    page: t.Number(),
-    limit: t.Number(),
+    page: t.Numeric(),
+    limit: t.Numeric(),
     username: t.Optional(t.String()),
     country: t.Optional(t.String()),
-    tags: t.Optional(t.Array(t.String())),
+    tags: t.Optional(t.Array(t.String(), { minItems: 1 })),
     sortBy: t.Optional(t.String()),
 });
