@@ -6,6 +6,10 @@ export interface ArtistUpdateRequest {
   followersCount: number;
 }
 
+export interface BulkArtistUpdateRequest extends ArtistUpdateRequest {
+  artistId: string;
+}
+
 export const ArtistUpdateDTO = t.Object({
   artistId: t.String(),
   tweetsCount: t.Numeric(),

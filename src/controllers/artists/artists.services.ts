@@ -2,7 +2,10 @@ import { PrismaClient } from "@prisma/client";
 import { ArtistsSearchQuery } from "../../models/query/ArtistsSearchQuery";
 import { error } from "elysia";
 import { ArtistEditRequest } from "../../models/query/ArtistEditRequest";
-import { ArtistUpdateRequest } from "../../models/query/ArtistsUpdateRequest";
+import {
+  ArtistUpdateRequest,
+  BulkArtistUpdateRequest,
+} from "../../models/query/ArtistsUpdateRequest";
 
 export class ArtistsServices {
   private readonly prisma = new PrismaClient();
@@ -62,11 +65,79 @@ export class ArtistsServices {
     }
   }
 
-  async updateArtistStats(artistId: string, request: ArtistUpdateRequest) {}
+  async updateArtistStats(artistId: string, request: ArtistUpdateRequest) {
+    try {
+      const data = this.prisma.artists.update({
+        where: {
+          id: artistId,
+        },
+        data: {
+          tweetsCount: request.tweetsCount,
+          followersCount: request.followersCount,
+        },
+      });
 
-  async bulkUpdateArtistsStats(request: ArtistUpdateRequest[]) {}
+      return data;
+    } catch (e) {
+      console.error("Error updating artist:", e);
+      throw e;
+    }
+  }
 
-  async deleteArtist(artistId: string) {}
+  async bulkUpdateArtistsStats(request: BulkArtistUpdateRequest[]) {
+    try {
+      const updatePromises = request.map((request) => {
+        return this.prisma.artists.updateMany({
+          where: {
+            id: request.artistId,
+          },
+          data: {
+            tweetsCount: request.tweetsCount,
+            followersCount: request.followersCount,
+          },
+        });
+      });
 
-  async bulkDeleteArtists(artistsIds: string[]) {}
+      const results = await Promise.all(updatePromises);
+
+      return results.length;
+    } catch (e) {
+      console.error("Error updating artists:", e);
+      throw e;
+    }
+  }
+
+  async deleteArtist(artistId: string) {
+    try {
+      const data = this.prisma.artists.delete({
+        where: {
+          id: artistId,
+        },
+      });
+
+      return error("OK", "Gone");
+    } catch (e) {
+      console.error("Error delete artist:", e);
+      throw e;
+    }
+  }
+
+  async bulkDeleteArtists(artistsIds: string[]) {
+    try {
+      const deletePromises = artistsIds.map((id) => {
+        return this.prisma.artists.delete({
+          where: {
+            id: id,
+          },
+        });
+      });
+
+      const results = await Promise.all(deletePromises);
+
+      return results.length;
+    } catch (e) {
+      console.error("Error delete artist:", e);
+      throw e;
+    }
+  }
 }

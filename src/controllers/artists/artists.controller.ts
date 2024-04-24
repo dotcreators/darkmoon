@@ -11,6 +11,7 @@ import {
   ArtistUpdateDTO,
   ArtistUpdateRequest,
   BulkArtistUpdateDTO,
+  BulkArtistUpdateRequest,
 } from "../../models/query/ArtistsUpdateRequest";
 import { BulkArtistDeleteDTO } from "../../models/query/ArtistsDeleteRequest";
 import { ArtistsServices } from "./artists.services";
@@ -64,7 +65,7 @@ const artistsRoutes = new Elysia({ prefix: "/artists" })
   .patch(
     "/stats/bulk",
     ({ body }) =>
-      artistsServices.bulkUpdateArtistsStats(<ArtistUpdateRequest[]>body),
+      artistsServices.bulkUpdateArtistsStats(<BulkArtistUpdateRequest[]>body),
     { body: BulkArtistUpdateDTO },
   )
   .delete("/:artistId", ({ params: { artistId } }) => {
