@@ -1,15 +1,12 @@
 import { Elysia } from "elysia";
-import artistsRoutes from "./controllers/artists";
+import artistsRoutes from "./controllers/artists/artists.controller";
 
 export const app: Elysia = new Elysia();
 
-app
-  .onError(({ code, error }) => {
-    return new Response(error.toString());
-  })
-  .group('/api', (app) => app.use(artistsRoutes))
-  .listen(8989);
+app.onError(({ error }) => {
+  return new Response(error.toString());
+});
+app.group("/api/v1/", (app) => app.use(artistsRoutes));
+app.listen(8989);
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+console.log(`Server is running at ${app.server?.hostname}:${app.server?.port}`);
