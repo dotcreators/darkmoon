@@ -1,20 +1,18 @@
 import { Elysia } from "elysia";
+import { ArtistsSearchQuery } from "../../models/query/ArtistsSearchQuery";
+import { ArtistEditRequest } from "../../models/query/ArtistEditRequest";
+import { ArtistsServices } from "./artists.services";
 import {
-  ArtistsSearchDTO,
-  ArtistsSearchQuery,
-} from "../../models/query/ArtistsSearchQuery";
+  ArtistEditSchema,
+  ArtistUpdateSchema,
+  ArtistsSearchSchema,
+  BulkArtistDeleteSchema,
+  BulkArtistUpdateSchema,
+} from "./artists.schema";
 import {
-  ArtistEditDTO,
-  ArtistEditRequest,
-} from "../../models/query/ArtistEditRequest";
-import {
-  ArtistUpdateDTO,
   ArtistUpdateRequest,
-  BulkArtistUpdateDTO,
   BulkArtistUpdateRequest,
 } from "../../models/query/ArtistsUpdateRequest";
-import { BulkArtistDeleteDTO } from "../../models/query/ArtistsDeleteRequest";
-import { ArtistsServices } from "./artists.services";
 
 const artistsServices: ArtistsServices = new ArtistsServices();
 
@@ -24,7 +22,7 @@ const artistsRoutes = new Elysia({ prefix: "/artists" })
     ({ query }) =>
       artistsServices.getArtistsPaginated(<ArtistsSearchQuery>query),
     {
-      query: ArtistsSearchDTO,
+      query: ArtistsSearchSchema,
       transform({ query }) {
         if (typeof query.tags === "string") {
           query.tags = [query.tags];
@@ -41,7 +39,7 @@ const artistsRoutes = new Elysia({ prefix: "/artists" })
     ({ params: { artistId }, query }) =>
       artistsServices.editArtist(artistId, <ArtistEditRequest>query),
     {
-      query: ArtistEditDTO,
+      query: ArtistEditSchema,
       transform({ query }) {
         if (typeof query.tags === "string") {
           query.tags = [query.tags];
@@ -60,20 +58,20 @@ const artistsRoutes = new Elysia({ prefix: "/artists" })
     "/stats/single/:artistId",
     ({ params: { artistId }, query }) =>
       artistsServices.updateArtistStats(artistId, <ArtistUpdateRequest>query),
-    { query: ArtistUpdateDTO },
+    { query: ArtistUpdateSchema },
   )
   .patch(
     "/stats/bulk",
     ({ body }) =>
       artistsServices.bulkUpdateArtistsStats(<BulkArtistUpdateRequest[]>body),
-    { body: BulkArtistUpdateDTO },
+    { body: BulkArtistUpdateSchema },
   )
   .delete("/:artistId", ({ params: { artistId } }) => {
     artistsServices.deleteArtist(artistId);
   })
   .delete("/bulk", ({ body }) => {
     artistsServices.bulkDeleteArtists(<string[]>body),
-      { body: BulkArtistDeleteDTO };
+      { body: BulkArtistDeleteSchema };
   });
 
 export default artistsRoutes;
