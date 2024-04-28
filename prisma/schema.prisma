@@ -8,7 +8,7 @@ datasource db {
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model artists {
+model Artist {
   id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username       String
   userId         String   @unique(map: "artists_userid_key")
@@ -24,24 +24,30 @@ model artists {
   joinedAt       DateTime @db.Timestamptz(6)
   createdAt      DateTime @default(now()) @db.Timestamptz(6)
   lastUpdatedAt  DateTime @default(now()) @db.Timestamptz(6)
+
+  @@map("artists")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model artistsQueue {
-  requestId     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+model ArtistSuggestion {
+  requestId     String   @id(map: "artistsQueue_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username      String
   country       String?
   tags          String[]
   requestStatus String   @default("requested")
   createdAt     DateTime @default(now()) @db.Timestamptz(6)
+
+  @@map("artistsSuggestions")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model artistsTrend {
+model ArtistTrending {
   userId         String    @id(map: "artistsTrends_pkey")
   followersCount Int
   tweetsCount    Int
   recordedAt     DateTime? @default(now()) @db.Timestamptz(6)
+
+  @@map("artistsTrending")
 }

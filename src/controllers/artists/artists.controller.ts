@@ -1,77 +1,145 @@
-import { Elysia } from "elysia";
-import { ArtistsSearchQuery } from "../../models/query/ArtistsSearchQuery";
-import { ArtistEditRequest } from "../../models/query/ArtistEditRequest";
-import { ArtistsServices } from "./artists.services";
+import { Elysia, t } from 'elysia'
+import { ArtistsServices } from './artists.services'
 import {
   ArtistEditSchema,
   ArtistUpdateSchema,
   ArtistsSearchSchema,
   BulkArtistDeleteSchema,
   BulkArtistUpdateSchema,
-} from "./artists.schema";
-import {
-  ArtistUpdateRequest,
-  BulkArtistUpdateRequest,
-} from "../../models/query/ArtistsUpdateRequest";
+} from './artists.schema'
+import { model } from '../../models/Model'
 
-const artistsServices: ArtistsServices = new ArtistsServices();
+const artistsServices: ArtistsServices = new ArtistsServices()
 
-const artistsRoutes = new Elysia({ prefix: "/artists" })
+const artistsRoutes = new Elysia({
+  prefix: '/artists',
+  detail: {
+    tags: ['Artists'],
+  },
+})
   .get(
-    "/",
-    ({ query }) =>
-      artistsServices.getArtistsPaginated(<ArtistsSearchQuery>query),
+    '/',
+    async ({ query, set }) => {
+      try {
+        const artists = await artistsServices.getArtistsPaginated(query)
+        return {
+          status: 'success',
+          response: {
+            data: artists.data,
+            has_next: artists.has_next,
+          },
+        }
+      } catch (e) {
+        set.status = 500
+        return {
+          status: 'error',
+          response: e,
+        }
+      }
+    },
     {
+      transform({ query }) {
+        if (typeof query.tags === 'string') {
+          query.tags = [query.tags]
+        }
+      },
+      beforeHandle({ query, error, set }) {
+        if (query.limit > 100) {
+          set.status = 400
+          return {
+            status: 'error',
+            response: 'Maximum artists query limit is 100!',
+          }
+        }
+      },
       query: ArtistsSearchSchema,
-      transform({ query }) {
-        if (typeof query.tags === "string") {
-          query.tags = [query.tags];
-        }
+      response: {
+        200: model['artists.get'],
+        400: model['api.error'],
+        500: model['api.error'],
       },
-      beforeHandle({ query, error }) {
-        if (query.limit > 100)
-          return error("Bad Request", "Maximum artists query limit is 100!");
-      },
-    },
+    }
   )
   .patch(
-    "/:artistId",
-    ({ params: { artistId }, query }) =>
-      artistsServices.editArtist(artistId, <ArtistEditRequest>query),
+    '/:artistId',
+    async ({ params: { artistId }, query, set }) => {
+      try {
+        const editedArtist = await artistsServices.editArtist(artistId, query)
+        return {
+          status: 'success',
+          response: editedArtist,
+        }
+      } catch (e) {
+        set.status = 500
+        return {
+          status: 'error',
+          response: e,
+        }
+      }
+    },
     {
-      query: ArtistEditSchema,
       transform({ query }) {
-        if (typeof query.tags === "string") {
-          query.tags = [query.tags];
+        if (typeof query.tags === 'string') {
+          query.tags = [query.tags]
         }
       },
-      beforeHandle({ query, error }) {
-        if (Object.keys(query).length == 0)
-          return error(
-            "Bad Request",
-            "Specify at least 1 of user edit options are represented!",
-          );
+      beforeHandle({ query, set }) {
+        if (Object.keys(query).length == 0) set.status = 400
+        return {
+          status: 'error',
+          response: 'Specify at least 1 of user edit options are represented!',
+        }
       },
+      query: ArtistEditSchema,
+      response: {
+        200: model['artists.get'],
+        400: model['api.error'],
+        500: model['api.error'],
+      },
+    }
+  )
+  .patch(
+    '/stats/single/:artistId',
+    async ({ params: { artistId }, query, set }) => {
+      try {
+        const updatedArtist = await artistsServices.updateArtistStats(
+          artistId,
+          query
+        )
+        return {
+          status: 'success',
+          response: updatedArtist,
+        }
+      } catch (e) {
+        set.status = 500
+        return {
+          status: 'error',
+          response: e,
+        }
+      }
     },
+    {
+      // Idk but without it line below ts getting me error
+      transform() {},
+      query: ArtistUpdateSchema,
+      response: {
+        200: model['artists.updateSingle'],
+        400: model['api.error'],
+        500: model['api.error'],
+      },
+    }
   )
   .patch(
-    "/stats/single/:artistId",
-    ({ params: { artistId }, query }) =>
-      artistsServices.updateArtistStats(artistId, <ArtistUpdateRequest>query),
-    { query: ArtistUpdateSchema },
+    '/stats/bulk',
+    ({ body }) => artistsServices.bulkUpdateArtistsStats(body),
+    { body: BulkArtistUpdateSchema }
   )
-  .patch(
-    "/stats/bulk",
-    ({ body }) =>
-      artistsServices.bulkUpdateArtistsStats(<BulkArtistUpdateRequest[]>body),
-    { body: BulkArtistUpdateSchema },
-  )
-  .delete("/:artistId", ({ params: { artistId } }) => {
-    artistsServices.deleteArtist(artistId);
+  .delete('/:artistId', ({ params: { artistId } }) => {
+    artistsServices.deleteArtist(artistId)
   })
-  .delete("/bulk", ({ body }) => {
+  .delete('/bulk', ({ body }) => {
     artistsServices.bulkDeleteArtists(<string[]>body),
-      { body: BulkArtistDeleteSchema };
-  });
+      { body: BulkArtistDeleteSchema }
+  })
 
-export default artistsRoutes;
+export default artistsRoutes

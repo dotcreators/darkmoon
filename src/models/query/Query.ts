@@ -1,4 +1,4 @@
 export interface Query {
-    page: number,
-    limit: number,
+  page: number;
+  limit: number;
 }
