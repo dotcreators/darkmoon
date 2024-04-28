@@ -100,13 +100,33 @@ export const model = {
       description: 'Update artist followers and posts count',
     }
   ),
+  'artists.updateBatch': t.Object(
+    {
+      status: t.String({ default: 'success' }),
+      response: t.Number(),
+    },
+    {
+      description: 'Delete artist profile',
+    }
+  ),
+  'artists.delete': t.Object(
+    {
+      status: t.String({ default: 'success' }),
+      response: t.Number(),
+    },
+    {
+      description: 'Batched update artist followers and posts count',
+    }
+  ),
 }
 
 export interface Model {
   artists: {
     get: UnwrapSchema<(typeof model)['artists.get']>
     edit: UnwrapSchema<(typeof model)['artists.edit']>
+    delete: UnwrapSchema<(typeof model)['artists.delete']>
     updateSingle: UnwrapSchema<(typeof model)['artists.updateSingle']>
+    updateBatch: UnwrapSchema<(typeof model)['artists.updateBatch']>
   }
   api: {
     error: UnwrapSchema<(typeof model)['api.error']>

@@ -110,7 +110,9 @@ export class ArtistsServices {
     return data
   }
 
-  async bulkUpdateArtistsStats(request: BulkArtistUpdateRequest[]) {
+  async bulkUpdateArtistsStats(
+    request: BulkArtistUpdateRequest[]
+  ): Promise<Number> {
     try {
       const updatePromises = request.map(request => {
         return this.prisma.artist.updateMany({
@@ -133,37 +135,23 @@ export class ArtistsServices {
     }
   }
 
-  async deleteArtist(artistId: string) {
-    try {
-      const data = this.prisma.artist.delete({
-        where: {
-          id: artistId,
-        },
-      })
-
-      return error('OK', 'Gone')
-    } catch (e) {
-      console.error('Error while deleting artist:', e)
-      throw e
-    }
+  async deleteArtist(artistId: string): Promise<void> {
+    this.prisma.artist.delete({
+      where: {
+        id: artistId,
+      },
+    })
   }
 
-  async bulkDeleteArtists(artistsIds: string[]) {
-    try {
-      const deletePromises = artistsIds.map(id => {
-        return this.prisma.artist.delete({
-          where: {
-            id: id,
-          },
-        })
+  async bulkDeleteArtists(artistsIds: string[]): Promise<void> {
+    const deletePromises = artistsIds.map(id => {
+      return this.prisma.artist.delete({
+        where: {
+          id: id,
+        },
       })
+    })
 
-      const results = await Promise.all(deletePromises)
-
-      return results.length
-    } catch (e) {
-      console.error('Error while bulk deleting artist:', e)
-      throw e
-    }
+    await Promise.all(deletePromises)
   }
 }

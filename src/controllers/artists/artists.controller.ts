@@ -119,7 +119,6 @@ const artistsRoutes = new Elysia({
       }
     },
     {
-      // Idk but without it line below ts getting me error
       transform() {},
       query: ArtistUpdateSchema,
       response: {
@@ -131,15 +130,83 @@ const artistsRoutes = new Elysia({
   )
   .patch(
     '/stats/bulk',
-    ({ body }) => artistsServices.bulkUpdateArtistsStats(body),
-    { body: BulkArtistUpdateSchema }
+    async ({ body, set }) => {
+      try {
+        const updatedArtistsCount =
+          await artistsServices.bulkUpdateArtistsStats(body)
+        return {
+          status: 'success',
+          response: updatedArtistsCount,
+        }
+      } catch (e) {
+        set.status = 500
+        return {
+          status: 'error',
+          response: e,
+        }
+      }
+    },
+    {
+      transform() {},
+      body: BulkArtistUpdateSchema,
+      response: {
+        200: model['artists.updateBatch'],
+        400: model['api.error'],
+        500: model['api.error'],
+      },
+    }
   )
-  .delete('/:artistId', ({ params: { artistId } }) => {
-    artistsServices.deleteArtist(artistId)
-  })
-  .delete('/bulk', ({ body }) => {
-    artistsServices.bulkDeleteArtists(<string[]>body),
-      { body: BulkArtistDeleteSchema }
-  })
+  .delete(
+    '/:artistId',
+    async ({ params: { artistId }, set }) => {
+      try {
+        artistsServices.deleteArtist(artistId)
+        return {
+          status: 'success',
+          response: 'OK Gone',
+        }
+      } catch (e) {
+        set.status = 500
+        return {
+          status: 'error',
+          response: e,
+        }
+      }
+    },
+    {
+      transform() {},
+      response: {
+        200: model['artists.delete'],
+        400: model['api.error'],
+        500: model['api.error'],
+      },
+    }
+  )
+  .delete(
+    '/bulk',
+    ({ body, set }) => {
+      try {
+        artistsServices.bulkDeleteArtists(<string[]>body)
+        return {
+          status: 'success',
+          response: 'OK Gone',
+        }
+      } catch (e) {
+        set.status = 500
+        return {
+          status: 'error',
+          response: e,
+        }
+      }
+    },
+    {
+      transform() {},
+      response: {
+        200: model['artists.delete'],
+        400: model['api.error'],
+        500: model['api.error'],
+      },
+    }
+  )
 
 export default artistsRoutes
