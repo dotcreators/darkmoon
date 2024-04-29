@@ -1,10 +1,11 @@
 import { Elysia, t } from 'elysia'
 import { ArtistsServices } from './artists.services'
 import {
+  ArtistAddSchema,
   ArtistEditSchema,
   ArtistUpdateSchema,
   ArtistsSearchSchema,
-  BulkArtistDeleteSchema,
+  BulkArtistAddSchema,
   BulkArtistUpdateSchema,
 } from './artists.schema'
 import { model } from '../../models/Model'
@@ -17,6 +18,60 @@ const artistsRoutes = new Elysia({
     tags: ['Artists'],
   },
 })
+  .post(
+    '/',
+    async ({ body, set }) => {
+      try {
+        const createdArtists = await artistsServices.createArtist(body)
+        return {
+          status: 'success',
+          response: createdArtists,
+        }
+      } catch (e) {
+        set.status = 500
+        return {
+          status: 'error',
+          response: e,
+        }
+      }
+    },
+    {
+      transform() {},
+      body: ArtistAddSchema,
+      response: {
+        200: model['artists.create'],
+        400: model['api.error'],
+        500: model['api.error'],
+      },
+    }
+  )
+  .post(
+    '/bulk',
+    async ({ body, set }) => {
+      try {
+        const createdArtistsCount = await artistsServices.bulkCreateArtist(body)
+        return {
+          status: 'success',
+          response: createdArtistsCount,
+        }
+      } catch (e) {
+        set.status = 500
+        return {
+          status: 'error',
+          response: e,
+        }
+      }
+    },
+    {
+      transform() {},
+      body: BulkArtistAddSchema,
+      response: {
+        200: model['artists.create'],
+        400: model['api.error'],
+        500: model['api.error'],
+      },
+    }
+  )
   .get(
     '/',
     async ({ query, set }) => {

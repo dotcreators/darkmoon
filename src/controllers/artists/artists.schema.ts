@@ -1,5 +1,40 @@
 import { t } from 'elysia'
 
+const ArtistAddSchema = t.Object({
+  username: t.String(),
+  userId: t.String(),
+  followersCount: t.Number(),
+  tweetsCount: t.Number(),
+  images: t.Object({
+    avatar: t.Nullable(t.String()),
+    banner: t.Nullable(t.String()),
+  }),
+  joinedAt: t.Date(),
+  name: t.String(),
+  url: t.String(),
+  bio: t.String(),
+  website: t.String(),
+})
+
+const BulkArtistAddSchema = t.Array(
+  t.Object({
+    username: t.String(),
+    userId: t.String(),
+    followersCount: t.Number(),
+    tweetsCount: t.Number(),
+    images: t.Object({
+      avatar: t.Nullable(t.String()),
+      banner: t.Nullable(t.String()),
+    }),
+    joinedAt: t.Date(),
+    name: t.String(),
+    url: t.String(),
+    bio: t.String(),
+    website: t.String(),
+  }),
+  { minItems: 1 }
+)
+
 const ArtistsSearchSchema = t.Object({
   page: t.Numeric(),
   limit: t.Numeric(),
@@ -40,6 +75,8 @@ const ArtistEditSchema = t.Partial(
 const BulkArtistDeleteSchema = t.Array(t.String())
 
 export {
+  ArtistAddSchema,
+  BulkArtistAddSchema,
   ArtistsSearchSchema,
   ArtistUpdateSchema,
   ArtistEditSchema,

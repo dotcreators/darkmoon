@@ -6,9 +6,69 @@ import {
   ArtistUpdateRequest,
   BulkArtistUpdateRequest,
 } from '../../models/query/artists/ArtistUpdateRequest'
+import { ArtistCreateRequest } from '../../models/query/artists/ArtistCreateRequest'
 
 export class ArtistsServices {
   private readonly prisma = new PrismaClient()
+
+  async createArtist(request: ArtistCreateRequest): Promise<Artist> {
+    const artist = await this.prisma.artist.create({
+      data: {
+        username: request.username,
+        userId: request.userId,
+        followersCount: request.followersCount,
+        tweetsCount: request.tweetsCount,
+        images: request.images,
+        joinedAt: request.joinedAt,
+        name: request.name,
+        url: request.url,
+        bio: request.bio,
+        website: request.website,
+      },
+      select: {
+        id: true,
+        userId: true,
+        username: true,
+        url: true,
+        followersCount: true,
+        tweetsCount: true,
+        images: true,
+        createdAt: true,
+        joinedAt: true,
+        lastUpdatedAt: true,
+        country: true,
+        tags: true,
+        bio: true,
+        name: true,
+        website: true,
+      },
+    })
+
+    return artist
+  }
+
+  async bulkCreateArtist(request: ArtistCreateRequest[]): Promise<number> {
+    const createPromises = request.map(artist => {
+      return this.prisma.artist.create({
+        data: {
+          username: artist.username,
+          userId: artist.userId,
+          followersCount: artist.followersCount,
+          tweetsCount: artist.tweetsCount,
+          images: artist.images,
+          joinedAt: artist.joinedAt,
+          name: artist.name,
+          url: artist.url,
+          bio: artist.bio,
+          website: artist.website,
+        },
+      })
+    })
+
+    const results = await Promise.all(createPromises)
+
+    return results.length
+  }
 
   async getArtistsPaginated(
     request: ArtistSearchRequest
