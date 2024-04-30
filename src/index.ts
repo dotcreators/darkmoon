@@ -2,7 +2,7 @@ import { Elysia } from 'elysia'
 import artistsRoutes from './controllers/artists/artists.controller'
 import swagger from '@elysiajs/swagger'
 import suggestionsRoutes from './controllers/suggestions/suggestions.controller'
-import { model } from './models/Model'
+import { model } from './models/responses/ArtistsResponses'
 
 const app = new Elysia()
   .use(

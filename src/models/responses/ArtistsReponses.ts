@@ -1,15 +1,6 @@
 import { UnwrapSchema, t } from 'elysia'
 
-export const model = {
-  'api.error': t.Object(
-    {
-      status: t.String({ default: 'error' }),
-      response: t.String(),
-    },
-    {
-      description: 'API Error',
-    }
-  ),
+export const artistsResponses = {
   'artists.get': t.Object(
     {
       status: t.String({ default: 'success' }),
@@ -72,6 +63,36 @@ export const model = {
       description: 'Create artist profile',
     }
   ),
+  'artists.createBulk': t.Object(
+    {
+      status: t.String({ default: 'success' }),
+      response: t.Array(
+        t.Object({
+          id: t.String(),
+          username: t.String(),
+          userId: t.String(),
+          tweetsCount: t.Number(),
+          followersCount: t.Number(),
+          images: t.Object({
+            avatar: t.Nullable(t.String()),
+            banner: t.Nullable(t.String()),
+          }),
+          url: t.String(),
+          joinedAt: t.Date(),
+          createdAt: t.Date(),
+          lastUpdatedAt: t.Date(),
+          tags: t.Nullable(t.Array(t.String(), { minItems: 0 })),
+          name: t.Nullable(t.String()),
+          country: t.Nullable(t.String()),
+          website: t.Nullable(t.String()),
+          bio: t.Nullable(t.String()),
+        })
+      ),
+    },
+    {
+      description: 'Create artist profile',
+    }
+  ),
   'artists.edit': t.Object(
     {
       status: t.String({ default: 'success' }),
@@ -128,7 +149,7 @@ export const model = {
       description: 'Update artist followers and posts count',
     }
   ),
-  'artists.updateBatch': t.Object(
+  'artists.updateBulk': t.Object(
     {
       status: t.String({ default: 'success' }),
       response: t.Number(),
@@ -148,16 +169,16 @@ export const model = {
   ),
 }
 
-export interface Model {
+export interface ArtistsResponsesModel {
   artists: {
-    create: UnwrapSchema<(typeof model)['artists.create']>
-    get: UnwrapSchema<(typeof model)['artists.get']>
-    edit: UnwrapSchema<(typeof model)['artists.edit']>
-    delete: UnwrapSchema<(typeof model)['artists.delete']>
-    updateSingle: UnwrapSchema<(typeof model)['artists.updateSingle']>
-    updateBatch: UnwrapSchema<(typeof model)['artists.updateBatch']>
-  }
-  api: {
-    error: UnwrapSchema<(typeof model)['api.error']>
+    create: UnwrapSchema<(typeof artistsResponses)['artists.create']>
+    createBulk: UnwrapSchema<(typeof artistsResponses)['artists.createBulk']>
+    get: UnwrapSchema<(typeof artistsResponses)['artists.get']>
+    edit: UnwrapSchema<(typeof artistsResponses)['artists.edit']>
+    delete: UnwrapSchema<(typeof artistsResponses)['artists.delete']>
+    updateSingle: UnwrapSchema<
+      (typeof artistsResponses)['artists.updateSingle']
+    >
+    updateBulk: UnwrapSchema<(typeof artistsResponses)['artists.updateBulk']>
   }
 }

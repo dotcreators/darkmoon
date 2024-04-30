@@ -8,7 +8,8 @@ import {
   BulkArtistAddSchema,
   BulkArtistUpdateSchema,
 } from './artists.schema'
-import { model } from '../../models/Model'
+import { artistsResponses } from '../../models/responses/ArtistsReponses'
+import { errorResponses } from '../../models/responses/ErrorsResponses'
 
 const artistsServices: ArtistsServices = new ArtistsServices()
 
@@ -39,9 +40,9 @@ const artistsRoutes = new Elysia({
       transform() {},
       body: ArtistAddSchema,
       response: {
-        200: model['artists.create'],
-        400: model['api.error'],
-        500: model['api.error'],
+        200: artistsResponses['artists.create'],
+        400: errorResponses['api.badrequest'],
+        500: errorResponses['api.error'],
       },
     }
   )
@@ -66,9 +67,9 @@ const artistsRoutes = new Elysia({
       transform() {},
       body: BulkArtistAddSchema,
       response: {
-        200: model['artists.create'],
-        400: model['api.error'],
-        500: model['api.error'],
+        200: artistsResponses['artists.createBulk'],
+        400: errorResponses['api.badrequest'],
+        500: errorResponses['api.error'],
       },
     }
   )
@@ -109,9 +110,9 @@ const artistsRoutes = new Elysia({
       },
       query: ArtistsSearchSchema,
       response: {
-        200: model['artists.get'],
-        400: model['api.error'],
-        500: model['api.error'],
+        200: artistsResponses['artists.get'],
+        400: errorResponses['api.badrequest'],
+        500: errorResponses['api.error'],
       },
     }
   )
@@ -147,9 +148,9 @@ const artistsRoutes = new Elysia({
       },
       query: ArtistEditSchema,
       response: {
-        200: model['artists.get'],
-        400: model['api.error'],
-        500: model['api.error'],
+        200: artistsResponses['artists.get'],
+        400: errorResponses['api.badrequest'],
+        500: errorResponses['api.error'],
       },
     }
   )
@@ -177,9 +178,9 @@ const artistsRoutes = new Elysia({
       transform() {},
       query: ArtistUpdateSchema,
       response: {
-        200: model['artists.updateSingle'],
-        400: model['api.error'],
-        500: model['api.error'],
+        200: artistsResponses['artists.updateSingle'],
+        400: errorResponses['api.badrequest'],
+        500: errorResponses['api.error'],
       },
     }
   )
@@ -205,9 +206,9 @@ const artistsRoutes = new Elysia({
       transform() {},
       body: BulkArtistUpdateSchema,
       response: {
-        200: model['artists.updateBatch'],
-        400: model['api.error'],
-        500: model['api.error'],
+        200: artistsResponses['artists.updateBulk'],
+        400: errorResponses['api.badrequest'],
+        500: errorResponses['api.error'],
       },
     }
   )
@@ -231,9 +232,9 @@ const artistsRoutes = new Elysia({
     {
       transform() {},
       response: {
-        200: model['artists.delete'],
-        400: model['api.error'],
-        500: model['api.error'],
+        200: artistsResponses['artists.delete'],
+        400: errorResponses['api.badrequest'],
+        500: errorResponses['api.error'],
       },
     }
   )
@@ -257,9 +258,9 @@ const artistsRoutes = new Elysia({
     {
       transform() {},
       response: {
-        200: model['artists.delete'],
-        400: model['api.error'],
-        500: model['api.error'],
+        200: artistsResponses['artists.delete'],
+        400: errorResponses['api.badrequest'],
+        500: errorResponses['api.error'],
       },
     }
   )
