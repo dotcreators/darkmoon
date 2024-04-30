@@ -5,6 +5,8 @@ import {
   ArtistsCreateSuggestionSchema,
   ArtistsSuggestionSchema,
 } from './suggestions.schema'
+import { suggestionsResponses } from '../../models/responses/SuggestionsResponses'
+import { errorResponses } from '../../models/responses/ErrorsResponses'
 
 const suggestionsServices: SuggestionsServices = new SuggestionsServices()
 
@@ -30,9 +32,9 @@ const suggestionsRoutes = new Elysia({
       transform() {},
       query: ArtistsSuggestionSchema,
       response: {
-        200: model['artists.delete'],
-        400: model['api.badrequest'],
-        500: model['api.error'],
+        200: suggestionsResponses['suggestions.get'],
+        400: errorResponses['api.badrequest'],
+        500: errorResponses['api.error'],
       },
     }
   )
@@ -42,11 +44,16 @@ const suggestionsRoutes = new Elysia({
       suggestionsServices.createSuggestion(body)
     },
     {
-      body: ArtistsCreateSuggestionSchema,
       transform({ body }) {
         if (typeof body.tags === 'string') {
           body.tags = [body.tags]
         }
+      },
+      body: ArtistsCreateSuggestionSchema,
+      response: {
+        200: suggestionsResponses['suggestions.create'],
+        400: errorResponses['api.badrequest'],
+        500: errorResponses['api.error'],
       },
     }
   )
@@ -59,7 +66,13 @@ const suggestionsRoutes = new Elysia({
       )
     },
     {
+      transform() {},
       query: ArtistEditSuggestionSchema,
+      response: {
+        200: suggestionsResponses['suggestions.update'],
+        400: errorResponses['api.badrequest'],
+        500: errorResponses['api.error'],
+      },
     }
   )
 

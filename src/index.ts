@@ -2,9 +2,10 @@ import { Elysia } from 'elysia'
 import artistsRoutes from './controllers/artists/artists.controller'
 import swagger from '@elysiajs/swagger'
 import suggestionsRoutes from './controllers/suggestions/suggestions.controller'
-import { model } from './models/responses/ArtistsResponses'
+import cors from '@elysiajs/cors'
 
-const app = new Elysia()
+export const app = new Elysia()
+  .use(cors())
   .use(
     swagger({
       documentation: {
@@ -19,7 +20,6 @@ const app = new Elysia()
       },
     })
   )
-  .model(model)
   .onError(({ error }) => {
     return new Response(error.toString())
   })
@@ -27,4 +27,6 @@ const app = new Elysia()
   .group('/api/v1', app => app.use(suggestionsRoutes))
   .listen(8989)
 
-console.log(`Server is running at ${app.server?.hostname}:${app.server?.port}`)
+console.log(
+  `🚀 Dotcreators API service is running at ${app.server?.hostname}:${app.server?.port}`
+)
