@@ -26,7 +26,7 @@ export const artistsResponses = {
             website: t.Nullable(t.String()),
             bio: t.Nullable(t.String()),
           }),
-          { minItems: 1 }
+          { minItems: 0 }
         ),
         has_next: t.Boolean(),
       }),
