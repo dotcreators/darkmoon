@@ -1,4 +1,4 @@
-import { UnwrapSchema, t } from 'elysia'
+import { UnwrapSchema, t } from 'elysia';
 
 export const artistsResponses = {
   'artists.get': t.Object(
@@ -167,18 +167,18 @@ export const artistsResponses = {
       description: 'Batched update artist followers and posts count',
     }
   ),
-}
+};
 
 export interface ArtistsResponsesModel {
   artists: {
-    create: UnwrapSchema<(typeof artistsResponses)['artists.create']>
-    createBulk: UnwrapSchema<(typeof artistsResponses)['artists.createBulk']>
-    get: UnwrapSchema<(typeof artistsResponses)['artists.get']>
-    edit: UnwrapSchema<(typeof artistsResponses)['artists.edit']>
-    delete: UnwrapSchema<(typeof artistsResponses)['artists.delete']>
+    create: UnwrapSchema<(typeof artistsResponses)['artists.create']>;
+    createBulk: UnwrapSchema<(typeof artistsResponses)['artists.createBulk']>;
+    get: UnwrapSchema<(typeof artistsResponses)['artists.get']>;
+    edit: UnwrapSchema<(typeof artistsResponses)['artists.edit']>;
+    delete: UnwrapSchema<(typeof artistsResponses)['artists.delete']>;
     updateSingle: UnwrapSchema<
       (typeof artistsResponses)['artists.updateSingle']
-    >
-    updateBulk: UnwrapSchema<(typeof artistsResponses)['artists.updateBulk']>
-  }
+    >;
+    updateBulk: UnwrapSchema<(typeof artistsResponses)['artists.updateBulk']>;
+  };
 }

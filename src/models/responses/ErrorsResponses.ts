@@ -1,4 +1,4 @@
-import { UnwrapSchema, t } from 'elysia'
+import { UnwrapSchema, t } from 'elysia';
 
 export const errorResponses = {
   'api.error': t.Object(
@@ -19,11 +19,11 @@ export const errorResponses = {
       description: 'Bad request',
     }
   ),
-}
+};
 
 export interface ErrorResponsesModel {
   api: {
-    error: UnwrapSchema<(typeof errorResponses)['api.error']>
-    badrequest: UnwrapSchema<(typeof errorResponses)['api.badrequest']>
-  }
+    error: UnwrapSchema<(typeof errorResponses)['api.error']>;
+    badrequest: UnwrapSchema<(typeof errorResponses)['api.badrequest']>;
+  };
 }

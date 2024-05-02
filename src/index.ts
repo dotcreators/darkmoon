@@ -1,8 +1,9 @@
-import { Elysia } from 'elysia'
-import artistsRoutes from './controllers/artists/artists.controller'
-import swagger from '@elysiajs/swagger'
-import suggestionsRoutes from './controllers/suggestions/suggestions.controller'
-import cors from '@elysiajs/cors'
+import { Elysia } from 'elysia';
+import artistsRoutes from './controllers/artists/artists.controller';
+import swagger from '@elysiajs/swagger';
+import suggestionsRoutes from './controllers/suggestions/suggestions.controller';
+import cors from '@elysiajs/cors';
+import fetchRoutes from './controllers/fetch/fetch.controller';
 
 export const app = new Elysia()
   .use(cors())
@@ -21,12 +22,13 @@ export const app = new Elysia()
     })
   )
   .onError(({ error }) => {
-    return new Response(error.toString())
+    return new Response(error.toString());
   })
   .group('/api/v1', app => app.use(artistsRoutes))
   .group('/api/v1', app => app.use(suggestionsRoutes))
-  .listen(8989)
+  .group('/api/v1', app => app.use(fetchRoutes))
+  .listen(8989);
 
 console.log(
   `🚀 Dotcreators API service is running at ${app.server?.hostname}:${app.server?.port}`
-)
+);
