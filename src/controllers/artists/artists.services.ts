@@ -80,7 +80,8 @@ export class ArtistsServices {
     else orderFilter.followersCount = 'desc'
 
     const whereFilter: any = {}
-    if (request.username) whereFilter.username = { contains: request.username }
+    if (request.username)
+      whereFilter.username = { contains: request.username, mode: 'insensitive' }
     if (request.country) whereFilter.country = { equals: request.country }
     if (request.tags && request.tags.length > 0)
       whereFilter.tags = { hasEvery: request.tags }
