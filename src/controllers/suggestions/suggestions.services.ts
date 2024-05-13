@@ -1,9 +1,9 @@
-import { ArtistSuggestion, PrismaClient } from '@prisma/client'
-import { SuggestionRequest } from '../../models/query/suggestions/SuggestionRequest'
-import { SuggestionCreateRequest } from '../../models/query/suggestions/SuggestionCreateRequest'
+import { ArtistSuggestion, PrismaClient } from '@prisma/client';
+import { SuggestionRequest } from '../../models/query/suggestions/SuggestionRequest';
+import { SuggestionCreateRequest } from '../../models/query/suggestions/SuggestionCreateRequest';
 
 export class SuggestionsServices {
-  private readonly prisma = new PrismaClient()
+  private readonly prisma = new PrismaClient();
 
   async getSuggestionsPaginated(
     request: SuggestionRequest
@@ -18,15 +18,15 @@ export class SuggestionsServices {
         orderBy: {
           createdAt: 'asc',
         },
-      })
+      });
 
       return {
         data: data,
         has_next: data.length === request.limit ? true : false,
-      }
+      };
     } catch (e) {
-      console.error('Error while fetching artist suggestions:', e)
-      throw e
+      console.error('Error while fetching artist suggestions:', e);
+      throw e;
     }
   }
 
@@ -35,15 +35,16 @@ export class SuggestionsServices {
       const data = await this.prisma.artistSuggestion.create({
         data: {
           username: request.username,
+          avatarUrl: request.avatarUrl,
           tags: request.tags,
           country: request.country,
           createdAt: new Date().toISOString(),
           requestStatus: 'suggested',
         },
-      })
+      });
     } catch (e) {
-      console.error('Error while creating artist suggestion:', e)
-      throw e
+      console.error('Error while creating artist suggestion:', e);
+      throw e;
     }
   }
 
@@ -56,10 +57,10 @@ export class SuggestionsServices {
         data: {
           requestStatus: requestStatus,
         },
-      })
+      });
     } catch (e) {
-      console.error('Error while editing status of suggested artist:', e)
-      throw e
+      console.error('Error while editing status of suggested artist:', e);
+      throw e;
     }
   }
 }

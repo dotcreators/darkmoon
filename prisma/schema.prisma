@@ -37,6 +37,7 @@ model ArtistSuggestion {
   tags          String[]
   requestStatus String   @default("requested")
   createdAt     DateTime @default(now()) @db.Timestamptz(6)
+  avatarUrl     String?
 
   @@map("artistsSuggestions")
 }
