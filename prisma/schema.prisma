@@ -9,21 +9,24 @@ datasource db {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model Artist {
-  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  username       String
-  userId         String   @unique(map: "artists_userid_key")
-  tweetsCount    Int
-  followersCount Int
-  images         Json     @db.Json
-  name           String?
-  website        String?
-  country        String?
-  tags           String[]
-  bio            String?
-  url            String
-  joinedAt       DateTime @db.Timestamptz(6)
-  createdAt      DateTime @default(now()) @db.Timestamptz(6)
-  lastUpdatedAt  DateTime @default(now()) @db.Timestamptz(6)
+  id                          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username                    String
+  userId                      String           @unique(map: "artists_userid_key")
+  tweetsCount                 Int
+  followersCount              Int
+  images                      Json             @db.Json
+  name                        String?
+  website                     String?
+  country                     String?
+  tags                        String[]
+  bio                         String?
+  url                         String
+  joinedAt                    DateTime         @db.Timestamptz(6)
+  createdAt                   DateTime         @default(now()) @db.Timestamptz(6)
+  lastUpdatedAt               DateTime         @default(now()) @db.Timestamptz(6)
+  weeklyFollowersGrowingTrend Float            @default(0) @db.Real
+  weeklyPostsGrowingTrend     Float            @default(0) @db.Real
+  artistsTrending             ArtistTrending[]
 
   @@map("artists")
 }
@@ -45,10 +48,12 @@ model ArtistSuggestion {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model ArtistTrending {
-  userId         String    @id(map: "artistsTrends_pkey")
+  userId         String
   followersCount Int
   tweetsCount    Int
   recordedAt     DateTime? @default(now()) @db.Timestamptz(6)
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  artists        Artist    @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("artistsTrending")
 }

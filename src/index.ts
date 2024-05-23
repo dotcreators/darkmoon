@@ -4,6 +4,7 @@ import swagger from '@elysiajs/swagger';
 import suggestionsRoutes from './controllers/suggestions/suggestions.controller';
 import cors from '@elysiajs/cors';
 import fetchRoutes from './controllers/fetch/fetch.controller';
+import trendsRoutes from './controllers/trends/trends.controller';
 
 export const app = new Elysia()
   .use(cors())
@@ -27,6 +28,7 @@ export const app = new Elysia()
   .group('/api/v1', app => app.use(artistsRoutes))
   .group('/api/v1', app => app.use(suggestionsRoutes))
   .group('/api/v1', app => app.use(fetchRoutes))
+  .group('/api/v1', app => app.use(trendsRoutes))
   .listen(8989);
 
 console.log(

@@ -9,14 +9,16 @@ export class SuggestionsServices {
     request: SuggestionRequest
   ): Promise<{ data: ArtistSuggestion[]; has_next: boolean }> {
     try {
+      const requestStatus: any = {};
+      if (request.requestStatus !== 'all')
+        requestStatus.requestStatus = request.requestStatus;
+
       const data = await this.prisma.artistSuggestion.findMany({
         take: request.limit,
         skip: (request.page - 1) * request.limit,
-        where: {
-          requestStatus: request.requestStatus,
-        },
+        where: requestStatus,
         orderBy: {
-          createdAt: 'asc',
+          createdAt: 'desc',
         },
       });
 
