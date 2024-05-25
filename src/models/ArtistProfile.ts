@@ -1,9 +1,20 @@
-import { TwitterUserProfile } from "./Fetch/TwitterUserProfile";
-
-export interface ArtistProfile extends TwitterUserProfile {
-    id: string,
-    lastUpdateAt: Date,
-    createdAt: Date,
-    country: string,
-    tags: string[],
+export interface ArtistProfile {
+  id: string;
+  username: string;
+  userId: string;
+  tweetsCount: number;
+  followersCount: number;
+  images: {
+    avatar: string | undefined;
+    banner: string | undefined;
+  };
+  tags: string[];
+  url: string;
+  joinedAt: Date;
+  createdAt: Date;
+  lastUpdatedAt: Date;
+  name: string | undefined;
+  country: string | undefined;
+  bio: string | undefined;
+  website: string | undefined;
 }

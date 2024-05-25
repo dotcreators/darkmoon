@@ -1,32 +1,22 @@
 {
-  "name": "dotcreators-darkmoon",
-  "version": "1.0.0",
-  "author": "anivire",
-  "description": "",
-  "keywords": [],
-  "license": "ISC",
-  "main": "index.ts",
+  "name": "darkmoon",
+  "version": "1.0.1",
   "scripts": {
-    "build": "webpack",
-    "dev": "npx wrangler dev src/index.ts"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch src/index.ts",
+    "dev:prisma": "bunx prisma db pull && bunx prisma generate"
   },
   "dependencies": {
-    "@cloudflare/workers-types": "^4.20240405.0",
-    "@hono-rate-limiter/redis": "^0.1.1",
-    "@supabase/supabase-js": "^2.42.3",
-    "@the-convocation/twitter-scraper": "^0.11.0",
-    "@types/node": "^20.12.7",
-    "@types/uuid": "^9.0.8",
-    "@upstash/ratelimit": "^1.1.1",
-    "@upstash/redis": "^1.29.0",
-    "hono": "^4.2.7",
-    "hono-rate-limiter": "^0.2.3",
-    "ts-loader": "^9.5.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.4",
-    "uuid": "^9.0.1",
-    "webpack": "^5.91.0",
-    "webpack-cli": "^5.1.4",
-    "wrangler": "^3.49.0"
-  }
+    "@elysiajs/cors": "^1.0.2",
+    "@elysiajs/swagger": "^1.0.4",
+    "@prisma/client": "^5.12.1",
+    "@the-convocation/twitter-scraper": "^0.12.0",
+    "elysia": "1.0.13",
+    "prisma": "^5.12.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.1.1",
+    "bun-types": "latest"
+  },
+  "module": "src/index.js"
 }
