@@ -14,7 +14,7 @@ export const app = new Elysia()
         info: {
           title: 'Dotcreators API Documentation',
           description:
-            'Dotcreators is a project aimed at promoting pixel artists, statistics trending and creating a close community',
+            'Track, share and grow together with community of talented pixel-related artists',
           contact: { email: 'admin@dotcreators.xyz' },
           version: '1.0.1',
         },
