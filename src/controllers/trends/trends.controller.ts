@@ -15,7 +15,10 @@ const trendsRoutes = new Elysia({
   '/:artistId',
   async ({ params: { artistId }, query, set }) => {
     try {
-      const data = await trendsService.getArtistTrend(artistId, query.range);
+      const data = await trendsService.getArtistTrend(
+        artistId,
+        parseInt(query.range)
+      );
 
       if (data) {
         return {

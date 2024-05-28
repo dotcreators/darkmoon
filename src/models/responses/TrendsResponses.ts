@@ -4,11 +4,14 @@ export const trendsResponses = {
   'trends.get': t.Object(
     {
       status: t.String({ default: 'success' }),
-      response: t.Object({
-        followersCount: t.Number(),
-        tweetsCount: t.Number(),
-        recordedAt: t.Date(),
-      }),
+      response: t.Array(
+        t.Object({
+          followersCount: t.Number(),
+          tweetsCount: t.Number(),
+          recordedAt: t.Date(),
+        }),
+        { minItems: 0 }
+      ),
     },
     {
       description: 'Get artists followers and tweets trends',
