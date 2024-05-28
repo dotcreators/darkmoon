@@ -1,5 +1,5 @@
-import { Elysia, t } from 'elysia'
-import { ArtistsServices } from './artists.services'
+import { Elysia, t } from 'elysia';
+import { ArtistsServices } from './artists.services';
 import {
   ArtistAddSchema,
   ArtistEditSchema,
@@ -7,11 +7,11 @@ import {
   ArtistsSearchSchema,
   BulkArtistAddSchema,
   BulkArtistUpdateSchema,
-} from './artists.schema'
-import { artistsResponses } from '../../models/responses/ArtistsReponses'
-import { errorResponses } from '../../models/responses/ErrorsResponses'
+} from './artists.schema';
+import { artistsResponses } from '../../models/responses/ArtistsReponses';
+import { errorResponses } from '../../models/responses/ErrorsResponses';
 
-const artistsServices: ArtistsServices = new ArtistsServices()
+const artistsServices: ArtistsServices = new ArtistsServices();
 
 const artistsRoutes = new Elysia({
   prefix: '/artists',
@@ -23,17 +23,17 @@ const artistsRoutes = new Elysia({
     '/',
     async ({ body, set }) => {
       try {
-        const createdArtists = await artistsServices.createArtist(body)
+        const createdArtists = await artistsServices.createArtist(body);
         return {
           status: 'success',
           response: createdArtists,
-        }
+        };
       } catch (e) {
-        set.status = 500
+        set.status = 500;
         return {
           status: 'error',
           response: e,
-        }
+        };
       }
     },
     {
@@ -50,17 +50,19 @@ const artistsRoutes = new Elysia({
     '/bulk',
     async ({ body, set }) => {
       try {
-        const createdArtistsCount = await artistsServices.bulkCreateArtist(body)
+        const createdArtistsCount = await artistsServices.bulkCreateArtist(
+          body
+        );
         return {
           status: 'success',
           response: createdArtistsCount,
-        }
+        };
       } catch (e) {
-        set.status = 500
+        set.status = 500;
         return {
           status: 'error',
           response: e,
-        }
+        };
       }
     },
     {
@@ -77,35 +79,35 @@ const artistsRoutes = new Elysia({
     '/',
     async ({ query, set }) => {
       try {
-        const artists = await artistsServices.getArtistsPaginated(query)
+        const artists = await artistsServices.getArtistsPaginated(query);
         return {
           status: 'success',
           response: {
             data: artists.data,
             has_next: artists.has_next,
           },
-        }
+        };
       } catch (e) {
-        set.status = 500
+        set.status = 500;
         return {
           status: 'error',
           response: e,
-        }
+        };
       }
     },
     {
       transform({ query }) {
         if (typeof query.tags === 'string') {
-          query.tags = [query.tags]
+          query.tags = [query.tags];
         }
       },
       beforeHandle({ query, error, set }) {
         if (query.limit > 100) {
-          set.status = 400
+          set.status = 400;
           return {
             status: 'error',
             response: 'Maximum artists query limit is 100!',
-          }
+          };
         }
       },
       query: ArtistsSearchSchema,
@@ -120,31 +122,31 @@ const artistsRoutes = new Elysia({
     '/:artistId',
     async ({ params: { artistId }, query, set }) => {
       try {
-        const editedArtist = await artistsServices.editArtist(artistId, query)
+        const editedArtist = await artistsServices.editArtist(artistId, query);
         return {
           status: 'success',
           response: editedArtist,
-        }
+        };
       } catch (e) {
-        set.status = 500
+        set.status = 500;
         return {
           status: 'error',
           response: e,
-        }
+        };
       }
     },
     {
       transform({ query }) {
         if (typeof query.tags === 'string') {
-          query.tags = [query.tags]
+          query.tags = [query.tags];
         }
       },
       beforeHandle({ query, set }) {
-        if (Object.keys(query).length == 0) set.status = 400
+        if (Object.keys(query).length == 0) set.status = 400;
         return {
           status: 'error',
           response: 'Specify at least 1 of user edit options are represented!',
-        }
+        };
       },
       query: ArtistEditSchema,
       response: {
@@ -161,17 +163,17 @@ const artistsRoutes = new Elysia({
         const updatedArtist = await artistsServices.updateArtistStats(
           artistId,
           query
-        )
+        );
         return {
           status: 'success',
           response: updatedArtist,
-        }
+        };
       } catch (e) {
-        set.status = 500
+        set.status = 500;
         return {
           status: 'error',
           response: e,
-        }
+        };
       }
     },
     {
@@ -189,17 +191,17 @@ const artistsRoutes = new Elysia({
     async ({ body, set }) => {
       try {
         const updatedArtistsCount =
-          await artistsServices.bulkUpdateArtistsStats(body)
+          await artistsServices.bulkUpdateArtistsStats(body);
         return {
           status: 'success',
           response: updatedArtistsCount,
-        }
+        };
       } catch (e) {
-        set.status = 500
+        set.status = 500;
         return {
           status: 'error',
           response: e,
-        }
+        };
       }
     },
     {
@@ -216,17 +218,17 @@ const artistsRoutes = new Elysia({
     '/:artistId',
     async ({ params: { artistId }, set }) => {
       try {
-        artistsServices.deleteArtist(artistId)
+        artistsServices.deleteArtist(artistId);
         return {
           status: 'success',
           response: 'OK Gone',
-        }
+        };
       } catch (e) {
-        set.status = 500
+        set.status = 500;
         return {
           status: 'error',
           response: e,
-        }
+        };
       }
     },
     {
@@ -242,17 +244,17 @@ const artistsRoutes = new Elysia({
     '/bulk',
     ({ body, set }) => {
       try {
-        artistsServices.bulkDeleteArtists(<string[]>body)
+        artistsServices.bulkDeleteArtists(<string[]>body);
         return {
           status: 'success',
           response: 'OK Gone',
-        }
+        };
       } catch (e) {
-        set.status = 500
+        set.status = 500;
         return {
           status: 'error',
           response: e,
-        }
+        };
       }
     },
     {
@@ -263,6 +265,6 @@ const artistsRoutes = new Elysia({
         500: errorResponses['api.error'],
       },
     }
-  )
+  );
 
-export default artistsRoutes
+export default artistsRoutes;

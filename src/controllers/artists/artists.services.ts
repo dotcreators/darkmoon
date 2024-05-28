@@ -1,15 +1,15 @@
-import { Artist, PrismaClient } from '@prisma/client'
-import { ArtistSearchRequest } from '../../models/query/artists/ArtistSearchRequest'
-import { error } from 'elysia'
-import { ArtistEditRequest } from '../../models/query/artists/ArtistEditRequest'
+import { Artist, PrismaClient } from '@prisma/client';
+import { ArtistSearchRequest } from '../../models/query/artists/ArtistSearchRequest';
+import { error } from 'elysia';
+import { ArtistEditRequest } from '../../models/query/artists/ArtistEditRequest';
 import {
   ArtistUpdateRequest,
   BulkArtistUpdateRequest,
-} from '../../models/query/artists/ArtistUpdateRequest'
-import { ArtistCreateRequest } from '../../models/query/artists/ArtistCreateRequest'
+} from '../../models/query/artists/ArtistUpdateRequest';
+import { ArtistCreateRequest } from '../../models/query/artists/ArtistCreateRequest';
 
 export class ArtistsServices {
-  private readonly prisma = new PrismaClient()
+  private readonly prisma = new PrismaClient();
 
   async createArtist(request: ArtistCreateRequest): Promise<Artist> {
     const artist = await this.prisma.artist.create({
@@ -41,10 +41,12 @@ export class ArtistsServices {
         bio: true,
         name: true,
         website: true,
+        weeklyFollowersGrowingTrend: true,
+        weeklyPostsGrowingTrend: true,
       },
-    })
+    });
 
-    return artist
+    return artist;
   }
 
   async bulkCreateArtist(request: ArtistCreateRequest[]): Promise<number> {
@@ -62,55 +64,58 @@ export class ArtistsServices {
           bio: artist.bio,
           website: artist.website,
         },
-      })
-    })
+      });
+    });
 
-    const results = await Promise.all(createPromises)
+    const results = await Promise.all(createPromises);
 
-    return results.length
+    return results.length;
   }
 
   async getArtistsPaginated(
     request: ArtistSearchRequest
   ): Promise<{ data: Artist[]; has_next: boolean }> {
-    const orderFilter: any = {}
-    if (request.sortBy == 'username') orderFilter.username = 'asc'
-    else if (request.sortBy == 'followers') orderFilter.followersCount = 'desc'
-    else if (request.sortBy == 'posts') orderFilter.tweetsCount = 'desc'
-    else orderFilter.followersCount = 'desc'
+    const orderFilter: any = {};
+    if (request.sortBy == 'username') orderFilter.username = 'asc';
+    else if (request.sortBy == 'followers') orderFilter.followersCount = 'desc';
+    else if (request.sortBy == 'posts') orderFilter.tweetsCount = 'desc';
+    else orderFilter.followersCount = 'desc';
 
-    const whereFilter: any = {}
+    const whereFilter: any = {};
     if (request.username)
-      whereFilter.username = { contains: request.username, mode: 'insensitive' }
-    if (request.country) whereFilter.country = { equals: request.country }
+      whereFilter.username = {
+        contains: request.username,
+        mode: 'insensitive',
+      };
+    if (request.country) whereFilter.country = { equals: request.country };
     if (request.tags && request.tags.length > 0)
-      whereFilter.tags = { hasEvery: request.tags }
+      whereFilter.tags = { hasEvery: request.tags };
 
     const data = await this.prisma.artist.findMany({
       take: request.limit,
       skip: (request.page - 1) * request.limit,
       where: Object.keys(whereFilter).length > 0 ? whereFilter : undefined,
       orderBy: orderFilter,
-    })
+    });
 
     return {
       data: data as Artist[],
       has_next: data.length === request.limit ? true : false,
-    }
+    };
   }
 
   async editArtist(
     artistId: string,
     request: ArtistEditRequest
   ): Promise<Artist> {
-    const editFileds: any = {}
-    if (request.username) editFileds.username = request.username
-    if (request.name) editFileds.name = request.name
-    if (request.tags) editFileds.tags = request.tags
-    if (request.country) editFileds.country = request.country
-    if (request.images) editFileds.images = request.images
-    if (request.bio) editFileds.bio = request.bio
-    if (request.url) editFileds.url = request.url
+    const editFileds: any = {};
+    if (request.username) editFileds.username = request.username;
+    if (request.name) editFileds.name = request.name;
+    if (request.tags) editFileds.tags = request.tags;
+    if (request.country) editFileds.country = request.country;
+    if (request.images) editFileds.images = request.images;
+    if (request.bio) editFileds.bio = request.bio;
+    if (request.url) editFileds.url = request.url;
 
     const data = await this.prisma.artist.update({
       where: { id: artistId },
@@ -131,10 +136,12 @@ export class ArtistsServices {
         bio: true,
         name: true,
         website: true,
+        weeklyFollowersGrowingTrend: true,
+        weeklyPostsGrowingTrend: true,
       },
-    })
+    });
 
-    return data
+    return data;
   }
 
   async updateArtistStats(
@@ -165,10 +172,12 @@ export class ArtistsServices {
         bio: true,
         name: true,
         website: true,
+        weeklyFollowersGrowingTrend: true,
+        weeklyPostsGrowingTrend: true,
       },
-    })
+    });
 
-    return data
+    return data;
   }
 
   async bulkUpdateArtistsStats(
@@ -184,15 +193,15 @@ export class ArtistsServices {
             tweetsCount: request.tweetsCount,
             followersCount: request.followersCount,
           },
-        })
-      })
+        });
+      });
 
-      const results = await Promise.all(updatePromises)
+      const results = await Promise.all(updatePromises);
 
-      return results.length
+      return results.length;
     } catch (e) {
-      console.error('Error while bulk updating artists:', e)
-      throw e
+      console.error('Error while bulk updating artists:', e);
+      throw e;
     }
   }
 
@@ -201,7 +210,7 @@ export class ArtistsServices {
       where: {
         id: artistId,
       },
-    })
+    });
   }
 
   async bulkDeleteArtists(artistsIds: string[]): Promise<void> {
@@ -210,9 +219,9 @@ export class ArtistsServices {
         where: {
           id: id,
         },
-      })
-    })
+      });
+    });
 
-    await Promise.all(deletePromises)
+    await Promise.all(deletePromises);
   }
 }
