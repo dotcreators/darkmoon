@@ -11,10 +11,11 @@ const fetchRoutes = new Elysia({
     tags: ['Fetch'],
   },
 }).get(
-  ':userTag',
-  async ({ params: { userTag }, set }) => {
+  ':username',
+  async ({ params: { username }, set }) => {
     try {
-      const profile = await fetchServices.getTwitterProfile(userTag);
+      const profile = await fetchServices.getTwitterProfile(username);
+
       return {
         status: 'success',
         response: profile,

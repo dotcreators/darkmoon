@@ -5,11 +5,12 @@ export const fetchResponses = {
     {
       status: t.String({ default: 'success' }),
       response: t.Object({
-        avatar: t.String(),
-        followers: t.Number(),
-        tweets: t.Number(),
+        username: t.String(),
+        name: t.Nullable(t.String()),
+        followersCount: t.Number(),
+        tweetsCount: t.Number(),
         images: t.Object({
-          avatar: t.Nullable(t.String()),
+          avatar: t.String(),
           banner: t.Nullable(t.String()),
         }),
       }),
