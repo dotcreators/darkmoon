@@ -14,7 +14,7 @@ console.log(parentUrl);
 export const app = new Elysia()
   .use(
     cors({
-      origin: parentUrl,
+      origin: 'http://web.147.45.136.60.sslip.io/',
       methods: ['GET', 'POST', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
