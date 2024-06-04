@@ -18,6 +18,7 @@ export const app = new Elysia()
       methods: ['GET', 'POST', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
+      maxAge: 500,
     })
   )
   .use(
