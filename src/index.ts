@@ -15,6 +15,9 @@ export const app = new Elysia()
   .use(
     cors({
       origin: parentUrl,
+      methods: ['GET', 'POST', 'PATCH'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true,
     })
   )
   .use(
