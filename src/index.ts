@@ -8,11 +8,12 @@ import trendsRoutes from './controllers/trends/trends.controller';
 import authRoutes from './controllers/auth/auth.controller';
 
 export const app = new Elysia()
-  // .use(
-  //   cors({
-  //     origin: process.env.PARENT_URL,
-  //   })
-  // )
+  .use(
+    cors({
+      origin: process.env.PARENT_URL,
+      allowedHeaders: '*',
+    })
+  )
   .use(
     swagger({
       documentation: {
