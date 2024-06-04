@@ -6,7 +6,7 @@ export const fetchResponses = {
       status: t.String({ default: 'success' }),
       response: t.Object({
         username: t.String(),
-        name: t.Optional(t.String()),
+        name: t.Nullable(t.String()),
         followersCount: t.Number(),
         tweetsCount: t.Number(),
         images: t.Object({
