@@ -11,7 +11,6 @@ export const app = new Elysia()
   .use(
     cors({
       origin: process.env.PARENT_URL,
-      allowedHeaders: '*',
     })
   )
   .use(
