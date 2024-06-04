@@ -22,7 +22,7 @@ export class FetchServices {
       tweetsCount: profile.tweetsCount || 0,
       images: {
         avatar: profile.avatar!,
-        banner: profile.banner || undefined,
+        banner: profile.banner,
       },
     };
   }
