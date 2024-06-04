@@ -6,12 +6,12 @@ export const fetchResponses = {
       status: t.String({ default: 'success' }),
       response: t.Object({
         username: t.String(),
-        name: t.MaybeEmpty(t.String()),
+        name: t.Optional(t.String()),
         followersCount: t.Number(),
         tweetsCount: t.Number(),
         images: t.Object({
           avatar: t.String(),
-          banner: t.MaybeEmpty(t.String()),
+          banner: t.Optional(t.String()),
         }),
       }),
     },

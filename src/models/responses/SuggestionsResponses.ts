@@ -9,8 +9,8 @@ export const suggestionsResponses = {
           t.Object({
             requestId: t.String(),
             username: t.String(),
-            country: t.Nullable(t.String()),
-            tags: t.Nullable(t.Array(t.String(), { minItems: 0 })),
+            country: t.Optional(t.String()),
+            tags: t.Optional(t.Array(t.String(), { minItems: 0 })),
             requestStatus: t.String(),
             avatarUrl: t.String(),
             createdAt: t.Date(),
