@@ -7,10 +7,14 @@ import fetchRoutes from './controllers/fetch/fetch.controller';
 import trendsRoutes from './controllers/trends/trends.controller';
 import authRoutes from './controllers/auth/auth.controller';
 
+let parentUrl = process.env.PARENT_URL;
+
+console.log(parentUrl);
+
 export const app = new Elysia()
   .use(
     cors({
-      origin: process.env.PARENT_URL,
+      origin: parentUrl,
     })
   )
   .use(
