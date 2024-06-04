@@ -21,6 +21,10 @@ export class TrendsServices {
       take: range,
     });
 
-    return artistTrends;
+    if (artistTrends.length < 3) {
+      return [];
+    } else {
+      return artistTrends;
+    }
   }
 }
