@@ -12,7 +12,7 @@ let parentUrl = process.env.PARENT_URL;
 export const app = new Elysia()
   .use(
     cors({
-      origin: 'https://web.147.45.136.60.sslip.io',
+      origin: true,
       methods: ['GET', 'POST', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
