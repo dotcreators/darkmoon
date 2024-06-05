@@ -9,12 +9,10 @@ import authRoutes from './controllers/auth/auth.controller';
 
 let parentUrl = process.env.PARENT_URL;
 
-console.log(parentUrl);
-
 export const app = new Elysia()
   .use(
     cors({
-      origin: true,
+      origin: 'https://web.147.45.136.60.sslip.io',
       methods: ['GET', 'POST', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
