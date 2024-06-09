@@ -11,9 +11,6 @@ const authRoutes = new Elysia({
   async ({ query, set }) => {
     const code = process.env.ACCESS_CODE;
 
-    console.log(query);
-    console.log(query.accessToken);
-
     if (query.accessToken === code) {
       return {
         status: 'success',
