@@ -1,6 +1,8 @@
 {
-  "name": "darkmoon",
-  "version": "1.0.1",
+  "name": "dotcreators-darkmoon",
+  "version": "1.0.0",
+  "description": "Backend service written with Elysia.js",
+  "author": "anivire",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
