@@ -16,7 +16,7 @@ export class TrendsServices {
         recordedAt: true,
       },
       orderBy: {
-        recordedAt: 'asc',
+        recordedAt: 'desc',
       },
       take: range,
     });
@@ -24,7 +24,7 @@ export class TrendsServices {
     if (artistTrends.length < 3) {
       return [];
     } else {
-      return artistTrends;
+      return artistTrends.reverse();
     }
   }
 }
