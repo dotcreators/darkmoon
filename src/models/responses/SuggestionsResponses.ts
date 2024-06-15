@@ -36,7 +36,15 @@ export const suggestionsResponses = {
   'suggestions.update': t.Object(
     {
       status: t.String(),
-      response: t.String(),
+      response: t.Object({
+        requestId: t.String(),
+        username: t.String(),
+        country: t.Nullable(t.String()),
+        tags: t.Nullable(t.Array(t.String(), { minItems: 0 })),
+        requestStatus: t.String(),
+        avatarUrl: t.String(),
+        createdAt: t.Date(),
+      }),
     },
     {
       description: 'Update artist suggestion status',

@@ -81,14 +81,34 @@ const suggestionsRoutes = new Elysia({
   )
   .patch(
     '/:suggestionId',
-    ({ params: { suggestionId }, query }) => {
-      suggestionsServices.updateStatusSuggestion(
-        suggestionId,
-        query.requestStatus
-      );
+    async ({ params: { suggestionId }, query, set }) => {
+      try {
+        const suggestion = await suggestionsServices.updateStatusSuggestion(
+          suggestionId,
+          query.requestStatus,
+          query.country ?? undefined,
+          query.tags ?? undefined
+        );
+
+        return {
+          status: 'success',
+          response: suggestion,
+        };
+      } catch (e) {
+        set.status = 500;
+        return {
+          status: 'error',
+          response: e,
+        };
+      }
     },
     {
-      transform() {},
+      transform({ query }) {
+        if (typeof query.tags === 'string') {
+          let tags = query.tags as string;
+          query.tags = tags.split(',');
+        }
+      },
       query: ArtistEditSuggestionSchema,
       response: {
         200: suggestionsResponses['suggestions.update'],

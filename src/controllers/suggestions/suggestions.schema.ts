@@ -15,6 +15,8 @@ const ArtistsCreateSuggestionSchema = t.Object({
 
 const ArtistEditSuggestionSchema = t.Object({
   requestStatus: t.String(),
+  country: t.Optional(t.String()),
+  tags: t.Optional(t.Array(t.String(), { minItems: 1 })),
 });
 
 const ArtistResponseSchema = t.Object({

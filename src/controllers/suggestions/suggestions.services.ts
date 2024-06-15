@@ -50,7 +50,12 @@ export class SuggestionsServices {
     }
   }
 
-  async updateStatusSuggestion(suggestionId: string, requestStatus: string) {
+  async updateStatusSuggestion(
+    suggestionId: string,
+    requestStatus: string,
+    country?: string,
+    tags?: string[]
+  ) {
     try {
       const data = await this.prisma.artistSuggestion.update({
         where: {
@@ -58,8 +63,12 @@ export class SuggestionsServices {
         },
         data: {
           requestStatus: requestStatus,
+          tags: tags,
+          country: country,
         },
       });
+
+      return data;
     } catch (e) {
       console.error('Error while editing status of suggested artist:', e);
       throw e;
