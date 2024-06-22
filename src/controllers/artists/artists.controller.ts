@@ -85,6 +85,7 @@ const artistsRoutes = new Elysia({
           response: {
             data: artists.data,
             has_next: artists.has_next,
+            total_pages: artists.total_pages,
           },
         };
       } catch (e) {

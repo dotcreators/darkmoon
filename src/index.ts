@@ -6,8 +6,24 @@ import cors from '@elysiajs/cors';
 import fetchRoutes from './controllers/fetch/fetch.controller';
 import trendsRoutes from './controllers/trends/trends.controller';
 import authRoutes from './controllers/auth/auth.controller';
+import { rateLimit } from 'elysia-rate-limit';
+import cookie from '@elysiajs/cookie';
+
+const IS_DEV = process.env.IS_DEV;
 
 export const app = new Elysia()
+  .use(
+    cookie({
+      httpOnly: true,
+      secure: true,
+      // If you need a cookie to be available for same-site only
+      // sameSite: "strict",
+      //
+      // If you want to encrypt a cookie
+      // signed: true,
+      // secret: process.env.COOKIE_SECRET,
+    })
+  )
   .use(
     cors({
       origin: true,
@@ -38,8 +54,17 @@ export const app = new Elysia()
   .group('/api/v1', app => app.use(suggestionsRoutes))
   .group('/api/v1', app => app.use(fetchRoutes))
   .group('/api/v1', app => app.use(trendsRoutes))
-  .group('/api/v1', app => app.use(authRoutes))
-  .listen(8989);
+  .group('/api/v1', app => app.use(authRoutes));
+
+IS_DEV !== 'true' &&
+  app.use(
+    rateLimit({
+      max: 100,
+      errorResponse: 'Rate-limit reached',
+    })
+  );
+
+app.listen(8989);
 
 console.log(
   `🚀 Dotcreators API service is running at ${app.server?.hostname}:${app.server?.port}`

@@ -29,6 +29,7 @@ export const artistsResponses = {
           { minItems: 0 }
         ),
         has_next: t.Boolean(),
+        total_pages: t.Number(),
       }),
     },
     {

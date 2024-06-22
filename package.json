@@ -9,11 +9,15 @@
     "dev:prisma": "bunx prisma db pull && bunx prisma generate"
   },
   "dependencies": {
+    "@elysiajs/cookie": "^0.8.0",
     "@elysiajs/cors": "^1.0.2",
     "@elysiajs/swagger": "^1.0.4",
     "@prisma/client": "^5.12.1",
+    "@supabase/supabase-js": "^2.43.5",
     "@the-convocation/twitter-scraper": "^0.12.0",
     "elysia": "1.0.13",
+    "elysia-rate-limit": "^4.1.0",
+    "lucia": "^3.2.0",
     "prisma": "^5.12.1"
   },
   "devDependencies": {

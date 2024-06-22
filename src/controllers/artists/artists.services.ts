@@ -74,7 +74,7 @@ export class ArtistsServices {
 
   async getArtistsPaginated(
     request: ArtistSearchRequest
-  ): Promise<{ data: Artist[]; has_next: boolean }> {
+  ): Promise<{ data: Artist[]; has_next: boolean; total_pages: number }> {
     const orderFilter: any = {};
     if (request.sortBy == 'username') orderFilter.username = 'asc';
     else if (request.sortBy == 'followers') orderFilter.followersCount = 'desc';
@@ -93,6 +93,10 @@ export class ArtistsServices {
     if (request.tags && request.tags.length > 0)
       whereFilter.tags = { hasEvery: request.tags };
 
+    const totalCount = await this.prisma.artist.count({
+      where: Object.keys(whereFilter).length > 0 ? whereFilter : undefined,
+    });
+
     const data = await this.prisma.artist.findMany({
       take: request.limit,
       skip: (request.page - 1) * request.limit,
@@ -103,6 +107,7 @@ export class ArtistsServices {
     return {
       data: data as Artist[],
       has_next: data.length === request.limit ? true : false,
+      total_pages: Math.ceil(totalCount / request.limit),
     };
   }
 

@@ -1,6 +1,7 @@
+import { PrismaClient } from '@prisma/client';
 import Elysia, { t } from 'elysia';
+import { supabase } from '../../libs/auth/supabase';
 
-// Temp auth system :_;
 const authRoutes = new Elysia({
   prefix: '/auth',
   detail: {
@@ -33,5 +34,39 @@ const authRoutes = new Elysia({
     query: t.Object({ accessToken: t.String() }),
   }
 );
+
+// const authRoutes = new Elysia({
+//   prefix: '/auth',
+//   detail: {
+//     tags: ['Auth'],
+//   },
+// })
+//   .post('/login', async () => {
+//     const { data, error } = await supabase.auth.signInWithOAuth({
+//       provider: 'discord',
+//       options: {
+//         redirectTo: `localhost:8989/auth/callback`,
+//       },
+//     });
+
+//     if (data) {
+//       return {
+//         url: data.url,
+//       };
+//     } else {
+//       return error;
+//     }
+//   })
+//   .post(
+//     '/callback',
+//     async ({ query, cookie }) => {
+//       const { data, error } = await supabase.auth.getUser(query.access_token);
+
+//       return data.user?.user_metadata;
+//     },
+//     {
+//       query: t.Object({ access_token: t.String() }),
+//     }
+//   );
 
 export default authRoutes;
