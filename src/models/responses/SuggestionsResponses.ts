@@ -24,6 +24,15 @@ export const suggestionsResponses = {
       description: 'Get paginated artists suggestions',
     }
   ),
+  'suggestions.check': t.Object(
+    {
+      status: t.String({ default: 'success' }),
+      response: t.Boolean(),
+    },
+    {
+      description: 'Check if artist exists in dotcreators',
+    }
+  ),
   'suggestions.create': t.Object(
     {
       status: t.String(),
@@ -57,5 +66,6 @@ export interface SuggestionsResponsesModel {
     create: UnwrapSchema<(typeof suggestionsResponses)['suggestions.create']>;
     get: UnwrapSchema<(typeof suggestionsResponses)['suggestions.get']>;
     update: UnwrapSchema<(typeof suggestionsResponses)['suggestions.update']>;
+    check: UnwrapSchema<(typeof suggestionsResponses)['suggestions.check']>;
   };
 }
