@@ -17,21 +17,10 @@ export const app = new Elysia()
       httpOnly: true,
       secure: true,
       // sameSite: 'strict',
-
-      // If you want to encrypt a cookie
-      // signed: true,
-      // secret: process.env.COOKIE_SECRET,
     })
   )
   .use(
     cors({
-      // origin: [
-      //   'https://dotcreators.xyz/',
-      //   'https://www.dotcreators.xyz/',
-      //   'https://dashboard.dotcreators.xyz/',
-      //   'http://localhost:3001/',
-      //   'http://localhost:3000/',
-      // ],
       origin: /(.*\.)?dotcreators\.xyz$/,
       methods: ['GET', 'POST', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
