@@ -8,33 +8,6 @@ const authRoutes = new Elysia({
     tags: ['Auth'],
   },
 })
-  .post(
-    '/access',
-    async ({ query, set }) => {
-      const code = process.env.ACCESS_CODE;
-
-      if (query.accessToken === code) {
-        return {
-          status: 'success',
-          response: code,
-        };
-      }
-
-      set.status = 400;
-      return {
-        status: 'error',
-        response: 'Invalid access token',
-      };
-    },
-    {
-      transform({ query }) {
-        if (typeof query.accessToken !== 'string') {
-          query.accessToken = String(query.accessToken);
-        }
-      },
-      query: t.Object({ accessToken: t.String() }),
-    }
-  )
   .post('/login', async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'discord',
