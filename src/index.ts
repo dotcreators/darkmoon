@@ -31,9 +31,9 @@ export const app = new Elysia()
         'https://dashboard.dotcreators.xyz',
       ],
       methods: ['GET', 'POST', 'PATCH'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
+      // allowedHeaders: ['Content-Type', 'Authorization'],
       maxAge: 500,
-      preflight: true,
+      // preflight: true,
     })
   )
   .use(
