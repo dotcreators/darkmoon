@@ -16,7 +16,7 @@ export const app = new Elysia()
     cookie({
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      // sameSite: 'strict',
 
       // If you want to encrypt a cookie
       // signed: true,
@@ -25,15 +25,18 @@ export const app = new Elysia()
   )
   .use(
     cors({
-      origin: [
-        'https://dotcreators.xyz',
-        'https://www.dotcreators.xyz',
-        'https://dashboard.dotcreators.xyz',
-      ],
+      // origin: [
+      //   'https://dotcreators.xyz/',
+      //   'https://www.dotcreators.xyz/',
+      //   'https://dashboard.dotcreators.xyz/',
+      //   'http://localhost:3001/',
+      //   'http://localhost:3000/',
+      // ],
+      // origin: /(.*\.)?dotcreators\.xyz$/,
+      origin: true,
       methods: ['GET', 'POST', 'PATCH'],
-      // allowedHeaders: ['Content-Type', 'Authorization'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
       maxAge: 500,
-      // preflight: true,
     })
   )
   .use(
