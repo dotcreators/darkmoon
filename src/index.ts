@@ -21,7 +21,8 @@ export const app = new Elysia()
   )
   .use(
     cors({
-      origin: /(.*\.)?dotcreators\.xyz$/,
+      // origin: !IS_DEV ? /(.*\.)?dotcreators\.xyz$/ : true,
+      origin: 'https://www.dotcreators.xyz',
       methods: ['GET', 'POST', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       maxAge: 500,
