@@ -30,6 +30,7 @@ export const app = new Elysia()
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
       maxAge: 500,
+      preflight: true,
     })
   )
   .use(
