@@ -16,9 +16,8 @@ export const app = new Elysia()
     cookie({
       httpOnly: true,
       secure: true,
-      // If you need a cookie to be available for same-site only
-      // sameSite: "strict",
-      //
+      sameSite: 'strict',
+
       // If you want to encrypt a cookie
       // signed: true,
       // secret: process.env.COOKIE_SECRET,
@@ -26,7 +25,7 @@ export const app = new Elysia()
   )
   .use(
     cors({
-      origin: true,
+      origin: /.*\.dotcreators\.xyz$/,
       methods: ['GET', 'POST', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,

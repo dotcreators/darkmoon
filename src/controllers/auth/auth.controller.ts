@@ -47,26 +47,9 @@ const authRoutes = new Elysia({
       url: data.url,
     };
   })
-  .post(
-    '/callback',
-    async ({ body, cookie }) => {
-      const { data, error } = await supabase.auth.getUser(body.access_token);
-
-      if (error) {
-        return {
-          status: 'error',
-          response: error.message,
-        };
-      }
-
-      return {
-        status: 'success',
-        response: data,
-      };
-    },
-    {
-      body: t.Object({ access_token: t.String(), refresh_token: t.String() }),
-    }
-  );
+  .post('/callback', async ({ cookie: { accessToken }, request }) => {
+    console.log(JSON.stringify(accessToken));
+    console.log(request.headers);
+  });
 
 export default authRoutes;
