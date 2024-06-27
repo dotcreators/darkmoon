@@ -25,7 +25,11 @@ export const app = new Elysia()
   )
   .use(
     cors({
-      origin: /(.*\.)?dotcreators\.xyz$/,
+      // origin: /(.*\.)?dotcreators\.xyz$/,
+      origin: [
+        'https://www.dotcreators.xyz/',
+        'https://dashboard.dotcreators.xyz/',
+      ],
       methods: ['GET', 'POST', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
