@@ -7,66 +7,66 @@ const authRoutes = new Elysia({
   detail: {
     tags: ['Auth'],
   },
-}).post(
-  '/',
-  async ({ query, set }) => {
-    const code = process.env.ACCESS_CODE;
+})
+  .post(
+    '/access',
+    async ({ query, set }) => {
+      const code = process.env.ACCESS_CODE;
 
-    if (query.accessToken === code) {
-      return {
-        status: 'success',
-        response: code,
-      };
-    } else {
+      if (query.accessToken === code) {
+        return {
+          status: 'success',
+          response: code,
+        };
+      }
+
       set.status = 400;
       return {
         status: 'error',
         response: 'Invalid access token',
       };
-    }
-  },
-  {
-    transform({ query }) {
-      if (typeof query.accessToken !== 'string') {
-        query.accessToken = String(query.accessToken);
-      }
     },
-    query: t.Object({ accessToken: t.String() }),
-  }
-);
+    {
+      transform({ query }) {
+        if (typeof query.accessToken !== 'string') {
+          query.accessToken = String(query.accessToken);
+        }
+      },
+      query: t.Object({ accessToken: t.String() }),
+    }
+  )
+  .post('/login', async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'discord',
+    });
 
-// const authRoutes = new Elysia({
-//   prefix: '/auth',
-//   detail: {
-//     tags: ['Auth'],
-//   },
-// })
-//   .post('/login', async () => {
-//     const { data, error } = await supabase.auth.signInWithOAuth({
-//       provider: 'discord',
-//       options: {
-//         redirectTo: `localhost:8989/auth/callback`,
-//       },
-//     });
+    if (!data) {
+      return error;
+    }
+    return {
+      url: data.url,
+    };
+  })
+  .post(
+    '/callback',
+    async ({ body, cookie }) => {
+      const { data, error } = await supabase.auth.getUser(body.access_token);
 
-//     if (data) {
-//       return {
-//         url: data.url,
-//       };
-//     } else {
-//       return error;
-//     }
-//   })
-//   .post(
-//     '/callback',
-//     async ({ query, cookie }) => {
-//       const { data, error } = await supabase.auth.getUser(query.access_token);
+      if (error) {
+        return {
+          status: 'error',
+          response: error.message,
+        };
+      }
 
-//       return data.user?.user_metadata;
-//     },
-//     {
-//       query: t.Object({ access_token: t.String() }),
-//     }
-//   );
+      return {
+        status: 'success',
+        response: data,
+      };
+    },
+    {
+      body: t.Object({ access_token: t.String(), refresh_token: t.String() }),
+    }
+  );
 
 export default authRoutes;
