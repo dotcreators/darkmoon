@@ -111,6 +111,16 @@ export class ArtistsServices {
     };
   }
 
+  async getArtistsUsernames(): Promise<string[]> {
+    const data = await this.prisma.artist.findMany({
+      select: {
+        username: true,
+      },
+    });
+
+    return data.map(artist => artist.username);
+  }
+
   async editArtist(
     artistId: string,
     request: ArtistEditRequest

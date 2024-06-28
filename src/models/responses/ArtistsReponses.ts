@@ -36,6 +36,15 @@ export const artistsResponses = {
       description: 'Get paginated artists profiles',
     }
   ),
+  'artists.usernames': t.Object(
+    {
+      status: t.String({ default: 'success' }),
+      response: t.Array(t.String(), { minItems: 0 }),
+    },
+    {
+      description: 'All artists usernames (for SEO)',
+    }
+  ),
   'artists.create': t.Object(
     {
       status: t.String({ default: 'success' }),
@@ -181,5 +190,6 @@ export interface ArtistsResponsesModel {
       (typeof artistsResponses)['artists.updateSingle']
     >;
     updateBulk: UnwrapSchema<(typeof artistsResponses)['artists.updateBulk']>;
+    usernames: UnwrapSchema<(typeof artistsResponses)['artists.usernames']>;
   };
 }
