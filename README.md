@@ -1,15 +1,8 @@
-# Elysia with Bun runtime
+## Dotcreators Darkmoon
 
-## Getting Started
-To get started with this template, simply paste this command into your terminal:
-```bash
-bun create elysia ./elysia-example
-```
+Backend service of dotcreators project, written in Typescript with Elysia.js, Supabase and Bun. 
 
-## Development
-To start the development server run:
-```bash
-bun run dev
-```
-
-Open http://localhost:3000/ with your browser to see the result.
+Learn more about Elysia.js, Supabase and Bun: 
+[Elysia.js Framework](https://elysiajs.com/),
+[Supabase](https://supabase.com/),
+[Bun runtime](https://bun.sh/)
