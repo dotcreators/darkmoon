@@ -121,6 +121,17 @@ export class ArtistsServices {
     return data.map(artist => artist.username);
   }
 
+  async getArtistsRandom() {
+    const data = await this.prisma.$queryRaw<Artist[]>`
+      SELECT * FROM "artists"
+      ORDER BY RANDOM()
+      LIMIT 1;
+    `;
+
+    if (!data) return null;
+    return data[0];
+  }
+
   async editArtist(
     artistId: string,
     request: ArtistEditRequest

@@ -36,13 +36,41 @@ export const artistsResponses = {
       description: 'Get paginated artists profiles',
     }
   ),
+  'artists.random': t.Object(
+    {
+      status: t.String({ default: 'success' }),
+      response: t.Object({
+        id: t.String(),
+        username: t.String(),
+        userId: t.String(),
+        tweetsCount: t.Number(),
+        followersCount: t.Number(),
+        images: t.Object({
+          avatar: t.String(),
+          banner: t.Optional(t.String()),
+        }),
+        url: t.String(),
+        joinedAt: t.Date(),
+        createdAt: t.Date(),
+        lastUpdatedAt: t.Date(),
+        tags: t.Nullable(t.Array(t.String(), { minItems: 0 })),
+        name: t.Nullable(t.String()),
+        country: t.Nullable(t.String()),
+        website: t.Nullable(t.String()),
+        bio: t.Nullable(t.String()),
+      }),
+    },
+    {
+      description: 'Get random artist',
+    }
+  ),
   'artists.usernames': t.Object(
     {
       status: t.String({ default: 'success' }),
       response: t.Array(t.String(), { minItems: 0 }),
     },
     {
-      description: 'All artists usernames (for SEO)',
+      description: 'Get all artists usernames (for SEO)',
     }
   ),
   'artists.create': t.Object(
@@ -191,5 +219,6 @@ export interface ArtistsResponsesModel {
     >;
     updateBulk: UnwrapSchema<(typeof artistsResponses)['artists.updateBulk']>;
     usernames: UnwrapSchema<(typeof artistsResponses)['artists.usernames']>;
+    random: UnwrapSchema<(typeof artistsResponses)['artists.random']>;
   };
 }

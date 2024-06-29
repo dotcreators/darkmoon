@@ -145,6 +145,32 @@ const artistsRoutes = new Elysia({
       },
     }
   )
+  .get(
+    '/random',
+    async ({ set }) => {
+      try {
+        const artist = await artistsServices.getArtistsRandom();
+        return {
+          status: 'success',
+          response: artist,
+        };
+      } catch (e) {
+        set.status = 500;
+        return {
+          status: 'error',
+          response: e,
+        };
+      }
+    },
+    {
+      beforeHandle() {},
+      response: {
+        200: artistsResponses['artists.random'],
+        400: errorResponses['api.badrequest'],
+        500: errorResponses['api.error'],
+      },
+    }
+  )
   .patch(
     '/:artistId',
     async ({ params: { artistId }, query, set }) => {
