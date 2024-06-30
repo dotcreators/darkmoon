@@ -122,7 +122,7 @@ export class ArtistsServices {
   }
 
   async getArtistsRandom() {
-    const data = await this.prisma.$queryRaw<Artist>`
+    const data = await this.prisma.$queryRaw<Artist[]>`
       SELECT * FROM "artists"
       WHERE "weeklyFollowersGrowingTrend" > 0
       ORDER BY RANDOM()
@@ -130,7 +130,7 @@ export class ArtistsServices {
     `;
 
     if (!data) return null;
-    return data;
+    return data[0];
   }
 
   async editArtist(
