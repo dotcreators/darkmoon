@@ -103,6 +103,11 @@ const authRoutes = new Elysia({
             ? 'https://dashboard.dotcreators.xyz/'
             : 'http://localhost:3000');
         } else {
+          // Temporarily remove account creation while authorizing
+          return (set.redirect = !IS_DEV
+            ? 'https://dashboard.dotcreators.xyz/'
+            : 'http://localhost:3000');
+
           const userId = generateId(15);
 
           await prisma.dashboard_users.create({
