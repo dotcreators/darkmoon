@@ -5,6 +5,8 @@ import { PrismaAdapter } from '@lucia-auth/adapter-prisma';
 import { Lucia, generateId } from 'lucia';
 import Elysia, { t } from 'elysia';
 
+const IS_DEV = process.env.IS_DEV;
+
 const prisma = new PrismaClient();
 const adapter = new PrismaAdapter(
   prisma.dashboard_sessions,
@@ -14,8 +16,9 @@ const adapter = new PrismaAdapter(
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
     attributes: {
-      secure: true,
+      secure: !IS_DEV ? true : false,
       sameSite: 'none',
+      path: '/',
       domain: '.dotcreators.xyz',
     },
   },
@@ -40,7 +43,7 @@ const authRoutes = new Elysia({
       github_state.value = state;
       github_state.set({
         httpOnly: true,
-        secure: true,
+        secure: !IS_DEV ? true : false,
         maxAge: 60 * 10,
         sameSite: 'none',
         domain: '.dotcreators.xyz',
@@ -96,7 +99,9 @@ const authRoutes = new Elysia({
           lucia_session!.value = sessionCookie.value;
           lucia_session!.set(sessionCookie.attributes);
 
-          return (set.redirect = 'https://dashboard.dotcreators.xyz/');
+          return (set.redirect = !IS_DEV
+            ? 'https://dashboard.dotcreators.xyz/'
+            : 'http://localhost:3000');
         } else {
           const userId = generateId(15);
 
@@ -115,7 +120,9 @@ const authRoutes = new Elysia({
           lucia_session!.value = sessionCookie.value;
           lucia_session!.set(sessionCookie.attributes);
 
-          return (set.redirect = 'https://dashboard.dotcreators.xyz/');
+          return (set.redirect = !IS_DEV
+            ? 'https://dashboard.dotcreators.xyz/'
+            : 'http://localhost:3000');
         }
       } catch (e) {
         if (e instanceof OAuth2RequestError) {
@@ -141,11 +148,13 @@ const authRoutes = new Elysia({
     lucia_session!.value = sessionCookie.value;
     lucia_session!.set(sessionCookie.attributes);
 
-    return (set.headers['Redirect'] = 'http://dashboard.dotcreators.xyz/');
+    return (set.headers['Redirect'] = !IS_DEV
+      ? 'https://dashboard.dotcreators.xyz/'
+      : 'http://localhost:3000');
   })
   .get('user', async ({ set, cookie: { lucia_session } }) => {
     try {
-      if (lucia_session?.value) {
+      if (lucia_session) {
         const session = await prisma.dashboard_sessions.findMany({
           where: {
             id: lucia_session?.value,
