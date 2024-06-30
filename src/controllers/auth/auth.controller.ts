@@ -16,15 +16,11 @@ const lucia = new Lucia(adapter, {
   sessionCookie: {
     attributes: {
       secure: true,
+      sameSite: 'none',
+      domain: '.dotcreators.xyz',
     },
   },
 });
-
-const discord = new Discord(
-  process.env.DISCORD_ID ?? '',
-  process.env.DISCORD_SECRET ?? '',
-  'http://localhost:8989/api/v1/auth/discord/callback'
-);
 
 const github = new GitHub(
   process.env.GITHUB_ID ?? '',
@@ -37,54 +33,6 @@ const authRoutes = new Elysia({
     tags: ['Auth'],
   },
 })
-  .get('/discord', async ({ set, cookie: { discord_state } }) => {
-    if (discord_state) {
-      const state = generateState();
-      const url = await discord.createAuthorizationURL(state, {
-        scopes: ['identify'],
-      });
-
-      discord_state.value = state;
-      discord_state.set({
-        httpOnly: true,
-        secure: true,
-        maxAge: 60 * 10,
-        path: '/',
-      });
-
-      return (set.redirect = url.toString());
-    }
-  })
-  .get(
-    '/discord/callback',
-    async ({ set, query: { state, code }, cookie: { discord_state } }) => {
-      const storedState = discord_state?.value;
-
-      if (!state || !code || !discord_state || storedState !== state) {
-        set.status = 400;
-        return {
-          status: 'error',
-          response: 'Invalid Discord authorization session',
-        };
-      }
-
-      try {
-        const tokens = await discord.validateAuthorizationCode(code);
-
-        console.log(tokens);
-
-        return {
-          status: 'success',
-          response: tokens,
-        };
-      } catch (e) {
-        if (e instanceof OAuth2RequestError) {
-          const { message, description, request } = e;
-          console.log(e.description);
-        }
-      }
-    }
-  )
   .get('/github', async ({ set, cookie: { github_state } }) => {
     if (github_state) {
       const state = generateState();
@@ -95,6 +43,8 @@ const authRoutes = new Elysia({
         httpOnly: true,
         secure: true,
         maxAge: 60 * 10,
+        sameSite: 'none',
+        domain: '.dotcreators.xyz',
         path: '/',
       });
 
@@ -112,6 +62,7 @@ const authRoutes = new Elysia({
         const storedState = github_state?.value;
 
         if (!state || !code || !github_state || storedState !== state) {
+          console.log();
           set.status = 400;
           return {
             status: 'error',
