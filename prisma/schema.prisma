@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["auth", "public"]
+  schemas  = ["auth", "dashboard", "public"]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -369,7 +369,7 @@ model analyticsArtists {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model analyticsSuggestions {
   id                    String   @id(map: "analyticssuggestions_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  totalSuggestionsCount Int?     @default(0)
+  totalSuggestionsCount Int      @default(0)
   recordedAt            DateTime @default(now()) @db.Timestamptz(6)
 
   @@schema("public")
@@ -385,6 +385,29 @@ model dashboardUsers {
   users     users    @relation(fields: [id], references: [id], onDelete: Cascade)
 
   @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model dashboard_sessions {
+  id                           String          @id
+  userId                       String
+  expiresAt                    DateTime        @default(now()) @db.Timestamptz(6)
+  users_sessions_userIdTousers dashboard_users @relation("sessions_userIdTousers", fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("sessions")
+  @@schema("dashboard")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model dashboard_users {
+  id                              String               @id(map: "Users_pkey")
+  githubId                        String
+  username                        String
+  avatarUrl                       String?
+  sessions_sessions_userIdTousers dashboard_sessions[] @relation("sessions_userIdTousers")
+
+  @@map("users")
+  @@schema("dashboard")
 }
 
 enum aal_level {

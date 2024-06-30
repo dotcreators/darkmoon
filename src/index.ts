@@ -16,7 +16,6 @@ export const app = new Elysia()
     cookie({
       httpOnly: true,
       secure: true,
-      // sameSite: 'strict',
     })
   )
   .use(
