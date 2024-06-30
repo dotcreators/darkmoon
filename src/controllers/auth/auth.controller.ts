@@ -146,7 +146,7 @@ const authRoutes = new Elysia({
           lucia_session!.value = sessionCookie.value;
           lucia_session!.set(sessionCookie.attributes);
 
-          return (set.redirect = 'http://dashboard.dotcreators.xyz/');
+          return (set.redirect = 'https://dashboard.dotcreators.xyz/');
         } else {
           const userId = generateId(15);
 
@@ -165,7 +165,7 @@ const authRoutes = new Elysia({
           lucia_session!.value = sessionCookie.value;
           lucia_session!.set(sessionCookie.attributes);
 
-          return (set.redirect = 'http://dashboard.dotcreators.xyz/');
+          return (set.redirect = 'https://dashboard.dotcreators.xyz/');
         }
       } catch (e) {
         if (e instanceof OAuth2RequestError) {
