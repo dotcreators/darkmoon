@@ -125,6 +125,7 @@ export class ArtistsServices {
     const data = await this.prisma.$queryRaw<Artist[]>`
       SELECT * FROM "artists"
       WHERE "weeklyFollowersGrowingTrend" > 0
+        AND "createdAt" < NOW() - INTERVAL '7 days'
       ORDER BY RANDOM()
       LIMIT 1;
     `;
