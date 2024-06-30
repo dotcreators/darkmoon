@@ -146,7 +146,7 @@ const authRoutes = new Elysia({
           lucia_session!.value = sessionCookie.value;
           lucia_session!.set(sessionCookie.attributes);
 
-          return (set.redirect = '/');
+          return (set.redirect = 'http://dashboard.dotcreators.xyz/');
         } else {
           const userId = generateId(15);
 
@@ -165,7 +165,7 @@ const authRoutes = new Elysia({
           lucia_session!.value = sessionCookie.value;
           lucia_session!.set(sessionCookie.attributes);
 
-          return (set.redirect = '/');
+          return (set.redirect = 'http://dashboard.dotcreators.xyz/');
         }
       } catch (e) {
         if (e instanceof OAuth2RequestError) {
@@ -191,7 +191,7 @@ const authRoutes = new Elysia({
     lucia_session!.value = sessionCookie.value;
     lucia_session!.set(sessionCookie.attributes);
 
-    return (set.headers['Redirect'] = '/');
+    return (set.headers['Redirect'] = 'http://dashboard.dotcreators.xyz/');
   });
 // .post('/login', async () => {
 //   const { data, error } = await supabase.auth.signInWithOAuth({
