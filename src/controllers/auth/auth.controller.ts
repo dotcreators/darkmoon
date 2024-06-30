@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { supabase } from '../../libs/auth/supabase';
 import { GithubUser } from '../../models/GithubUser';
-import { Discord, GitHub, OAuth2RequestError, generateState } from 'arctic';
+import { GitHub, OAuth2RequestError, generateState } from 'arctic';
 import { PrismaAdapter } from '@lucia-auth/adapter-prisma';
 import { Lucia, generateId } from 'lucia';
 import Elysia, { t } from 'elysia';
@@ -12,7 +11,7 @@ const adapter = new PrismaAdapter(
   prisma.dashboard_users
 );
 
-const lucia = new Lucia(adapter, {
+export const lucia = new Lucia(adapter, {
   sessionCookie: {
     attributes: {
       secure: true,
@@ -143,6 +142,35 @@ const authRoutes = new Elysia({
     lucia_session!.set(sessionCookie.attributes);
 
     return (set.headers['Redirect'] = 'http://dashboard.dotcreators.xyz/');
+  })
+  .get('user', async ({ set, cookie: { lucia_session } }) => {
+    try {
+      if (lucia_session?.value) {
+        const session = await prisma.dashboard_sessions.findMany({
+          where: {
+            id: lucia_session?.value,
+          },
+        });
+        if (session) {
+          const user = await prisma.dashboard_users.findMany({
+            where: {
+              id: session[0]?.userId,
+            },
+          });
+
+          return {
+            status: 'success',
+            response: user,
+          };
+        }
+      }
+    } catch (e) {
+      set.status = 400;
+      return {
+        status: 'error',
+        response: e instanceof Error && e.message,
+      };
+    }
   });
 
 export default authRoutes;
