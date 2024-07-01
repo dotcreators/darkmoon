@@ -9,8 +9,7 @@ export const trendsResponses = {
           followersCount: t.Number(),
           tweetsCount: t.Number(),
           recordedAt: t.Date(),
-        }),
-        { minItems: 0 }
+        })
       ),
     },
     {
