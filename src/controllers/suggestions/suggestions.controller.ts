@@ -8,8 +8,10 @@ import {
 import { suggestionsResponses } from '../../models/responses/SuggestionsResponses';
 import { errorResponses } from '../../models/responses/ErrorsResponses';
 import { lucia } from '../auth/auth.controller';
+import { PrismaClient } from '@prisma/client';
 
 const suggestionsServices: SuggestionsServices = new SuggestionsServices();
+const prisma = new PrismaClient();
 
 const suggestionsRoutes = new Elysia({
   prefix: '/suggestions',
@@ -54,7 +56,6 @@ const suggestionsRoutes = new Elysia({
     async ({ params: { username }, set }) => {
       try {
         const isArtistExist = await suggestionsServices.checkUser(username);
-        // console.log(isArtistExist);
 
         return {
           status: 'success',
@@ -111,7 +112,7 @@ const suggestionsRoutes = new Elysia({
   .guard(
     {
       async beforeHandle({ set, cookie: { lucia_session } }) {
-        if (lucia_session) {
+        if (lucia_session && lucia_session.value) {
           const { user } = await lucia.validateSession(lucia_session.value);
           if (!user) return (set.status = 'Unauthorized');
         } else {

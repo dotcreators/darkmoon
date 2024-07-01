@@ -2,7 +2,7 @@ import Elysia from 'elysia';
 import { errorResponses } from '../../models/responses/ErrorsResponses';
 import { fetchResponses } from '../../models/responses/FetchResponses';
 import { FetchServices } from './fetch.services';
-import { sendDiscordMessage } from '../../utils/discordService';
+import { sendDiscordMessage } from '../../utils/webhookService';
 
 const fetchServices: FetchServices = new FetchServices();
 

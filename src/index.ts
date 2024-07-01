@@ -16,8 +16,8 @@ export const app = new Elysia()
     cookie({
       httpOnly: true,
       secure: !IS_DEV ? true : false,
-      domain: '.dotcreators.xyz',
-      sameSite: 'none',
+      domain: !IS_DEV ? '.dotcreators.xyz' : undefined,
+      sameSite: !IS_DEV ? 'none' : undefined,
     })
   )
   .use(

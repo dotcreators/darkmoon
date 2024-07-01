@@ -8,18 +8,15 @@ import Elysia, { t } from 'elysia';
 const IS_DEV = process.env.IS_DEV;
 
 const prisma = new PrismaClient();
-const adapter = new PrismaAdapter(
-  prisma.dashboard_sessions,
-  prisma.dashboard_users
-);
+const adapter = new PrismaAdapter(prisma.authSessions, prisma.authUsers);
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
     attributes: {
       secure: !IS_DEV ? true : false,
-      sameSite: 'none',
+      sameSite: !IS_DEV ? 'none' : undefined,
+      domain: !IS_DEV ? '.dotcreators.xyz' : undefined,
       path: '/',
-      domain: '.dotcreators.xyz',
     },
   },
 });
@@ -45,8 +42,8 @@ const authRoutes = new Elysia({
         httpOnly: true,
         secure: !IS_DEV ? true : false,
         maxAge: 60 * 10,
-        sameSite: 'none',
-        domain: '.dotcreators.xyz',
+        sameSite: !IS_DEV ? 'none' : undefined,
+        domain: !IS_DEV ? '.dotcreators.xyz' : undefined,
         path: '/',
       });
 
@@ -64,7 +61,6 @@ const authRoutes = new Elysia({
         const storedState = github_state?.value;
 
         if (!state || !code || !github_state || storedState !== state) {
-          console.log();
           set.status = 400;
           return {
             status: 'error',
@@ -81,7 +77,7 @@ const authRoutes = new Elysia({
         });
         const githubUser: GithubUser = await githubUserResponse.json();
 
-        const existingUserReq = await prisma.dashboard_users.findMany({
+        const existingUserReq = await prisma.authUsers.findMany({
           where: {
             githubId: String(githubUser.id),
           },
@@ -104,13 +100,13 @@ const authRoutes = new Elysia({
             : 'http://localhost:3000');
         } else {
           // Temporarily remove account creation while authorizing
-          return (set.redirect = !IS_DEV
-            ? 'https://dashboard.dotcreators.xyz/'
-            : 'http://localhost:3000');
+          // return (set.redirect = !IS_DEV
+          //   ? 'https://dashboard.dotcreators.xyz/'
+          //   : 'http://localhost:3000');
 
           const userId = generateId(15);
 
-          await prisma.dashboard_users.create({
+          await prisma.authUsers.create({
             data: {
               id: userId,
               username: String(githubUser.login),
@@ -118,6 +114,8 @@ const authRoutes = new Elysia({
               githubId: String(githubUser.id),
             },
           });
+
+          console.log(userId);
 
           const session = await lucia.createSession(userId, {});
           const sessionCookie = lucia.createSessionCookie(session.id);
@@ -138,6 +136,7 @@ const authRoutes = new Elysia({
             response: e.description,
           };
         } else if (e instanceof Error) {
+          console.log(e);
           return {
             status: 'error',
             response: e.message,
@@ -160,13 +159,13 @@ const authRoutes = new Elysia({
   .get('user', async ({ set, cookie: { lucia_session } }) => {
     try {
       if (lucia_session) {
-        const session = await prisma.dashboard_sessions.findMany({
+        const session = await prisma.authSessions.findMany({
           where: {
             id: lucia_session?.value,
           },
         });
         if (session) {
-          const user = await prisma.dashboard_users.findMany({
+          const user = await prisma.authUsers.findMany({
             where: {
               id: session[0]?.userId,
             },

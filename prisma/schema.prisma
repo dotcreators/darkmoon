@@ -388,25 +388,35 @@ model dashboardUsers {
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model dashboard_sessions {
-  id        String          @id
-  userId    String
-  expiresAt DateTime        @default(now()) @db.Timestamptz(6)
-  user      dashboard_users @relation("sessions_userIdTousers", fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+model users_legacy {
+  id        String  @id(map: "Users_pkey")
+  githubId  String  @unique(map: "users_githubId_key")
+  username  String
+  avatarUrl String?
 
-  @@map("sessions")
   @@schema("dashboard")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model dashboard_users {
-  id        String               @id(map: "Users_pkey")
-  githubId  String
-  username  String
-  avatarUrl String?
-  sessions  dashboard_sessions[] @relation("sessions_userIdTousers")
+model AuthSessions {
+  id        String    @id(map: "sessions_pkey")
+  userId    String
+  expiresAt DateTime  @db.Timestamptz(6)
+  authUsers AuthUsers @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "sessions_user_id_fkey")
 
-  @@map("users")
+  @@map("AuthSessions")
+  @@schema("dashboard")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model AuthUsers {
+  id           String         @id(map: "users_pkey")
+  githubId     String
+  username     String
+  avatarUrl    String?
+  AuthSessions AuthSessions[]
+
+  @@map("AuthUsers")
   @@schema("dashboard")
 }
 

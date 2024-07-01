@@ -119,7 +119,7 @@ const artistsRoutes = new Elysia({
   .guard(
     {
       async beforeHandle({ set, cookie: { lucia_session } }) {
-        if (lucia_session) {
+        if (lucia_session && lucia_session.value) {
           const { user } = await lucia.validateSession(lucia_session.value);
           if (!user) return (set.status = 'Unauthorized');
         } else {
