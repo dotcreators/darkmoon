@@ -15,9 +15,11 @@ export const app = new Elysia()
   .use(
     cookie({
       httpOnly: true,
-      secure: !IS_DEV ? true : false,
+      secure: true,
+      sameSite: 'none',
       domain: !IS_DEV ? '.dotcreators.xyz' : undefined,
-      sameSite: !IS_DEV ? 'none' : undefined,
+      maxAge: 60 * 10,
+      path: '/',
     })
   )
   .use(
@@ -25,6 +27,7 @@ export const app = new Elysia()
       origin: !IS_DEV ? /(.*\.)?dotcreators\.xyz$/ : true,
       methods: ['GET', 'POST', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true,
       maxAge: 500,
     })
   )
@@ -51,13 +54,14 @@ export const app = new Elysia()
   .group('/api/v1', app => app.use(trendsRoutes))
   .group('/api/v1', app => app.use(authRoutes));
 
-IS_DEV !== 'true' &&
+if (IS_DEV !== 'true') {
   app.use(
     rateLimit({
       max: 100,
       errorResponse: 'Rate-limit reached',
     })
   );
+}
 
 app.listen(8989);
 

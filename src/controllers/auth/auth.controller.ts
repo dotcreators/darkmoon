@@ -13,8 +13,8 @@ const adapter = new PrismaAdapter(prisma.authSessions, prisma.authUsers);
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
     attributes: {
-      secure: !IS_DEV ? true : false,
-      sameSite: !IS_DEV ? 'none' : undefined,
+      secure: true,
+      sameSite: 'none',
       domain: !IS_DEV ? '.dotcreators.xyz' : undefined,
       path: '/',
     },
@@ -40,10 +40,10 @@ const authRoutes = new Elysia({
       github_state.value = state;
       github_state.set({
         httpOnly: true,
-        secure: !IS_DEV ? true : false,
-        maxAge: 60 * 10,
-        sameSite: !IS_DEV ? 'none' : undefined,
+        secure: true,
+        sameSite: 'none',
         domain: !IS_DEV ? '.dotcreators.xyz' : undefined,
+        maxAge: 60 * 10,
         path: '/',
       });
 
@@ -100,9 +100,9 @@ const authRoutes = new Elysia({
             : 'http://localhost:3000');
         } else {
           // Temporarily remove account creation while authorizing
-          // return (set.redirect = !IS_DEV
-          //   ? 'https://dashboard.dotcreators.xyz/'
-          //   : 'http://localhost:3000');
+          return (set.redirect = !IS_DEV
+            ? 'https://dashboard.dotcreators.xyz/'
+            : 'http://localhost:3000');
 
           const userId = generateId(15);
 
@@ -156,9 +156,10 @@ const authRoutes = new Elysia({
       ? 'https://dashboard.dotcreators.xyz/'
       : 'http://localhost:3000');
   })
-  .get('user', async ({ set, cookie: { lucia_session } }) => {
+  .get('user', async ({ set, request, cookie: { lucia_session } }) => {
     try {
-      if (lucia_session) {
+      console.log(request);
+      if (lucia_session && lucia_session.value) {
         const session = await prisma.authSessions.findMany({
           where: {
             id: lucia_session?.value,
@@ -176,6 +177,8 @@ const authRoutes = new Elysia({
             response: user,
           };
         }
+      } else {
+        throw new Error('Lucia session value is empty');
       }
     } catch (e) {
       set.status = 400;
