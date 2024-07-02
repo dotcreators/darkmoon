@@ -23,13 +23,20 @@ const fetchRoutes = new Elysia({
       };
     } catch (e) {
       set.status = 500;
-      console.log(e);
-      console.log(request);
 
-      if (e instanceof Error) {
+      if (
+        e instanceof Error &&
+        e.message !== 'rest_id not found.' &&
+        e.message !== 'User not found.'
+      ) {
         sendDiscordMessage(
           e.name,
-          `${e.message}\n\n\`url: ${request.url}\``,
+          `
+            ${e.message}\n\n
+            \`url: ${request.url}\`\n
+            \`cause: ${e.cause}\`\n
+            \`stack: ${e.stack}\`\n
+          `,
           'error'
         );
         return {
