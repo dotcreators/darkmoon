@@ -21,7 +21,7 @@ export class TrendsServices {
       take: range,
     });
 
-    if (artistTrends.length < 3) {
+    if (artistTrends.length < 6) {
       return [];
     } else {
       return artistTrends.reverse();
