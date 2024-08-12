@@ -92,6 +92,7 @@ export class ArtistsServices {
     if (request.country) whereFilter.country = { equals: request.country };
     if (request.tags && request.tags.length > 0)
       whereFilter.tags = { hasEvery: request.tags };
+    if (request.sortBy == 'trending') whereFilter.followersCount = { gte: 300 };
 
     const totalCount = await this.prisma.artist.count({
       where: Object.keys(whereFilter).length > 0 ? whereFilter : undefined,
