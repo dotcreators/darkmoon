@@ -79,6 +79,7 @@ export class ArtistsServices {
     if (request.sortBy == 'username') orderFilter.username = 'asc';
     else if (request.sortBy == 'followers') orderFilter.followersCount = 'desc';
     else if (request.sortBy == 'posts') orderFilter.tweetsCount = 'desc';
+    else if (request.sortBy == 'new') orderFilter.createdAt = 'desc';
     else if (request.sortBy == 'trending')
       orderFilter.weeklyFollowersGrowingTrend = 'desc';
     else orderFilter.followersCount = 'desc';
