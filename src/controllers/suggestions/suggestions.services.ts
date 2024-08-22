@@ -1,6 +1,7 @@
 import { ArtistSuggestion, PrismaClient } from '@prisma/client';
 import { SuggestionRequest } from '../../models/query/suggestions/SuggestionRequest';
 import { SuggestionCreateRequest } from '../../models/query/suggestions/SuggestionCreateRequest';
+import { sendDiscordMessageSuggestion } from '../../utils/webhookService';
 
 export class SuggestionsServices {
   private readonly prisma = new PrismaClient();
@@ -68,6 +69,13 @@ export class SuggestionsServices {
           requestStatus: 'suggested',
         },
       });
+
+      sendDiscordMessageSuggestion(
+        request.username,
+        request.avatarUrl,
+        request.tags,
+        request.country
+      );
     } catch (e) {
       console.error('Error while creating artist suggestion:', e);
       throw e;

@@ -17,8 +17,6 @@ const fetchRoutes = new Elysia({
     try {
       const profile = await fetchServices.getTwitterProfile(username);
 
-      console.log(profile);
-
       if (profile !== null) {
         return {
           status: 'success',

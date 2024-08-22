@@ -27,7 +27,10 @@ export class FetchServices {
         followersCount: r.data.user.legacy.normalFollowersCount || 0,
         tweetsCount: r.data.user.legacy.statusesCount || 0,
         images: {
-          avatar: r.data.user.legacy.profileImageUrlHttps,
+          avatar: r.data.user.legacy.profileImageUrlHttps.replace(
+            '_normal',
+            ''
+          ),
           banner: r.data.user.legacy.profileBannerUrl,
         },
       };

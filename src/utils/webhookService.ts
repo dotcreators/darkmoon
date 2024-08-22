@@ -1,6 +1,7 @@
 const { Webhook, MessageBuilder } = require('discord-webhook-node');
 
 const hook = new Webhook(process.env.WEBHOOK_URL);
+const suggestionHook = new Webhook(process.env.SUGGESTION_WEBHOOK_URL);
 hook.setUsername('dotcreator');
 
 export function sendDiscordMessage(
@@ -25,4 +26,24 @@ export function sendDiscordMessage(
   }
 
   hook.send(embed);
+}
+
+export function sendDiscordMessageSuggestion(
+  username: string,
+  avatarUrl: string,
+  tags: string[] | undefined,
+  country: string | undefined
+) {
+  let embed = new MessageBuilder()
+    .setColor('#FF902B')
+    .setTitle(username)
+    .setURL(
+      'https://dashboard.dotcreators.xyz/dashboard/suggestions?page=1&limit=50&requestStatus=suggested'
+    )
+    .setThumbnail(avatarUrl)
+    .addField('Tags', tags ? tags.join(', ') : 'null', true)
+    .addField('Country', country ?? 'null')
+    .setTimestamp();
+
+  suggestionHook.send(embed);
 }
