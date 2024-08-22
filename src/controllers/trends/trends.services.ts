@@ -8,7 +8,6 @@ export class TrendsServices {
     artistId: string,
     range: number
   ): Promise<Omit<ArtistTrending, 'userId' | 'id'>[]> {
-    console.log(range);
     const artistTrends = await this.prisma.artistTrending.findMany({
       where: { userId: artistId },
       select: {
