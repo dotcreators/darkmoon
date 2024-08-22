@@ -1,7 +1,9 @@
 import { Profile, Scraper } from '@the-convocation/twitter-scraper';
+import { TwitterOpenApi } from 'twitter-openapi-typescript';
 
 export class FetchServices {
   private readonly scraper = new Scraper();
+  private readonly api = new TwitterOpenApi();
 
   async getTwitterProfile(username: string): Promise<{
     username: string;
@@ -12,18 +14,25 @@ export class FetchServices {
       avatar: string;
       banner?: string;
     };
-  }> {
-    const profile = await this.scraper.getProfile(username);
+  } | null> {
+    const twitterClient = await this.api.getGuestClient();
+    const r = await twitterClient
+      .getUserApi()
+      .getUserByScreenName({ screenName: username });
 
-    return {
-      username: profile.username || username,
-      name: profile.name || undefined,
-      followersCount: profile.followersCount || 0,
-      tweetsCount: profile.tweetsCount || 0,
-      images: {
-        avatar: profile.avatar!,
-        banner: profile.banner,
-      },
-    };
+    if (r && r.data && r.data.user) {
+      return {
+        username: r.data.user.legacy.screenName,
+        name: r.data.user.legacy.name || undefined,
+        followersCount: r.data.user.legacy.normalFollowersCount || 0,
+        tweetsCount: r.data.user.legacy.statusesCount || 0,
+        images: {
+          avatar: r.data.user.legacy.profileImageUrlHttps,
+          banner: r.data.user.legacy.profileBannerUrl,
+        },
+      };
+    }
+
+    return null;
   }
 }

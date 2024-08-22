@@ -13,7 +13,7 @@ export function sendDiscordMessage(
   if (severity === 'error') {
     embed = new MessageBuilder()
       .setColor('#FA4545')
-      .setTitle(`darkmoon-${title}`)
+      .setTitle(`darkmoon-${title.toLocaleLowerCase()}`)
       .setDescription(message)
       .setTimestamp();
   } else if (severity === 'info') {

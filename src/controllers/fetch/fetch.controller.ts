@@ -17,10 +17,20 @@ const fetchRoutes = new Elysia({
     try {
       const profile = await fetchServices.getTwitterProfile(username);
 
-      return {
-        status: 'success',
-        response: profile,
-      };
+      console.log(profile);
+
+      if (profile !== null) {
+        return {
+          status: 'success',
+          response: profile,
+        };
+      } else {
+        set.status = 400;
+        return {
+          status: 'error',
+          response: 'User not found',
+        };
+      }
     } catch (e) {
       set.status = 500;
 
@@ -29,26 +39,11 @@ const fetchRoutes = new Elysia({
         e.message !== 'rest_id not found.' &&
         e.message !== 'User not found.'
       ) {
-        sendDiscordMessage(
-          e.name,
-          `
-            ${e.message}\n\n
-            \`url: ${request.url}\`\n
-            \`cause: ${e.cause}\`\n
-            \`stack: ${e.stack}\`\n
-          `,
-          'error'
-        );
         return {
           status: 'error',
-          response: e.message,
+          response: 'User not found',
         };
       } else {
-        sendDiscordMessage(
-          'UnknownError',
-          `${e}\n\n\`url: ${request.url}\``,
-          'error'
-        );
         return {
           status: 'error',
           response: e,
