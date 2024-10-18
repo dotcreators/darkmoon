@@ -1,15 +1,17 @@
 import { EmbedBuilder } from '@tycrek/discord-hookr';
 import { Webhook } from '@tycrek/discord-hookr/dist/webhook';
+import { IDiscordWebhook } from './discordWebhook.interface';
+import { webhookConfig } from './webhook.config';
 
-export class DiscordWebhook {
+export class DiscordWebhook implements IDiscordWebhook {
   private errorHook: Webhook;
   private logHook: Webhook;
   private suggestionHook: Webhook;
 
   constructor() {
-    this.errorHook = new Webhook(process.env.ERROR_WEBHOOK_URL ?? '');
-    this.logHook = new Webhook(process.env.LOG_WEBHOOK_URL ?? '');
-    this.suggestionHook = new Webhook(process.env.SUGGESTION_WEBHOOK_URL ?? '');
+    this.errorHook = new Webhook(webhookConfig.errorWebhookUrl);
+    this.logHook = new Webhook(webhookConfig.logWebhookUrl);
+    this.suggestionHook = new Webhook(webhookConfig.suggestionWebhookUrl);
   }
 
   public sendErrorMessage(title: string, message: string): void {
@@ -20,7 +22,9 @@ export class DiscordWebhook {
       .setTimestamp();
 
     this.errorHook.addEmbed(embed);
-    this.errorHook.send();
+    this.errorHook.send().catch(e => {
+      console.log('Error while trying to send discord message: ', e);
+    });
   }
 
   public sendLogMessage(title: string, message: string): void {
@@ -31,7 +35,9 @@ export class DiscordWebhook {
       .setTimestamp();
 
     this.logHook.addEmbed(embed);
-    this.logHook.send();
+    this.logHook.send().catch(e => {
+      console.log('Error while trying to send discord message: ', e);
+    });
   }
 
   public sendArtistSuggestion(
@@ -39,7 +45,7 @@ export class DiscordWebhook {
     avatarUrl: string,
     tags: string[] | undefined,
     country: string | undefined
-  ) {
+  ): void {
     const embed = new EmbedBuilder()
       .setColor('#FF902B')
       .setTitle(username)
@@ -64,6 +70,8 @@ export class DiscordWebhook {
       .setTimestamp();
 
     this.suggestionHook.addEmbed(embed);
-    this.suggestionHook.send();
+    this.suggestionHook.send().catch(e => {
+      console.log('Error while trying to send discord message: ', e);
+    });
   }
 }
