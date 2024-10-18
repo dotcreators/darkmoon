@@ -9,7 +9,7 @@ import authRoutes from './controllers/auth/auth.controller';
 import { rateLimit } from 'elysia-rate-limit';
 import cookie from '@elysiajs/cookie';
 
-const IS_DEV = process.env.IS_DEV;
+const IS_DEV: boolean = Boolean(process.env.IS_DEV);
 
 export const app = new Elysia()
   .use(
@@ -54,7 +54,7 @@ export const app = new Elysia()
   .group('/api/v1', app => app.use(trendsRoutes))
   .group('/api/v1', app => app.use(authRoutes));
 
-if (IS_DEV !== 'true') {
+if (!IS_DEV) {
   app.use(
     rateLimit({
       max: 100,
