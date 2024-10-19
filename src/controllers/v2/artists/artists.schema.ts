@@ -1,5 +1,9 @@
 import { Static, t } from 'elysia';
-import { ArtistProfileModel } from '../shared.schema';
+import {
+  ArtistImagesModel,
+  ArtistProfileModel,
+  ArtistTagsModel,
+} from '../shared.schema';
 
 export const ArtistsQueryModel = {
   GetArtist: t.Object(
@@ -8,24 +12,36 @@ export const ArtistsQueryModel = {
       perPage: t.Number(),
       username: t.Optional(t.String()),
       country: t.Optional(t.String()),
+      /* 
+        Here need custom tags type definition for query, because
+        this type allow to accept array of tags like ["pixelart", "gamedev"],
+        which is creating on frontend side
+      */
       tags: t.Optional(t.Array(t.String(), { minItems: 1 })),
       sortBy: t.Optional(t.String()),
     },
     { description: 'Get artist profiles with selected options' }
   ),
   EditArtist: t.Partial(
-    t.Object({
-      username: t.String(),
-      name: t.String(),
-      tags: t.Array(t.String(), { minItems: 1 }),
-      country: t.String(),
-      images: t.Object({
-        avatar: t.String(),
-        banner: t.String(),
-      }),
-      bio: t.String(),
-      url: t.String(),
-    })
+    t.Object(
+      {
+        username: t.String(),
+        name: t.String(),
+        tags: ArtistTagsModel,
+        country: t.String(),
+        images: ArtistImagesModel,
+        bio: t.String(),
+        url: t.String(),
+      },
+      { description: 'Update artist profiles with new selected field values' }
+    )
+  ),
+  UpdateArtistTrendStats: t.Object(
+    {
+      weeklyFollowersTrend: t.Number(),
+      weeklyTweetsTrend: t.Number(),
+    },
+    { description: 'Update artist profile trend stats' }
   ),
 };
 
@@ -36,9 +52,13 @@ export const ArtistsReponseModel = {
       perPage: t.Number(),
       totalPages: t.Number(),
       totalItems: t.Number(),
-      data: t.Array(ArtistProfileModel, { minItems: 0 }),
+      items: t.Array(ArtistProfileModel, { minItems: 0 }),
     },
     { description: 'Returns paginated artists profiles' }
+  ),
+  GetRandomArtist: t.Object(
+    { ArtistProfileModel },
+    { description: 'Returns random artist profile' }
   ),
   EditArtist: t.Object(
     { ArtistProfileModel },
@@ -48,6 +68,10 @@ export const ArtistsReponseModel = {
 
 export type GetArtistQuery = Static<typeof ArtistsQueryModel.GetArtist>;
 export type GetArtistResponse = Static<typeof ArtistsReponseModel.GetArtist>;
+
+export type GetArtistRandomResponse = Static<
+  typeof ArtistsReponseModel.GetRandomArtist
+>;
 
 export type EditArtistQuery = Static<typeof ArtistsQueryModel.EditArtist>;
 export type EditArtistResponse = Static<typeof ArtistsReponseModel.EditArtist>;

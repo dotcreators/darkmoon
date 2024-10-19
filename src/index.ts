@@ -13,46 +13,6 @@ import artistsRoutesV2 from './controllers/v2/artists/artists.controller';
 
 export const app = new Elysia()
   .use(
-    cookie({
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      domain: !envConfig.IS_DEVELOPMENT ? '.dotcreators.xyz' : undefined,
-      maxAge: 60 * 10,
-      path: '/',
-    })
-  )
-  .use(
-    cors({
-      origin: !envConfig.IS_DEVELOPMENT ? /(.*\.)?dotcreators\.xyz$/ : true,
-      methods: ['GET', 'POST', 'PATCH'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
-      credentials: true,
-      maxAge: 500,
-    })
-  )
-  .onError(({ error, code }) => {
-    return {
-      status: code,
-      response: {
-        error: code === 'VALIDATION' ? 'Validation error' : error.name,
-        message:
-          code === 'VALIDATION' && !envConfig.IS_DEVELOPMENT
-            ? 'Error while trying to parse input values'
-            : JSON.parse(error.message),
-        ...(envConfig.IS_DEVELOPMENT && error.stack && code !== 'VALIDATION'
-          ? { stack: JSON.parse(error.stack) }
-          : {}),
-      },
-    };
-  })
-  .group('/api/v1', app => app.use(artistsRoutes))
-  .group('/api/v1', app => app.use(suggestionsRoutes))
-  .group('/api/v1', app => app.use(fetchRoutes))
-  .group('/api/v1', app => app.use(trendsRoutes))
-  .group('/api/v1', app => app.use(authRoutes))
-  .group('/v2', app => app.use(artistsRoutesV2))
-  .use(
     swagger({
       documentation: {
         info: {
@@ -84,7 +44,45 @@ export const app = new Elysia()
       },
       path: '/docs',
     })
-  );
+  )
+  .use(
+    cookie({
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      domain: !envConfig.IS_DEVELOPMENT ? '.dotcreators.xyz' : undefined,
+      maxAge: 60 * 10,
+      path: '/',
+    })
+  )
+  .use(
+    cors({
+      origin: !envConfig.IS_DEVELOPMENT ? /(.*\.)?dotcreators\.xyz$/ : true,
+      methods: ['GET', 'POST', 'PATCH'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true,
+      maxAge: 500,
+    })
+  )
+  .onError(({ error, code }) => {
+    return {
+      status: code,
+      response: {
+        error: code === 'VALIDATION' ? 'Validation error' : error.name,
+        message: error.message,
+
+        ...(envConfig.IS_DEVELOPMENT && error.stack
+          ? { stack: error.stack }
+          : {}),
+      },
+    };
+  })
+  .group('/api/v1', app => app.use(artistsRoutes))
+  .group('/api/v1', app => app.use(suggestionsRoutes))
+  .group('/api/v1', app => app.use(fetchRoutes))
+  .group('/api/v1', app => app.use(trendsRoutes))
+  .group('/api/v1', app => app.use(authRoutes))
+  .group('/v2', app => app.use(artistsRoutesV2));
 
 if (!envConfig.IS_DEVELOPMENT) {
   app.use(

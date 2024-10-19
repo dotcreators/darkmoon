@@ -1,4 +1,4 @@
-import PocketbaseClient from 'utils/database/pocketbase/PocketbaseClient';
+import PocketbaseClient from 'utils/database/pocketbase/pocketbaseClient';
 import {
   EditArtistQuery,
   EditArtistResponse,
@@ -10,16 +10,19 @@ import { IDatabaseClient } from 'utils/database/databaseClient.interface';
 export default class ArtistsService {
   private databaseProvider: IDatabaseClient;
 
-  constructor(databaseProvider: IDatabaseClient = new PocketbaseClient()) {
-    this.databaseProvider = databaseProvider;
+  constructor() {
+    this.databaseProvider = new PocketbaseClient();
   }
 
   async getArtistsPaginated(query: GetArtistQuery): Promise<GetArtistResponse> {
     return await this.databaseProvider.getArtistPaginated(query);
   }
 
-  async editArtist(query: EditArtistQuery): Promise<EditArtistResponse> {
-    return await this.databaseProvider.editArtist(query);
+  async editArtist(
+    id: string,
+    query: EditArtistQuery
+  ): Promise<EditArtistResponse | null> {
+    return await this.databaseProvider.editArtist(id, query);
   }
 
   getRandomArtist() {}

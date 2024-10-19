@@ -11,43 +11,81 @@ const artistsRoutesV2 = new Elysia({
   detail: {
     tags: ['Artists'],
   },
-}).get(
-  '/',
-  async ({ query }) => {
-    if (query.perPage > 100 || query.perPage < 0) {
-      return error(400, {
-        status: StatusMap['Bad Request'],
-        response: {
-          error: 'Query error',
-          message:
-            'Maximum artists query must be greater than 0 and limited by 100',
-        },
-      });
-    } else if (query.page < 0) {
-      return error(400, {
-        status: StatusMap['Bad Request'],
-        response: {
-          error: 'Query error',
-          message: 'Page value must be greater than 0',
-        },
-      });
-    }
-
-    return await artistsService.getArtistsPaginated(query);
-  },
-  {
-    transform({ query }) {
-      if (typeof query.tags === 'string') {
-        query.tags = [query.tags];
+})
+  .get(
+    '/search',
+    async ({ query }) => {
+      if (query.perPage > 100 || query.perPage < 0) {
+        return error(400, {
+          status: StatusMap['Bad Request'],
+          response: {
+            error: 'Query error',
+            message:
+              'Maximum artists query must be greater than 0 and limited by 100',
+          },
+        });
+      } else if (query.page < 0) {
+        return error(400, {
+          status: StatusMap['Bad Request'],
+          response: {
+            error: 'Query error',
+            message: 'Page value must be greater than 0',
+          },
+        });
       }
+
+      return await artistsService.getArtistsPaginated(query);
     },
-    query: ArtistsQueryModel.GetArtist,
-    response: {
-      200: ArtistsReponseModel.GetArtist,
-      400: ErrorResponseModel.BadRequest,
-      500: ErrorResponseModel.InternalServerError,
+    {
+      transform({ query }) {
+        if (typeof query.tags === 'string') {
+          query.tags = [query.tags];
+        }
+      },
+      query: ArtistsQueryModel.GetArtist,
+      response: {
+        200: ArtistsReponseModel.GetArtist,
+        400: ErrorResponseModel.BadRequest,
+        500: ErrorResponseModel.InternalServerError,
+      },
+    }
+  )
+  .patch(
+    '/:id/edit',
+    async ({ params, query }) => {
+      if (!query) {
+        return error(400, {
+          status: StatusMap['Bad Request'],
+          response: {
+            error: 'Query error',
+            message: 'None of any query edit fields are specified',
+          },
+        });
+      }
+
+      const r = await artistsService.editArtist(params.id, query);
+
+      if (!r) {
+        return error(400, {
+          status: StatusMap['Bad Request'],
+          response: {
+            error: 'Edit error',
+            message: 'Unable to find artist profile with specified ID',
+          },
+        });
+      }
+
+      return r;
     },
-  }
-);
+    {
+      query: ArtistsQueryModel.EditArtist,
+      params: t.Object({ id: t.String() }),
+      response: {
+        200: ArtistsReponseModel.EditArtist,
+        400: ErrorResponseModel.BadRequest,
+        500: ErrorResponseModel.InternalServerError,
+      },
+    }
+  );
 
 export default artistsRoutesV2;

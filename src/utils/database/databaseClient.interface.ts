@@ -10,7 +10,10 @@ export interface IDatabaseClient {
   getRandomArtist(): Promise<{}>;
   updateArtistStats(): Promise<{}>;
   updateArtistStatsBulk(): Promise<{}[]>;
-  editArtist(query: EditArtistQuery): Promise<EditArtistResponse>;
+  editArtist(
+    id: string,
+    query: EditArtistQuery
+  ): Promise<EditArtistResponse | null>;
   editArtistBulk(): Promise<{}[]>;
   createArtist(): Promise<{}>;
   createArtistBulk(): Promise<{}[]>;
