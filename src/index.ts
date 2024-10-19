@@ -35,9 +35,14 @@ export const app = new Elysia()
     return {
       status: code,
       response: {
-        error: error.name,
-        message: error.message,
-        ...(envConfig.IS_DEVELOPMENT ? { stack: error.stack } : {}),
+        error: code === 'VALIDATION' ? 'Validation error' : error.name,
+        message:
+          code === 'VALIDATION' && !envConfig.IS_DEVELOPMENT
+            ? 'Error while trying to parse input values'
+            : JSON.parse(error.message),
+        ...(envConfig.IS_DEVELOPMENT && error.stack && code !== 'VALIDATION'
+          ? { stack: JSON.parse(error.stack) }
+          : {}),
       },
     };
   })
