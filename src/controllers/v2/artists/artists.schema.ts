@@ -1,7 +1,8 @@
 import { Static, t } from 'elysia';
+import { ArtistProfileModel } from '../shared.schema';
 
-export const ArtistsModel = {
-  ArtistsQuery: t.Object(
+export const ArtistsQueryModel = {
+  GetArtist: t.Object(
     {
       page: t.Number(),
       perPage: t.Number(),
@@ -12,58 +13,41 @@ export const ArtistsModel = {
     },
     { description: 'Get artist profiles with selected options' }
   ),
-  EditArtist: t.Object({
-    username: t.String(),
-    name: t.String(),
-    tags: t.Array(t.String(), { minItems: 1 }),
-    country: t.String(),
-    images: t.Object({
-      avatar: t.String(),
-      banner: t.String(),
-    }),
-    bio: t.String(),
-    url: t.String(),
-  }),
+  EditArtist: t.Partial(
+    t.Object({
+      username: t.String(),
+      name: t.String(),
+      tags: t.Array(t.String(), { minItems: 1 }),
+      country: t.String(),
+      images: t.Object({
+        avatar: t.String(),
+        banner: t.String(),
+      }),
+      bio: t.String(),
+      url: t.String(),
+    })
+  ),
 };
 
-export const ArtistReponseModel = {
-  Artists: t.Object(
+export const ArtistsReponseModel = {
+  GetArtist: t.Object(
     {
       page: t.Number(),
       perPage: t.Number(),
       totalPages: t.Number(),
       totalItems: t.Number(),
-      data: t.Array(
-        t.Object({
-          id: t.String(),
-          username: t.String(),
-          userId: t.String(),
-          tweetsCount: t.Number(),
-          followersCount: t.Number(),
-          images: t.Object({
-            avatar: t.String(),
-            banner: t.Optional(t.String()),
-          }),
-          url: t.String({ format: 'uri' }),
-          joinedAt: t.String({ format: 'date-time' }),
-          createdAt: t.String({ format: 'date-time' }),
-          lastUpdatedAt: t.String({ format: 'date-time' }),
-          tags: t.Array(t.String(), { minItems: 0 }),
-          name: t.Nullable(t.String()),
-          country: t.Nullable(t.String()),
-          website: t.Nullable(t.String()),
-          bio: t.Nullable(t.String()),
-          weeklyFollowersGrowingTrend: t.Number(),
-          weeklyPostsGrowingTrend: t.Number(),
-        }),
-        { minItems: 0 }
-      ),
+      data: t.Array(ArtistProfileModel, { minItems: 0 }),
     },
-    {
-      description: 'Returns paginated artists profiles',
-    }
+    { description: 'Returns paginated artists profiles' }
+  ),
+  EditArtist: t.Object(
+    { ArtistProfileModel },
+    { description: 'Returns updated artist profile' }
   ),
 };
 
-export type ArtistGetResponse = Static<typeof ArtistReponseModel.Artists>;
-export type ArtistsGetQuery = Static<typeof ArtistsModel.ArtistsQuery>;
+export type GetArtistQuery = Static<typeof ArtistsQueryModel.GetArtist>;
+export type GetArtistResponse = Static<typeof ArtistsReponseModel.GetArtist>;
+
+export type EditArtistQuery = Static<typeof ArtistsQueryModel.EditArtist>;
+export type EditArtistResponse = Static<typeof ArtistsReponseModel.EditArtist>;
