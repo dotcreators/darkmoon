@@ -1,7 +1,7 @@
 import Elysia, { t } from 'elysia';
 import { TrendsServices } from './trends.services';
-import { trendsResponses } from '../../models/responses/TrendsResponses';
-import { errorResponses } from '../../models/responses/ErrorsResponses';
+import { trendsResponses } from '../../../models/responses/TrendsResponses';
+import { errorResponses } from '../../../models/responses/ErrorsResponses';
 import TrendsGetSchema from './trends.schema';
 
 const trendsService: TrendsServices = new TrendsServices();

@@ -1,4 +1,4 @@
-import { t } from 'elysia'
+import { t } from 'elysia';
 
 const ArtistAddSchema = t.Object({
   username: t.String(),
@@ -14,7 +14,7 @@ const ArtistAddSchema = t.Object({
   url: t.String(),
   bio: t.String(),
   website: t.String(),
-})
+});
 
 const BulkArtistAddSchema = t.Array(
   t.Object({
@@ -33,7 +33,7 @@ const BulkArtistAddSchema = t.Array(
     website: t.String(),
   }),
   { minItems: 1 }
-)
+);
 
 const ArtistsSearchSchema = t.Object({
   page: t.Numeric(),
@@ -42,12 +42,12 @@ const ArtistsSearchSchema = t.Object({
   country: t.Optional(t.String()),
   tags: t.Optional(t.Array(t.String(), { minItems: 1 })),
   sortBy: t.Optional(t.String()),
-})
+});
 
 const ArtistUpdateSchema = t.Object({
   tweetsCount: t.Numeric(),
   followersCount: t.Numeric(),
-})
+});
 
 const BulkArtistUpdateSchema = t.Array(
   t.Object({
@@ -55,7 +55,7 @@ const BulkArtistUpdateSchema = t.Array(
     tweetsCount: t.Numeric(),
     followersCount: t.Numeric(),
   })
-)
+);
 
 const ArtistEditSchema = t.Partial(
   t.Object({
@@ -70,9 +70,9 @@ const ArtistEditSchema = t.Partial(
     bio: t.String(),
     url: t.String(),
   })
-)
+);
 
-const BulkArtistDeleteSchema = t.Array(t.String())
+const BulkArtistDeleteSchema = t.Array(t.String());
 
 export {
   ArtistAddSchema,
@@ -82,4 +82,4 @@ export {
   ArtistEditSchema,
   BulkArtistUpdateSchema,
   BulkArtistDeleteSchema,
-}
+};

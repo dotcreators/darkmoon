@@ -12,9 +12,9 @@ export class DiscordWebhook implements IDiscordWebhook {
    * Initialize webhooks for different message types
    */
   constructor() {
-    this.errorHook = new Webhook(webhookConfig.errorWebhookUrl);
-    this.logHook = new Webhook(webhookConfig.logWebhookUrl);
-    this.suggestionHook = new Webhook(webhookConfig.suggestionWebhookUrl);
+    this.errorHook = new Webhook(webhookConfig.ERROR_WEBHOOK_URL);
+    this.logHook = new Webhook(webhookConfig.LOG_WEBHOOK_URL);
+    this.suggestionHook = new Webhook(webhookConfig.SUGGESTION_WEBHOOK_URL);
   }
 
   /**
