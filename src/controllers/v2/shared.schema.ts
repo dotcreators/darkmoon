@@ -1,4 +1,4 @@
-import { t } from 'elysia';
+import { Static, t } from 'elysia';
 
 const ArtistTagsModel = t.Nullable(
   t.Object({
@@ -13,22 +13,23 @@ const ArtistImagesModel = t.Object({
 
 const ArtistProfileModel = t.Object({
   id: t.String(),
+  twitterUserId: t.String(),
   username: t.String(),
-  userId: t.String(),
+  name: t.Nullable(t.String()),
   tweetsCount: t.Number(),
   followersCount: t.Number(),
+  weeklyTweetsTrend: t.Number(),
+  weeklyFollowersTrend: t.Number(),
   images: ArtistImagesModel,
-  url: t.String({ format: 'uri' }),
   tags: ArtistTagsModel,
-  name: t.Nullable(t.String()),
+  url: t.String({ format: 'uri' }),
   country: t.Nullable(t.String()),
   website: t.Nullable(t.String()),
   bio: t.Nullable(t.String()),
-  weeklyFollowersTrend: t.Number(),
-  weeklyTweetsTrend: t.Number(),
-  created: t.String({ format: 'date-time' }),
-  joined: t.String({ format: 'date-time' }),
-  updated: t.String({ format: 'date-time' }),
+  createdAt: t.Date({ format: 'date-time' }),
+  joinedAt: t.Date({ format: 'date-time' }),
+  updatedAt: t.Date({ format: 'date-time' }),
 });
 
+export type ArtistProfileType = Static<typeof ArtistProfileModel>;
 export { ArtistProfileModel, ArtistImagesModel, ArtistTagsModel };

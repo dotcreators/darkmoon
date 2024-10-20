@@ -21,6 +21,7 @@
     "arctic": "^1.9.2",
     "discord-webhook-node": "^1.1.8",
     "drizzle-orm": "^0.35.2",
+    "drizzle-typebox": "^0.1.1",
     "elysia": "1.1.22",
     "elysia-rate-limit": "^4.1.0",
     "lucia": "^3.2.1",

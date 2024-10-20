@@ -1,4 +1,3 @@
-import PocketbaseClient from 'utils/database/pocketbase/pocketbaseClient';
 import {
   EditArtistQuery,
   EditArtistResponse,
@@ -6,12 +5,13 @@ import {
   GetArtistResponse,
 } from './artists.schema';
 import { IDatabaseClient } from 'utils/database/databaseClient.interface';
+import DrizzleClient from 'utils/database/drizzle/drizzleClient';
 
 export default class ArtistsService {
   private databaseProvider: IDatabaseClient;
 
   constructor() {
-    this.databaseProvider = new PocketbaseClient();
+    this.databaseProvider = new DrizzleClient();
   }
 
   async getArtistsPaginated(query: GetArtistQuery): Promise<GetArtistResponse> {
