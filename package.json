@@ -20,16 +20,20 @@
     "@tycrek/discord-hookr": "^0.1.0",
     "arctic": "^1.9.2",
     "discord-webhook-node": "^1.1.8",
+    "drizzle-orm": "^0.35.2",
     "elysia": "1.1.22",
     "elysia-rate-limit": "^4.1.0",
     "lucia": "^3.2.1",
+    "pg": "^8.13.0",
     "pocketbase": "^0.21.5",
     "prisma": "^5.21.1",
     "twitter-openapi-typescript": "^0.0.34"
   },
   "devDependencies": {
-    "eslint": "^9.13.0",
-    "bun-types": "latest"
+    "@types/pg": "^8.11.10",
+    "bun-types": "latest",
+    "drizzle-kit": "^0.26.2",
+    "eslint": "^9.13.0"
   },
   "module": "src/index.js"
 }
