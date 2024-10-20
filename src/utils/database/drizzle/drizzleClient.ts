@@ -8,7 +8,7 @@ import {
   GetArtistQuery,
   GetArtistResponse,
 } from 'controllers/v2/artists/artists.schema';
-import { and, asc, desc, eq, gte, like, or, sql, SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, like, sql, SQL } from 'drizzle-orm';
 import { envConfig } from 'env.config';
 
 export default class DrizzleClient implements IDatabaseClient {
@@ -60,13 +60,21 @@ export default class DrizzleClient implements IDatabaseClient {
     }
     if (query.tags && query.tags.length > 0) {
       filterOptions.push(
-        or(...query.tags.map(tag => sql`tags->'items' @> ${tag}`))!
+        and(
+          ...query.tags.map(
+            tag => sql`tags->'items' @> ${JSON.stringify([tag])}`
+          )
+        )!
       );
     }
 
+    const items = await this.client
+      .select({ count: count(artistsSchema.artists.id) })
+      .from(artistsSchema.artists);
+
     const result = await this.client.query.artists.findMany({
       limit: query.perPage,
-      offset: query.page * query.perPage,
+      offset: (query.page - 1) * query.perPage,
       orderBy: filterOrderBy,
       where: filterOptions.length > 0 ? and(...filterOptions) : undefined,
     });
@@ -74,7 +82,7 @@ export default class DrizzleClient implements IDatabaseClient {
     return {
       page: query.page,
       perPage: query.perPage,
-      totalPages: 1,
+      totalPages: Math.ceil(items.length / query.perPage),
       totalItems: result.length,
       items: result,
     };
