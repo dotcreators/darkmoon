@@ -6,6 +6,7 @@ import {
   EditArtistBody,
   EditArtistResponse,
   GetArtistQuery,
+  GetArtistRandomResponse,
   GetArtistResponse,
 } from 'controllers/v2/artists/artists.schema';
 import { and, asc, count, desc, eq, gte, like, sql, SQL } from 'drizzle-orm';
@@ -85,6 +86,7 @@ export default class DrizzleClient implements IDatabaseClient {
       items: result,
     };
   }
+
   async editArtist(
     id: string,
     body: EditArtistBody
@@ -107,14 +109,22 @@ export default class DrizzleClient implements IDatabaseClient {
 
     return result.length !== 1 ? null : result[0];
   }
+
+  async getRandomArtist(): Promise<GetArtistRandomResponse> {
+    const result = await this.client
+      .select()
+      .from(artists)
+      .orderBy(sql`RANDOM()`)
+      .limit(1);
+
+    return result[0];
+  }
+
   async updateArtistStats(): Promise<{}> {
     return {};
   }
   async updateArtistStatsBulk(): Promise<{}[]> {
     return [{}];
-  }
-  async getRandomArtist(): Promise<{}> {
-    return {};
   }
   async editArtistBulk(): Promise<{}[]> {
     return [{}];

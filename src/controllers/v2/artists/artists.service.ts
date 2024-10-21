@@ -2,6 +2,7 @@ import {
   EditArtistBody,
   EditArtistResponse,
   GetArtistQuery,
+  GetArtistRandomResponse,
   GetArtistResponse,
 } from './artists.schema';
 import { IDatabaseClient } from 'utils/database/databaseClient.interface';
@@ -25,7 +26,10 @@ export default class ArtistsService {
     return await this.databaseProvider.editArtist(id, body);
   }
 
-  getRandomArtist() {}
+  async getRandomArtist(): Promise<GetArtistRandomResponse> {
+    return await this.databaseProvider.getRandomArtist();
+  }
+
   updateArtistStats() {}
   updateArtistStatsBulk() {}
   createArtist() {}

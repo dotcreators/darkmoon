@@ -67,9 +67,9 @@ const artistsRoutesV2 = new Elysia({
         });
       }
 
-      const r = await artistsService.editArtist(params.id, body);
+      const result = await artistsService.editArtist(params.id, body);
 
-      if (!r) {
+      if (!result) {
         return error(404, {
           status: StatusMap['Bad Request'],
           response: {
@@ -79,7 +79,7 @@ const artistsRoutesV2 = new Elysia({
         });
       }
 
-      return r;
+      return result;
     },
     {
       body: ArtistsBodyModel.EditArtist,
@@ -88,6 +88,19 @@ const artistsRoutesV2 = new Elysia({
         200: ArtistsReponseModel.EditArtist,
         400: ErrorResponseModel.BadRequest,
         404: ErrorResponseModel.NotFound,
+        500: ErrorResponseModel.InternalServerError,
+      },
+    }
+  )
+  .get(
+    '/random',
+    async () => {
+      return await artistsService.getRandomArtist();
+    },
+    {
+      response: {
+        200: ArtistsReponseModel.GetRandomArtist,
+        400: ErrorResponseModel.BadRequest,
         500: ErrorResponseModel.InternalServerError,
       },
     }
