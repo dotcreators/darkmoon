@@ -5,8 +5,8 @@ import {
   ArtistsCreateSuggestionSchema,
   ArtistsSuggestionSchema,
 } from './suggestions.schema';
-import { suggestionsResponses } from '../../models/responses/SuggestionsResponses';
-import { errorResponses } from '../../models/responses/ErrorsResponses';
+import { suggestionsResponses } from '../../../models/responses/SuggestionsResponses';
+import { errorResponses } from '../../../models/responses/ErrorsResponses';
 import { lucia } from '../auth/auth.controller';
 import { PrismaClient } from '@prisma/client';
 

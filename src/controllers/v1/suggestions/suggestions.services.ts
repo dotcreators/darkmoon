@@ -1,7 +1,7 @@
 import { ArtistSuggestion, PrismaClient } from '@prisma/client';
-import { SuggestionRequest } from '../../models/query/suggestions/SuggestionRequest';
-import { SuggestionCreateRequest } from '../../models/query/suggestions/SuggestionCreateRequest';
-import { sendDiscordMessageSuggestion } from '../../utils/webhookService';
+import { SuggestionRequest } from '../../../models/query/suggestions/SuggestionRequest';
+import { SuggestionCreateRequest } from '../../../models/query/suggestions/SuggestionCreateRequest';
+import { sendDiscordMessageSuggestion } from '../../../utils/webhookServiceLegacy';
 
 export class SuggestionsServices {
   private readonly prisma = new PrismaClient();

@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { GithubUser } from '../../models/GithubUser';
+import { GithubUser } from '../../../models/GithubUser';
 import { GitHub, OAuth2RequestError, generateState } from 'arctic';
 import { PrismaAdapter } from '@lucia-auth/adapter-prisma';
 import { Lucia, generateId } from 'lucia';

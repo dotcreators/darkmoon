@@ -1,8 +1,8 @@
 import Elysia from 'elysia';
-import { errorResponses } from '../../models/responses/ErrorsResponses';
-import { fetchResponses } from '../../models/responses/FetchResponses';
+import { errorResponses } from '../../../models/responses/ErrorsResponses';
+import { fetchResponses } from '../../../models/responses/FetchResponses';
 import { FetchServices } from './fetch.services';
-import { sendDiscordMessage } from '../../utils/webhookService';
+import { sendDiscordMessage } from '../../../utils/webhookServiceLegacy';
 
 const fetchServices: FetchServices = new FetchServices();
 

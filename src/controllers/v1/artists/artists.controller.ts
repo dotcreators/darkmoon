@@ -1,4 +1,4 @@
-import { Elysia, t } from 'elysia';
+import { Elysia, StatusMap, t } from 'elysia';
 import { ArtistsServices } from './artists.services';
 import {
   ArtistAddSchema,
@@ -8,9 +8,9 @@ import {
   BulkArtistAddSchema,
   BulkArtistUpdateSchema,
 } from './artists.schema';
-import { artistsResponses } from '../../models/responses/ArtistsReponses';
-import { errorResponses } from '../../models/responses/ErrorsResponses';
 import { lucia } from '../auth/auth.controller';
+import { artistsResponses } from '../../../models/responses/ArtistsReponses';
+import { errorResponses } from '../../../models/responses/ErrorsResponses';
 
 const artistsServices: ArtistsServices = new ArtistsServices();
 

@@ -1,60 +1,90 @@
-import { Elysia } from 'elysia';
-import artistsRoutes from './controllers/artists/artists.controller';
+import { Elysia, StatusMap } from 'elysia';
+import artistsRoutes from './controllers/v1/artists/artists.controller';
 import swagger from '@elysiajs/swagger';
-import suggestionsRoutes from './controllers/suggestions/suggestions.controller';
+import suggestionsRoutes from './controllers/v1/suggestions/suggestions.controller';
 import cors from '@elysiajs/cors';
-import fetchRoutes from './controllers/fetch/fetch.controller';
-import trendsRoutes from './controllers/trends/trends.controller';
-import authRoutes from './controllers/auth/auth.controller';
+import fetchRoutes from './controllers/v1/fetch/fetch.controller';
+import trendsRoutes from './controllers/v1/trends/trends.controller';
+import authRoutes from './controllers/v1/auth/auth.controller';
 import { rateLimit } from 'elysia-rate-limit';
 import cookie from '@elysiajs/cookie';
-
-const IS_DEV = process.env.IS_DEV;
+import { envConfig } from './env.config';
+import artistsRoutesV2 from './controllers/v2/artists/artists.controller';
 
 export const app = new Elysia()
-  .use(
-    cookie({
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      domain: !IS_DEV ? '.dotcreators.xyz' : undefined,
-      maxAge: 60 * 10,
-      path: '/',
-    })
-  )
-  .use(
-    cors({
-      origin: !IS_DEV ? /(.*\.)?dotcreators\.xyz$/ : true,
-      methods: ['GET', 'POST', 'PATCH'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
-      credentials: true,
-      maxAge: 500,
-    })
-  )
   .use(
     swagger({
       documentation: {
         info: {
           title: 'Dotcreators API Documentation',
           description:
-            'Track, share and grow together with community of talented pixel-related artists',
-          contact: { email: 'admin@dotcreators.xyz' },
+            'Dotcreators is service which allow users discover new creators, track growing trend and share talented pixel-related artists with others.\n\n' +
+            'Search in left menu specified endpoint to continue or just scroll down.',
+          contact: {
+            email: 'hi@anivire.xyz',
+            url: 'https://github.com/dotcreators',
+          },
           version: '1.0.1',
         },
-        tags: [{ name: 'Artists', description: 'Artists endpoints' }],
+        tags: [
+          { name: 'Artists', description: 'Artists related endpoints' },
+          {
+            name: 'Suggestions',
+            description: 'Artist suggestions related endpoints',
+          },
+          {
+            name: 'Fetch',
+            description: 'Getting X/Twitter artist profiles related endpoints',
+          },
+          {
+            name: 'Trends',
+            description: 'Artist trends related endpoints',
+          },
+        ],
       },
+      path: '/docs',
     })
   )
-  .onError(({ error }) => {
-    return new Response(error.toString());
+  .use(
+    cookie({
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      domain: !envConfig.IS_DEVELOPMENT ? '.dotcreators.xyz' : undefined,
+      maxAge: 60 * 10,
+      path: '/',
+    })
+  )
+  .use(
+    cors({
+      origin: !envConfig.IS_DEVELOPMENT ? /(.*\.)?dotcreators\.xyz$/ : true,
+      methods: ['GET', 'POST', 'PATCH'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true,
+      maxAge: 500,
+    })
+  )
+  .onError(({ error, code }) => {
+    return {
+      status: code,
+      response: {
+        error: code === 'VALIDATION' ? 'Validation error' : error.name,
+        message:
+          code === 'VALIDATION' ? JSON.parse(error.message) : error.message,
+        ...(envConfig.IS_DEVELOPMENT && error.stack && code !== 'VALIDATION'
+          ? { stack: error.stack }
+          : {}),
+      },
+    };
   })
   .group('/api/v1', app => app.use(artistsRoutes))
   .group('/api/v1', app => app.use(suggestionsRoutes))
   .group('/api/v1', app => app.use(fetchRoutes))
   .group('/api/v1', app => app.use(trendsRoutes))
-  .group('/api/v1', app => app.use(authRoutes));
+  .group('/api/v1', app => app.use(authRoutes))
+  .group('/v2', app => app.use(artistsRoutesV2));
 
-if (IS_DEV !== 'true') {
+if (!envConfig.IS_DEVELOPMENT) {
   app.use(
     rateLimit({
       max: 100,

@@ -1,12 +1,12 @@
 import { Artist, PrismaClient } from '@prisma/client';
-import { ArtistSearchRequest } from '../../models/query/artists/ArtistSearchRequest';
+import { ArtistSearchRequest } from '../../../models/query/artists/ArtistSearchRequest';
 import { error } from 'elysia';
-import { ArtistEditRequest } from '../../models/query/artists/ArtistEditRequest';
+import { ArtistEditRequest } from '../../../models/query/artists/ArtistEditRequest';
 import {
   ArtistUpdateRequest,
   BulkArtistUpdateRequest,
-} from '../../models/query/artists/ArtistUpdateRequest';
-import { ArtistCreateRequest } from '../../models/query/artists/ArtistCreateRequest';
+} from '../../../models/query/artists/ArtistUpdateRequest';
+import { ArtistCreateRequest } from '../../../models/query/artists/ArtistCreateRequest';
 
 export class ArtistsServices {
   private readonly prisma = new PrismaClient();
