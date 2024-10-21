@@ -9,7 +9,7 @@ const fetchServices: FetchServices = new FetchServices();
 const fetchRoutes = new Elysia({
   prefix: '/fetch',
   detail: {
-    tags: ['Fetch'],
+    tags: ['v1'],
   },
 }).get(
   ':username',

@@ -29,7 +29,7 @@ const github = new GitHub(
 const authRoutes = new Elysia({
   prefix: '/auth',
   detail: {
-    tags: ['Auth'],
+    tags: ['v1'],
   },
 })
   .get('/github', async ({ set, cookie: { github_state } }) => {

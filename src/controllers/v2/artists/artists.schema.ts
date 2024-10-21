@@ -22,13 +22,6 @@ export const ArtistsQueryModel = {
     },
     { description: 'Get artist profiles with selected options' }
   ),
-  UpdateArtistTrendStats: t.Object(
-    {
-      weeklyFollowersTrend: t.Number(),
-      weeklyTweetsTrend: t.Number(),
-    },
-    { description: 'Update artist profile trend stats' }
-  ),
 };
 
 export const ArtistsBodyModel = {
@@ -41,10 +34,37 @@ export const ArtistsBodyModel = {
         country: t.String(),
         images: ArtistImagesModel,
         bio: t.String(),
-        url: t.String(),
+        website: t.String(),
       },
       { description: 'Update artist profiles with new selected field values' }
     )
+  ),
+  CreateArtist: t.Object({
+    twitterUserId: t.String(),
+    username: t.String(),
+    tweetsCount: t.Number(),
+    followersCount: t.Number(),
+    images: ArtistImagesModel,
+    tags: ArtistTagsModel,
+    name: t.Nullable(t.String()),
+    url: t.String(),
+    country: t.Nullable(t.String()),
+    website: t.Nullable(t.String()),
+    bio: t.Nullable(t.String()),
+    createdAt: t.Date({ format: 'date-time' }),
+  }),
+  UpdateArtistInformations: t.Object(
+    {
+      username: t.String(),
+      name: t.String(),
+      country: t.String(),
+      bio: t.String(),
+      url: t.String(),
+      images: ArtistImagesModel,
+      weeklyFollowersTrend: t.Number(),
+      weeklyTweetsTrend: t.Number(),
+    },
+    { description: 'Update artist profile trend stats' }
   ),
 };
 
@@ -60,7 +80,9 @@ export const ArtistsReponseModel = {
     { description: 'Returns paginated artists profiles' }
   ),
   GetRandomArtist: ArtistProfileModel,
+  CreateArtist: ArtistProfileModel,
   EditArtist: ArtistProfileModel,
+  UpdateArtistInformation: ArtistProfileModel,
 };
 
 export type GetArtistQuery = Static<typeof ArtistsQueryModel.GetArtist>;
@@ -72,3 +94,15 @@ export type GetArtistRandomResponse = Static<
 
 export type EditArtistBody = Static<typeof ArtistsBodyModel.EditArtist>;
 export type EditArtistResponse = Static<typeof ArtistsReponseModel.EditArtist>;
+
+export type UpdateArtistInformationBody = Static<
+  typeof ArtistsBodyModel.UpdateArtistInformations
+>;
+export type UpdateArtistInformationResponse = Static<
+  typeof ArtistsReponseModel.UpdateArtistInformation
+>;
+
+export type CreateArtistBody = Static<typeof ArtistsBodyModel.CreateArtist>;
+export type CreateArtistResponse = Static<
+  typeof ArtistsReponseModel.CreateArtist
+>;

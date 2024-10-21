@@ -77,11 +77,11 @@ export const app = new Elysia()
       },
     };
   })
-  .group('/api/v1', app => app.use(artistsRoutes))
-  .group('/api/v1', app => app.use(suggestionsRoutes))
-  .group('/api/v1', app => app.use(fetchRoutes))
-  .group('/api/v1', app => app.use(trendsRoutes))
-  .group('/api/v1', app => app.use(authRoutes))
+  .group('/v1', app => app.use(artistsRoutes))
+  .group('/v1', app => app.use(suggestionsRoutes))
+  .group('/v1', app => app.use(fetchRoutes))
+  .group('/v1', app => app.use(trendsRoutes))
+  .group('/v1', app => app.use(authRoutes))
   .group('/v2', app => app.use(artistsRoutesV2));
 
 if (!envConfig.IS_DEVELOPMENT) {

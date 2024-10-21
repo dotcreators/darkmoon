@@ -22,7 +22,7 @@ const ArtistProfileModel = t.Object({
   weeklyFollowersTrend: t.Number(),
   images: ArtistImagesModel,
   tags: ArtistTagsModel,
-  url: t.String({ format: 'uri' }),
+  url: t.String(),
   country: t.Nullable(t.String()),
   website: t.Nullable(t.String()),
   bio: t.Nullable(t.String()),

@@ -9,7 +9,7 @@ const trendsService: TrendsServices = new TrendsServices();
 const trendsRoutes = new Elysia({
   prefix: '/trends',
   detail: {
-    tags: ['Trends'],
+    tags: ['v1'],
   },
 }).get(
   '/:artistId',

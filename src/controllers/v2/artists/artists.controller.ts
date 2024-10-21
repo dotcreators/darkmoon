@@ -13,7 +13,7 @@ const artistsService = new ArtistsService();
 const artistsRoutesV2 = new Elysia({
   prefix: '/artists',
   detail: {
-    tags: ['Artists'],
+    tags: ['v2'],
   },
 })
   .get(
@@ -55,14 +55,14 @@ const artistsRoutesV2 = new Elysia({
     }
   )
   .patch(
-    '/:id/edit',
+    '/edit/:id/',
     async ({ params, body }) => {
       if (!body) {
         return error(400, {
           status: StatusMap['Bad Request'],
           response: {
             error: 'Body error',
-            message: 'None of any editable artist fields are specified',
+            message: 'None of any editable artist fields are provided',
           },
         });
       }
@@ -101,6 +101,88 @@ const artistsRoutesV2 = new Elysia({
       response: {
         200: ArtistsReponseModel.GetRandomArtist,
         400: ErrorResponseModel.BadRequest,
+        500: ErrorResponseModel.InternalServerError,
+      },
+    }
+  )
+  .post(
+    '/create',
+    async ({ body }) => {
+      // TODO: move to guard group after authentication is implemented
+
+      if (!body) {
+        return error(400, {
+          status: StatusMap['Bad Request'],
+          response: {
+            error: 'Body error',
+            message: 'None of all artist fields are provided',
+          },
+        });
+      }
+
+      const result = await artistsService.createArtist(body);
+
+      if (!result) {
+        return error(400, {
+          status: StatusMap['Bad Request'],
+          response: {
+            error: 'Artist error',
+            message: 'Artist with provided twitterUserId is alredy existing',
+          },
+        });
+      }
+
+      return result;
+    },
+    {
+      transform({ body }) {
+        body.createdAt = new Date(body.createdAt);
+      },
+      body: ArtistsBodyModel.CreateArtist,
+      response: {
+        200: ArtistsReponseModel.CreateArtist,
+        400: ErrorResponseModel.BadRequest,
+        500: ErrorResponseModel.InternalServerError,
+      },
+    }
+  )
+  .patch(
+    '/update/:id/',
+    async ({ params, body }) => {
+      if (!body) {
+        return error(400, {
+          status: StatusMap['Bad Request'],
+          response: {
+            error: 'Body error',
+            message: 'None of any editable artist fields are provided',
+          },
+        });
+      }
+
+      const result = await artistsService.updateArtistInformation(
+        params.id,
+        body
+      );
+
+      if (!result) {
+        return error(404, {
+          status: StatusMap['Bad Request'],
+          response: {
+            error: 'Edit error',
+            message: 'Unable to find artist profile with specified ID',
+          },
+        });
+      }
+
+      return result;
+    },
+    {
+      body: ArtistsBodyModel.UpdateArtistInformations,
+      params: t.Object({ id: t.String() }),
+      response: {
+        200: ArtistsReponseModel.UpdateArtistInformation,
+        400: ErrorResponseModel.BadRequest,
+        404: ErrorResponseModel.NotFound,
         500: ErrorResponseModel.InternalServerError,
       },
     }

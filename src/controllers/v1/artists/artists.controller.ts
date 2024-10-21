@@ -17,7 +17,7 @@ const artistsServices: ArtistsServices = new ArtistsServices();
 const artistsRoutes = new Elysia({
   prefix: '/artists',
   detail: {
-    tags: ['Artists'],
+    tags: ['v1'],
   },
 })
   .get(

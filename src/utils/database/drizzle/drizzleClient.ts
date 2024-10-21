@@ -3,14 +3,19 @@ import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { drizzleConfig } from './drizzle.config';
 import { IDatabaseClient } from '../databaseClient.interface';
 import {
+  CreateArtistBody,
+  CreateArtistResponse,
   EditArtistBody,
   EditArtistResponse,
   GetArtistQuery,
   GetArtistRandomResponse,
   GetArtistResponse,
+  UpdateArtistInformationBody,
+  UpdateArtistInformationResponse,
 } from 'controllers/v2/artists/artists.schema';
 import { and, asc, count, desc, eq, gte, like, sql, SQL } from 'drizzle-orm';
 import { envConfig } from 'env.config';
+import { ArtistProfileType } from 'controllers/v2/shared.schema';
 
 export default class DrizzleClient implements IDatabaseClient {
   private client;
@@ -94,18 +99,10 @@ export default class DrizzleClient implements IDatabaseClient {
     const result = await this.client
       .update(artists)
       .set({
-        username: body.username,
-        name: body.name,
-        tags: body.tags,
-        country: body.country,
-        images: body.images,
-        bio: body.bio,
-        url: body.url,
+        ...body,
       })
       .where(eq(artists.twitterUserId, id))
       .returning();
-
-    console.log(result);
 
     return result.length !== 1 ? null : result[0];
   }
@@ -116,21 +113,46 @@ export default class DrizzleClient implements IDatabaseClient {
       .from(artists)
       .orderBy(sql`RANDOM()`)
       .limit(1);
-
     return result[0];
   }
 
-  async updateArtistStats(): Promise<{}> {
-    return {};
+  async updateArtistInformation(
+    id: string,
+    body: UpdateArtistInformationBody
+  ): Promise<UpdateArtistInformationResponse> {
+    const result = await this.client
+      .update(artists)
+      .set({ ...body })
+      .where(eq(artists.twitterUserId, id))
+      .returning();
+    return result[0];
+  }
+  async createArtist(
+    body: CreateArtistBody
+  ): Promise<CreateArtistResponse | null> {
+    const result = await this.client
+      .insert(artists)
+      .values({
+        ...body,
+        joinedAt: new Date(),
+        updatedAt: new Date(),
+        weeklyTweetsTrend: 0,
+        weeklyFollowersTrend: 0,
+      })
+      .onConflictDoNothing()
+      .returning();
+
+    if (result.length < 0) {
+      return null;
+    }
+
+    return result[0];
   }
   async updateArtistStatsBulk(): Promise<{}[]> {
     return [{}];
   }
   async editArtistBulk(): Promise<{}[]> {
     return [{}];
-  }
-  async createArtist(): Promise<{}> {
-    return {};
   }
   async createArtistBulk(): Promise<{}[]> {
     return [{}];

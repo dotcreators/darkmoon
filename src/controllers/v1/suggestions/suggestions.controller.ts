@@ -16,7 +16,7 @@ const prisma = new PrismaClient();
 const suggestionsRoutes = new Elysia({
   prefix: '/suggestions',
   detail: {
-    tags: ['Suggestions'],
+    tags: ['v1'],
   },
 })
   .get(
