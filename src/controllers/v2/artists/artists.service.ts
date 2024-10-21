@@ -1,5 +1,5 @@
 import {
-  EditArtistQuery,
+  EditArtistBody,
   EditArtistResponse,
   GetArtistQuery,
   GetArtistResponse,
@@ -20,9 +20,9 @@ export default class ArtistsService {
 
   async editArtist(
     id: string,
-    query: EditArtistQuery
+    body: EditArtistBody
   ): Promise<EditArtistResponse | null> {
-    return await this.databaseProvider.editArtist(id, query);
+    return await this.databaseProvider.editArtist(id, body);
   }
 
   getRandomArtist() {}

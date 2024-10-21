@@ -1,9 +1,9 @@
-import * as artistsSchema from './schema/artists';
+import { artists, artistsSuggestions, artistsTrends } from './schema/artists';
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { drizzleConfig } from './drizzle.config';
 import { IDatabaseClient } from '../databaseClient.interface';
 import {
-  EditArtistQuery,
+  EditArtistBody,
   EditArtistResponse,
   GetArtistQuery,
   GetArtistResponse,
@@ -20,7 +20,7 @@ export default class DrizzleClient implements IDatabaseClient {
         connectionString: drizzleConfig.DATABASE_CONNECTION_URL,
         ssl: envConfig.IS_DEVELOPMENT ? false : true,
       },
-      schema: artistsSchema,
+      schema: { artists, artistsSuggestions, artistsTrends },
     });
   }
 
@@ -30,33 +30,31 @@ export default class DrizzleClient implements IDatabaseClient {
 
     switch (query.sortBy) {
       case 'username':
-        filterOrderBy = asc(artistsSchema.artists.username);
+        filterOrderBy = asc(artists.username);
         break;
       case 'followers':
-        filterOrderBy = desc(artistsSchema.artists.followersCount);
+        filterOrderBy = desc(artists.followersCount);
         break;
       case 'posts':
-        filterOrderBy = desc(artistsSchema.artists.tweetsCount);
+        filterOrderBy = desc(artists.tweetsCount);
         break;
       case 'new':
-        filterOrderBy = desc(artistsSchema.artists.createdAt);
+        filterOrderBy = desc(artists.createdAt);
         break;
       case 'trending':
-        filterOptions.push(gte(artistsSchema.artists.followersCount, 300));
-        filterOrderBy = desc(artistsSchema.artists.weeklyFollowersTrend);
+        filterOptions.push(gte(artists.followersCount, 300));
+        filterOrderBy = desc(artists.weeklyFollowersTrend);
         break;
       default:
-        filterOrderBy = asc(artistsSchema.artists.followersCount);
+        filterOrderBy = asc(artists.followersCount);
         break;
     }
 
     if (query.username) {
-      filterOptions.push(
-        like(artistsSchema.artists.username, `%${query.username}%`)
-      );
+      filterOptions.push(like(artists.username, `%${query.username}%`));
     }
     if (query.country) {
-      filterOptions.push(eq(artistsSchema.artists.country, query.country));
+      filterOptions.push(eq(artists.country, query.country));
     }
     if (query.tags && query.tags.length > 0) {
       filterOptions.push(
@@ -69,8 +67,8 @@ export default class DrizzleClient implements IDatabaseClient {
     }
 
     const items = await this.client
-      .select({ count: count(artistsSchema.artists.id) })
-      .from(artistsSchema.artists);
+      .select({ count: count(artists.id) })
+      .from(artists);
 
     const result = await this.client.query.artists.findMany({
       limit: query.perPage,
@@ -89,9 +87,25 @@ export default class DrizzleClient implements IDatabaseClient {
   }
   async editArtist(
     id: string,
-    query: EditArtistQuery
+    body: EditArtistBody
   ): Promise<EditArtistResponse | null> {
-    return {} as EditArtistResponse;
+    const result = await this.client
+      .update(artists)
+      .set({
+        username: body.username,
+        name: body.name,
+        tags: body.tags,
+        country: body.country,
+        images: body.images,
+        bio: body.bio,
+        url: body.url,
+      })
+      .where(eq(artists.twitterUserId, id))
+      .returning();
+
+    console.log(result);
+
+    return result.length !== 1 ? null : result[0];
   }
   async updateArtistStats(): Promise<{}> {
     return {};

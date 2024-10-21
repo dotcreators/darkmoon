@@ -1,7 +1,11 @@
 import { Elysia, error, StatusMap, t } from 'elysia';
 
 import { ErrorResponseModel } from '../error.schema';
-import { ArtistsReponseModel, ArtistsQueryModel } from './artists.schema';
+import {
+  ArtistsReponseModel,
+  ArtistsQueryModel,
+  ArtistsBodyModel,
+} from './artists.schema';
 import ArtistsService from './artists.service';
 
 const artistsService = new ArtistsService();
@@ -52,21 +56,21 @@ const artistsRoutesV2 = new Elysia({
   )
   .patch(
     '/:id/edit',
-    async ({ params, query }) => {
-      if (!query) {
+    async ({ params, body }) => {
+      if (!body) {
         return error(400, {
           status: StatusMap['Bad Request'],
           response: {
-            error: 'Query error',
-            message: 'None of any query edit fields are specified',
+            error: 'Body error',
+            message: 'None of any editable artist fields are specified',
           },
         });
       }
 
-      const r = await artistsService.editArtist(params.id, query);
+      const r = await artistsService.editArtist(params.id, body);
 
       if (!r) {
-        return error(400, {
+        return error(404, {
           status: StatusMap['Bad Request'],
           response: {
             error: 'Edit error',
@@ -78,11 +82,12 @@ const artistsRoutesV2 = new Elysia({
       return r;
     },
     {
-      query: ArtistsQueryModel.EditArtist,
+      body: ArtistsBodyModel.EditArtist,
       params: t.Object({ id: t.String() }),
       response: {
         200: ArtistsReponseModel.EditArtist,
         400: ErrorResponseModel.BadRequest,
+        404: ErrorResponseModel.NotFound,
         500: ErrorResponseModel.InternalServerError,
       },
     }

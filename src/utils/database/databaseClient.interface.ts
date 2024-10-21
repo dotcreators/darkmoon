@@ -1,5 +1,5 @@
 import {
-  EditArtistQuery,
+  EditArtistBody,
   EditArtistResponse,
   GetArtistQuery,
   GetArtistResponse,
@@ -12,7 +12,7 @@ export interface IDatabaseClient {
   updateArtistStatsBulk(): Promise<{}[]>;
   editArtist(
     id: string,
-    query: EditArtistQuery
+    body: EditArtistBody
   ): Promise<EditArtistResponse | null>;
   editArtistBulk(): Promise<{}[]>;
   createArtist(): Promise<{}>;

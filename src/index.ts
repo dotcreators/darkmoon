@@ -69,9 +69,9 @@ export const app = new Elysia()
       status: code,
       response: {
         error: code === 'VALIDATION' ? 'Validation error' : error.name,
-        message: error.message,
-
-        ...(envConfig.IS_DEVELOPMENT && error.stack
+        message:
+          code === 'VALIDATION' ? JSON.parse(error.message) : error.message,
+        ...(envConfig.IS_DEVELOPMENT && error.stack && code !== 'VALIDATION'
           ? { stack: error.stack }
           : {}),
       },
