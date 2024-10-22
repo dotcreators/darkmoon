@@ -55,6 +55,7 @@ export const artistsSuggestions = pgTable('artistsSuggestions', {
   country: text('country'),
   tags: typedJsonb<Tags>('tags'),
   status: varchar('status', { length: 255 }).notNull().default('requested'),
+  requestedFrom: text('requested_from').notNull().default('suggestions'),
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
     .defaultNow(),

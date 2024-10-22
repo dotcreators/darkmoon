@@ -1,5 +1,5 @@
 import { artists, artistsSuggestions, artistsTrends } from './schema/artists';
-import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { drizzleConfig } from './drizzle.config';
 import { IDatabaseClient } from '../databaseClient.interface';
 import {
@@ -21,7 +21,10 @@ import {
 } from 'controllers/v2/artists/artists.schema';
 import { and, asc, count, desc, eq, gte, like, sql, SQL } from 'drizzle-orm';
 import { envConfig } from 'env.config';
-import { ArtistProfileType } from 'controllers/v2/shared.schema';
+import {
+  GetSuggestionsQuery,
+  GetSuggestionsResponse,
+} from 'controllers/v2/suggestions/suggestions.schema';
 
 export default class DrizzleClient implements IDatabaseClient {
   private client;
@@ -236,5 +239,64 @@ export default class DrizzleClient implements IDatabaseClient {
       .filter(result => result !== null);
 
     return { items: processedResults, errors: errorResults };
+  }
+
+  async getSuggestionsPaginated(
+    query: GetSuggestionsQuery
+  ): Promise<GetSuggestionsResponse> {
+    let filterOptions: SQL[] = [];
+    let filterOrderBy: SQL;
+
+    switch (query.sortBy) {
+      case 'username':
+        filterOrderBy = asc(artistsSuggestions.username);
+        break;
+      case 'createdAt':
+        filterOrderBy = desc(artistsSuggestions.createdAt);
+        break;
+      case 'status':
+        filterOrderBy = desc(artistsSuggestions.status);
+        break;
+      default:
+        filterOrderBy = asc(artistsSuggestions.status);
+        break;
+    }
+
+    if (query.username) {
+      filterOptions.push(
+        like(artistsSuggestions.username, `%${query.username}%`)
+      );
+    }
+    if (query.status) {
+      filterOptions.push(eq(artistsSuggestions.status, query.status));
+    }
+    if (query.tags && query.tags.length > 0) {
+      filterOptions.push(
+        and(
+          ...query.tags.map(
+            tag => sql`tags->'items' @> ${JSON.stringify([tag])}`
+          )
+        )!
+      );
+    }
+
+    const items = await this.client
+      .select({ count: count(artistsSuggestions.id) })
+      .from(artistsSuggestions);
+
+    const result = await this.client.query.artistsSuggestions.findMany({
+      limit: query.perPage,
+      offset: (query.page - 1) * query.perPage,
+      orderBy: filterOrderBy,
+      where: filterOptions.length > 0 ? and(...filterOptions) : undefined,
+    });
+
+    return {
+      page: query.page,
+      perPage: query.perPage,
+      totalPages: Math.ceil(items.length / query.perPage),
+      totalItems: result.length,
+      items: result,
+    };
   }
 }

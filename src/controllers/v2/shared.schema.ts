@@ -36,5 +36,24 @@ const ArtistProfileModel = t.Object(
   }
 );
 
+const ArtistSuggestionModel = t.Object({
+  id: t.String(),
+  username: t.String(),
+  avatarUrl: t.String(),
+  tags: ArtistTagsModel,
+  status: t.String(),
+  requestedFrom: t.String(),
+  country: t.Nullable(t.String()),
+  createdAt: t.Date({ format: 'date-time' }),
+  updatedAt: t.Date({ format: 'date-time' }),
+});
+
+export {
+  ArtistProfileModel,
+  ArtistImagesModel,
+  ArtistTagsModel,
+  ArtistSuggestionModel,
+};
+
+export type ArtistSuggestionType = Static<typeof ArtistSuggestionModel>;
 export type ArtistProfileType = Static<typeof ArtistProfileModel>;
-export { ArtistProfileModel, ArtistImagesModel, ArtistTagsModel };

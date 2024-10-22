@@ -10,7 +10,7 @@ import ArtistsService from './artists.service';
 
 const artistsService = new ArtistsService();
 
-const artistsRoutesV2 = new Elysia({
+const artistsRoutes = new Elysia({
   prefix: '/artists',
   detail: {
     tags: ['v2'],
@@ -228,4 +228,4 @@ const artistsRoutesV2 = new Elysia({
       )
   );
 
-export default artistsRoutesV2;
+export default artistsRoutes;

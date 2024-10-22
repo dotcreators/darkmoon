@@ -15,11 +15,11 @@ import {
   UpdateArtistInformationBulkResponse,
   UpdateArtistInformationResponse,
 } from './artists.schema';
-import { IDatabaseClient } from 'utils/database/databaseClient.interface';
+import { IArtistsDatabaseClient } from 'utils/database/databaseClient.interface';
 import DrizzleClient from 'utils/database/drizzle/drizzleClient';
 
 export default class ArtistsService {
-  private databaseProvider: IDatabaseClient;
+  private databaseProvider: IArtistsDatabaseClient;
 
   constructor() {
     this.databaseProvider = new DrizzleClient();

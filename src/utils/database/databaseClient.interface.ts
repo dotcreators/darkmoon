@@ -15,8 +15,16 @@ import {
   UpdateArtistInformationBulkResponse,
   UpdateArtistInformationResponse,
 } from 'controllers/v2/artists/artists.schema';
+import {
+  GetSuggestionsQuery,
+  GetSuggestionsResponse,
+} from 'controllers/v2/suggestions/suggestions.schema';
 
-export interface IDatabaseClient {
+export interface IDatabaseClient
+  extends IArtistsDatabaseClient,
+    ISuggestionsDatabaseClient {}
+
+export interface IArtistsDatabaseClient {
   getArtistPaginated(query: GetArtistQuery): Promise<GetArtistResponse>;
   createArtist(body: CreateArtistBody): Promise<CreateArtistResponse | null>;
   updateArtistInformation(
@@ -35,4 +43,10 @@ export interface IDatabaseClient {
   createArtistBulk(
     body: CreateArtistBulkBody
   ): Promise<CreateArtistBulkResponse>;
+}
+
+export interface ISuggestionsDatabaseClient {
+  getSuggestionsPaginated(
+    query: GetSuggestionsQuery
+  ): Promise<GetSuggestionsResponse>;
 }

@@ -1,15 +1,11 @@
-import { Elysia, StatusMap } from 'elysia';
-import artistsRoutes from './controllers/v1/artists/artists.controller';
+import { Elysia } from 'elysia';
 import swagger from '@elysiajs/swagger';
-import suggestionsRoutes from './controllers/v1/suggestions/suggestions.controller';
 import cors from '@elysiajs/cors';
-import fetchRoutes from './controllers/v1/fetch/fetch.controller';
-import trendsRoutes from './controllers/v1/trends/trends.controller';
-import authRoutes from './controllers/v1/auth/auth.controller';
 import { rateLimit } from 'elysia-rate-limit';
 import cookie from '@elysiajs/cookie';
 import { envConfig } from './env.config';
-import artistsRoutesV2 from './controllers/v2/artists/artists.controller';
+import { apiEndpointsV2 } from 'controllers/v2';
+import { apiEndpointsV1 } from 'controllers/v1';
 
 export const app = new Elysia()
   .use(
@@ -26,21 +22,21 @@ export const app = new Elysia()
           },
           version: '1.0.1',
         },
-        tags: [
-          { name: 'Artists', description: 'Artists related endpoints' },
-          {
-            name: 'Suggestions',
-            description: 'Artist suggestions related endpoints',
-          },
-          {
-            name: 'Fetch',
-            description: 'Getting X/Twitter artist profiles related endpoints',
-          },
-          {
-            name: 'Trends',
-            description: 'Artist trends related endpoints',
-          },
-        ],
+        // tags: [
+        //   { name: 'Artists', description: 'Artists related endpoints' },
+        //   {
+        //     name: 'Suggestions',
+        //     description: 'Artist suggestions related endpoints',
+        //   },
+        //   {
+        //     name: 'Fetch',
+        //     description: 'Getting X/Twitter artist profiles related endpoints',
+        //   },
+        //   {
+        //     name: 'Trends',
+        //     description: 'Artist trends related endpoints',
+        //   },
+        // ],
       },
       path: '/docs',
     })
@@ -77,12 +73,8 @@ export const app = new Elysia()
       },
     };
   })
-  .group('/v1', app => app.use(artistsRoutes))
-  .group('/v1', app => app.use(suggestionsRoutes))
-  .group('/v1', app => app.use(fetchRoutes))
-  .group('/v1', app => app.use(trendsRoutes))
-  .group('/v1', app => app.use(authRoutes))
-  .group('/v2', app => app.use(artistsRoutesV2));
+  .use(apiEndpointsV1)
+  .use(apiEndpointsV2);
 
 if (!envConfig.IS_DEVELOPMENT) {
   app.use(
@@ -95,6 +87,4 @@ if (!envConfig.IS_DEVELOPMENT) {
 
 app.listen(8989);
 
-console.log(
-  `🚀 Dotcreators API service is running at ${app.server?.hostname}:${app.server?.port}`
-);
+console.log(`🚀 Dotcreators API service is running.`);
