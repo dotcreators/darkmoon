@@ -23,6 +23,7 @@
     "drizzle-orm": "^0.35.2",
     "elysia": "1.1.22",
     "elysia-rate-limit": "^4.1.0",
+    "logestic": "^1.2.4",
     "lucia": "^3.2.1",
     "pg": "^8.13.0",
     "pocketbase": "^0.21.5",

@@ -6,6 +6,7 @@ import cookie from '@elysiajs/cookie';
 import { envConfig } from './env.config';
 import { apiEndpointsV2 } from 'controllers/v2';
 import { apiEndpointsV1 } from 'controllers/v1';
+import { Logestic } from 'logestic';
 
 export const app = new Elysia()
   .use(
@@ -41,6 +42,7 @@ export const app = new Elysia()
       path: '/docs',
     })
   )
+  .use(Logestic.preset('fancy'))
   .use(
     cookie({
       httpOnly: true,
@@ -60,7 +62,11 @@ export const app = new Elysia()
       maxAge: 500,
     })
   )
-  .onError(({ error, code }) => {
+  .onError(({ error, code, redirect }) => {
+    if (code === 'NOT_FOUND') {
+      return redirect('/welcome', 302);
+    }
+
     return {
       status: code,
       response: {
@@ -73,6 +79,18 @@ export const app = new Elysia()
       },
     };
   })
+  .get(
+    '/welcome',
+    () => {
+      return {
+        message: 'Welcome to dotcreators API service',
+        name: 'dotcreators-darkmoon',
+        version: 'v1.0.1',
+        docs: '/docs',
+      };
+    },
+    {}
+  )
   .use(apiEndpointsV1)
   .use(apiEndpointsV2);
 
