@@ -1,12 +1,18 @@
 import {
   CreateArtistBody,
+  CreateArtistBulkBody,
+  CreateArtistBulkResponse,
   CreateArtistResponse,
   EditArtistBody,
+  EditArtistBulkBody,
+  EditArtistBulkResponse,
   EditArtistResponse,
   GetArtistQuery,
   GetArtistRandomResponse,
   GetArtistResponse,
   UpdateArtistInformationBody,
+  UpdateArtistInformationBulkBody,
+  UpdateArtistInformationBulkResponse,
   UpdateArtistInformationResponse,
 } from 'controllers/v2/artists/artists.schema';
 
@@ -22,7 +28,11 @@ export interface IDatabaseClient {
     body: EditArtistBody
   ): Promise<EditArtistResponse | null>;
   getRandomArtist(): Promise<GetArtistRandomResponse>;
-  editArtistBulk(): Promise<{}[]>;
-  updateArtistStatsBulk(): Promise<{}[]>;
-  createArtistBulk(): Promise<{}[]>;
+  editArtistBulk(body: EditArtistBulkBody): Promise<EditArtistBulkResponse>;
+  updateArtistInformationBulk(
+    body: UpdateArtistInformationBulkBody
+  ): Promise<UpdateArtistInformationBulkResponse>;
+  createArtistBulk(
+    body: CreateArtistBulkBody
+  ): Promise<CreateArtistBulkResponse>;
 }

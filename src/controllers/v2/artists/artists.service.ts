@@ -1,12 +1,18 @@
 import {
   CreateArtistBody,
+  CreateArtistBulkBody,
+  CreateArtistBulkResponse,
   CreateArtistResponse,
   EditArtistBody,
+  EditArtistBulkBody,
+  EditArtistBulkResponse,
   EditArtistResponse,
   GetArtistQuery,
   GetArtistRandomResponse,
   GetArtistResponse,
   UpdateArtistInformationBody,
+  UpdateArtistInformationBulkBody,
+  UpdateArtistInformationBulkResponse,
   UpdateArtistInformationResponse,
 } from './artists.schema';
 import { IDatabaseClient } from 'utils/database/databaseClient.interface';
@@ -47,9 +53,21 @@ export default class ArtistsService {
     return await this.databaseProvider.createArtist(body);
   }
 
-  async updateArtistStatsBulk() {}
+  async updateArtistInformationBulk(
+    body: UpdateArtistInformationBulkBody
+  ): Promise<UpdateArtistInformationBulkResponse> {
+    return await this.databaseProvider.updateArtistInformationBulk(body);
+  }
 
-  async createArtistBulk() {}
+  async createArtistBulk(
+    body: CreateArtistBulkBody
+  ): Promise<CreateArtistBulkResponse> {
+    return await this.databaseProvider.createArtistBulk(body);
+  }
 
-  async editArtistBulk() {}
+  async editArtistBulk(
+    body: EditArtistBulkBody
+  ): Promise<EditArtistBulkResponse> {
+    return await this.databaseProvider.editArtistBulk(body);
+  }
 }

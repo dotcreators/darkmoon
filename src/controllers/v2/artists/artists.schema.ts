@@ -36,23 +36,28 @@ export const ArtistsBodyModel = {
         bio: t.String(),
         website: t.String(),
       },
-      { description: 'Update artist profiles with new selected field values' }
+      { description: 'Update artist profile with new selected field values' }
     )
   ),
-  CreateArtist: t.Object({
-    twitterUserId: t.String(),
-    username: t.String(),
-    tweetsCount: t.Number(),
-    followersCount: t.Number(),
-    images: ArtistImagesModel,
-    tags: ArtistTagsModel,
-    name: t.Nullable(t.String()),
-    url: t.String(),
-    country: t.Nullable(t.String()),
-    website: t.Nullable(t.String()),
-    bio: t.Nullable(t.String()),
-    createdAt: t.Date({ format: 'date-time' }),
-  }),
+  CreateArtist: t.Object(
+    {
+      twitterUserId: t.String(),
+      username: t.String(),
+      tweetsCount: t.Number(),
+      followersCount: t.Number(),
+      images: ArtistImagesModel,
+      tags: ArtistTagsModel,
+      name: t.Nullable(t.String()),
+      url: t.String(),
+      country: t.Nullable(t.String()),
+      website: t.Nullable(t.String()),
+      bio: t.Nullable(t.String()),
+      createdAt: t.Date({ format: 'date-time' }),
+    },
+    {
+      description: 'Create artist profile with provided values',
+    }
+  ),
   UpdateArtistInformations: t.Object(
     {
       username: t.String(),
@@ -65,6 +70,65 @@ export const ArtistsBodyModel = {
       weeklyTweetsTrend: t.Number(),
     },
     { description: 'Update artist profile trend stats' }
+  ),
+  CreateArtistBulk: t.Array(
+    t.Object({
+      twitterUserId: t.String(),
+      username: t.String(),
+      tweetsCount: t.Number(),
+      followersCount: t.Number(),
+      images: ArtistImagesModel,
+      tags: ArtistTagsModel,
+      name: t.Nullable(t.String()),
+      url: t.String(),
+      country: t.Nullable(t.String()),
+      website: t.Nullable(t.String()),
+      bio: t.Nullable(t.String()),
+      createdAt: t.Date({ format: 'date-time' }),
+    }),
+    {
+      description: 'Create multiple artist profiles with provided values',
+    }
+  ),
+  EditArtistBulk: t.Array(
+    t.Object(
+      {
+        id: t.String(),
+        data: t.Partial(
+          t.Object({
+            username: t.String(),
+            name: t.String(),
+            tags: ArtistTagsModel,
+            country: t.String(),
+            images: ArtistImagesModel,
+            bio: t.String(),
+            website: t.String(),
+          })
+        ),
+      },
+      {
+        description:
+          'Update multiple artist profiles with new selected field values',
+      }
+    )
+  ),
+  UpdateArtistInformationsBulk: t.Array(
+    t.Object(
+      {
+        id: t.String(),
+        data: t.Object({
+          username: t.String(),
+          name: t.String(),
+          country: t.String(),
+          bio: t.String(),
+          url: t.String(),
+          images: ArtistImagesModel,
+          weeklyFollowersTrend: t.Number(),
+          weeklyTweetsTrend: t.Number(),
+        }),
+      },
+      { description: 'Update multiple artist profiles with new trend stats' }
+    )
   ),
 };
 
@@ -83,26 +147,65 @@ export const ArtistsReponseModel = {
   CreateArtist: ArtistProfileModel,
   EditArtist: ArtistProfileModel,
   UpdateArtistInformation: ArtistProfileModel,
+  UpdateArtistInformationBulk: t.Object({
+    items: t.Array(ArtistProfileModel),
+    errors: t.Array(
+      t.Object({
+        id: t.String(),
+        reason: t.String(),
+      })
+    ),
+  }),
+  CreateArtistBulk: t.Object({
+    items: t.Array(ArtistProfileModel),
+    errors: t.Array(
+      t.Object({
+        id: t.String(),
+        reason: t.String(),
+      })
+    ),
+  }),
+  EditArtistBulk: t.Object({
+    items: t.Array(ArtistProfileModel),
+    errors: t.Array(
+      t.Object({
+        id: t.String(),
+        reason: t.String(),
+      })
+    ),
+  }),
 };
 
 export type GetArtistQuery = Static<typeof ArtistsQueryModel.GetArtist>;
 export type GetArtistResponse = Static<typeof ArtistsReponseModel.GetArtist>;
-
 export type GetArtistRandomResponse = Static<
   typeof ArtistsReponseModel.GetRandomArtist
 >;
-
 export type EditArtistBody = Static<typeof ArtistsBodyModel.EditArtist>;
 export type EditArtistResponse = Static<typeof ArtistsReponseModel.EditArtist>;
-
 export type UpdateArtistInformationBody = Static<
   typeof ArtistsBodyModel.UpdateArtistInformations
 >;
 export type UpdateArtistInformationResponse = Static<
   typeof ArtistsReponseModel.UpdateArtistInformation
 >;
-
 export type CreateArtistBody = Static<typeof ArtistsBodyModel.CreateArtist>;
 export type CreateArtistResponse = Static<
   typeof ArtistsReponseModel.CreateArtist
+>;
+export type CreateArtistBulkBody = Static<
+  typeof ArtistsBodyModel.CreateArtistBulk
+>;
+export type CreateArtistBulkResponse = Static<
+  typeof ArtistsReponseModel.CreateArtistBulk
+>;
+export type UpdateArtistInformationBulkBody = Static<
+  typeof ArtistsBodyModel.UpdateArtistInformationsBulk
+>;
+export type UpdateArtistInformationBulkResponse = Static<
+  typeof ArtistsReponseModel.UpdateArtistInformationBulk
+>;
+export type EditArtistBulkBody = Static<typeof ArtistsBodyModel.EditArtistBulk>;
+export type EditArtistBulkResponse = Static<
+  typeof ArtistsReponseModel.EditArtistBulk
 >;

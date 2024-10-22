@@ -4,13 +4,19 @@ import { drizzleConfig } from './drizzle.config';
 import { IDatabaseClient } from '../databaseClient.interface';
 import {
   CreateArtistBody,
+  CreateArtistBulkBody,
+  CreateArtistBulkResponse,
   CreateArtistResponse,
   EditArtistBody,
+  EditArtistBulkBody,
+  EditArtistBulkResponse,
   EditArtistResponse,
   GetArtistQuery,
   GetArtistRandomResponse,
   GetArtistResponse,
   UpdateArtistInformationBody,
+  UpdateArtistInformationBulkBody,
+  UpdateArtistInformationBulkResponse,
   UpdateArtistInformationResponse,
 } from 'controllers/v2/artists/artists.schema';
 import { and, asc, count, desc, eq, gte, like, sql, SQL } from 'drizzle-orm';
@@ -148,13 +154,87 @@ export default class DrizzleClient implements IDatabaseClient {
 
     return result[0];
   }
-  async updateArtistStatsBulk(): Promise<{}[]> {
-    return [{}];
+  async updateArtistInformationBulk(
+    body: UpdateArtistInformationBulkBody
+  ): Promise<UpdateArtistInformationBulkResponse> {
+    const promises = body.map(profile => {
+      return this.client
+        .update(artists)
+        .set({ ...profile.data })
+        .where(eq(artists.id, profile.id))
+        .returning()._.result[0];
+    });
+
+    const results = await Promise.allSettled(promises);
+
+    let errorResults: { id: string; reason: string }[] = [];
+    const processedResults = results
+      .map((result, index) => {
+        if (result.status === 'fulfilled') {
+          return result.value;
+        } else {
+          errorResults.push({ id: body[index].id, reason: result.reason });
+          return null;
+        }
+      })
+      .filter(result => result !== null);
+
+    return { items: processedResults, errors: errorResults };
   }
-  async editArtistBulk(): Promise<{}[]> {
-    return [{}];
+  async editArtistBulk(
+    body: EditArtistBulkBody
+  ): Promise<EditArtistBulkResponse> {
+    const promises = body.map(profile => {
+      return this.client
+        .update(artists)
+        .set({ ...profile.data })
+        .where(eq(artists.id, profile.id))
+        .returning()._.result[0];
+    });
+
+    const results = await Promise.allSettled(promises);
+
+    let errorResults: { id: string; reason: string }[] = [];
+    const processedResults = results
+      .map((result, index) => {
+        if (result.status === 'fulfilled') {
+          return result.value;
+        } else {
+          errorResults.push({ id: body[index].id, reason: result.reason });
+          return null;
+        }
+      })
+      .filter(result => result !== null);
+
+    return { items: processedResults, errors: errorResults };
   }
-  async createArtistBulk(): Promise<{}[]> {
-    return [{}];
+  async createArtistBulk(
+    body: CreateArtistBulkBody
+  ): Promise<CreateArtistBulkResponse> {
+    const promises = body.map(profile => {
+      return this.client
+        .insert(artists)
+        .values({ ...profile })
+        .returning()._.result[0];
+    });
+
+    const results = await Promise.allSettled(promises);
+
+    let errorResults: { id: string; reason: string }[] = [];
+    const processedResults = results
+      .map((result, index) => {
+        if (result.status === 'fulfilled') {
+          return result.value;
+        } else {
+          errorResults.push({
+            id: body[index].twitterUserId,
+            reason: result.reason,
+          });
+          return null;
+        }
+      })
+      .filter(result => result !== null);
+
+    return { items: processedResults, errors: errorResults };
   }
 }

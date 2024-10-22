@@ -22,7 +22,7 @@ export const ErrorResponseModel = {
       response: ErrorModel,
     },
     {
-      description: 'Bad Request',
+      description: 'Not Found',
     }
   ),
   InternalServerError: t.Object(
