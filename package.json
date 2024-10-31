@@ -22,7 +22,7 @@
     "elysia-rate-limit": "^4.1.0",
     "lucia": "^3.2.0",
     "prisma": "^5.12.1",
-    "twitter-openapi-typescript": "^0.0.34"
+    "twitter-openapi-typescript": "0.0.41"
   },
   "devDependencies": {
     "eslint": "^9.1.1",
