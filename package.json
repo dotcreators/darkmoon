@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
-    "dev:prisma": "bunx prisma db pull && bunx prisma generate"
     "start": "bunx prisma db pull && bunx prisma generate && bun run --watch src/index.ts",
+    "dev:prisma": "bunx prisma db pull && bunx prisma generate"
   },
   "dependencies": {
     "@elysiajs/cookie": "^0.8.0",
