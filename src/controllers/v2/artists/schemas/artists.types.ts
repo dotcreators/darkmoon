@@ -1,0 +1,20 @@
+import { Static } from 'elysia';
+import { ArtistsQueryModel } from './artists.query';
+import { ArtistsReponseModel } from './artists.response';
+import { ArtistsBodyModel } from './artists.body';
+
+export type GetArtistQuery = Static<typeof ArtistsQueryModel.GetArtist>;
+export type GetArtistResponse = Static<typeof ArtistsReponseModel.GetArtist>;
+export type GetArtistRandomResponse = Static<typeof ArtistsReponseModel.GetRandomArtist>;
+export type EditArtistBody = Static<typeof ArtistsBodyModel.EditArtist>;
+export type EditArtistResponse = Static<typeof ArtistsReponseModel.EditArtist>;
+export type UpdateArtistInformationBody = Static<typeof ArtistsBodyModel.UpdateArtistInformations>;
+export type UpdateArtistInformationResponse = Static<typeof ArtistsReponseModel.UpdateArtistInformation>;
+export type CreateArtistBody = Static<typeof ArtistsBodyModel.CreateArtist>;
+export type CreateArtistResponse = Static<typeof ArtistsReponseModel.CreateArtist>;
+export type CreateArtistBulkBody = Static<typeof ArtistsBodyModel.CreateArtistBulk>;
+export type CreateArtistBulkResponse = Static<typeof ArtistsReponseModel.CreateArtistBulk>;
+export type UpdateArtistInformationBulkBody = Static<typeof ArtistsBodyModel.UpdateArtistInformationsBulk>;
+export type UpdateArtistInformationBulkResponse = Static<typeof ArtistsReponseModel.UpdateArtistInformationBulk>;
+export type EditArtistBulkBody = Static<typeof ArtistsBodyModel.EditArtistBulk>;
+export type EditArtistBulkResponse = Static<typeof ArtistsReponseModel.EditArtistBulk>;

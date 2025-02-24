@@ -1,12 +1,12 @@
 {
   "name": "dotcreators-darkmoon",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Backend service written with Elysia.js",
   "author": "anivire",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
-    "dev:prisma": "bunx prisma db pull && bunx prisma generate"
+    "start": "bun run src/index.ts",
+    "build:drizzle-schema": "bunx drizzle-kit generate && bunx drizzle-kit push"
   },
   "dependencies": {
     "@elysiajs/cookie": "^0.8.0",
@@ -23,10 +23,10 @@
     "drizzle-orm": "^0.35.2",
     "elysia": "1.1.22",
     "elysia-rate-limit": "^4.1.0",
-    "logestic": "^1.2.4",
     "lucia": "^3.2.1",
     "pg": "^8.13.0",
     "pocketbase": "^0.21.5",
+    "prettier": "^3.5.0",
     "prisma": "^5.21.1",
     "twitter-openapi-typescript": "^0.0.34"
   },

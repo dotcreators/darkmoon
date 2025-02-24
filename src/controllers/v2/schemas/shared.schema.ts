@@ -1,17 +1,27 @@
 import { Static, t } from 'elysia';
 
-const ArtistTagsModel = t.Nullable(
+export const TagsModel = t.Nullable(
   t.Object({
     items: t.Array(t.String(), { minItems: 0 }),
   })
 );
 
-const ArtistImagesModel = t.Object({
+export const ImagesModel = t.Object({
   avatar: t.String(),
   banner: t.Optional(t.String()),
 });
 
-const ArtistProfileModel = t.Object(
+export const ResponseModel = t.Object({
+  items: t.Any(),
+  errors: t.Array(
+    t.Object({
+      id: t.String(),
+      reason: t.String(),
+    })
+  ),
+});
+
+export const ArtistProfileModel = t.Object(
   {
     id: t.String(),
     twitterUserId: t.String(),
@@ -21,8 +31,8 @@ const ArtistProfileModel = t.Object(
     followersCount: t.Number(),
     weeklyTweetsTrend: t.Number(),
     weeklyFollowersTrend: t.Number(),
-    images: ArtistImagesModel,
-    tags: ArtistTagsModel,
+    images: ImagesModel,
+    tags: TagsModel,
     url: t.String(),
     country: t.Nullable(t.String()),
     website: t.Nullable(t.String()),
@@ -36,24 +46,14 @@ const ArtistProfileModel = t.Object(
   }
 );
 
-const ArtistSuggestionModel = t.Object({
+export const ArtistSuggestionModel = t.Object({
   id: t.String(),
   username: t.String(),
   avatarUrl: t.String(),
-  tags: ArtistTagsModel,
+  tags: TagsModel,
   status: t.String(),
   requestedFrom: t.String(),
   country: t.Nullable(t.String()),
   createdAt: t.Date({ format: 'date-time' }),
   updatedAt: t.Date({ format: 'date-time' }),
 });
-
-export {
-  ArtistProfileModel,
-  ArtistImagesModel,
-  ArtistTagsModel,
-  ArtistSuggestionModel,
-};
-
-export type ArtistSuggestionType = Static<typeof ArtistSuggestionModel>;
-export type ArtistProfileType = Static<typeof ArtistProfileModel>;

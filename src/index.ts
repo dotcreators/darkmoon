@@ -1,12 +1,12 @@
-import { Elysia } from 'elysia';
-import swagger from '@elysiajs/swagger';
-import cors from '@elysiajs/cors';
-import { rateLimit } from 'elysia-rate-limit';
-import cookie from '@elysiajs/cookie';
 import { envConfig } from './env.config';
-import { apiEndpointsV2 } from 'controllers/v2';
-import { apiEndpointsV1 } from 'controllers/v1';
-import { Logestic } from 'logestic';
+import cookie from '@elysiajs/cookie';
+import cors from '@elysiajs/cors';
+import swagger from '@elysiajs/swagger';
+import { API_ENDPOINTS_V1 } from 'controllers/v1';
+import { API_ENDPOINTS_V2 } from 'controllers/v2';
+import { Elysia } from 'elysia';
+import { rateLimit } from 'elysia-rate-limit';
+import { drizzleConfig } from 'utils/database/drizzle/drizzle.config';
 
 export const app = new Elysia()
   .use(
@@ -21,28 +21,13 @@ export const app = new Elysia()
             email: 'hi@anivire.xyz',
             url: 'https://github.com/dotcreators',
           },
-          version: '1.0.1',
+          version: '2.0.0',
         },
-        // tags: [
-        //   { name: 'Artists', description: 'Artists related endpoints' },
-        //   {
-        //     name: 'Suggestions',
-        //     description: 'Artist suggestions related endpoints',
-        //   },
-        //   {
-        //     name: 'Fetch',
-        //     description: 'Getting X/Twitter artist profiles related endpoints',
-        //   },
-        //   {
-        //     name: 'Trends',
-        //     description: 'Artist trends related endpoints',
-        //   },
-        // ],
       },
       path: '/docs',
+      exclude: ['/', '/welcome'],
     })
   )
-  .use(Logestic.preset('fancy'))
   .use(
     cookie({
       httpOnly: true,
@@ -62,22 +47,8 @@ export const app = new Elysia()
       maxAge: 500,
     })
   )
-  .onError(({ error, code, redirect }) => {
-    if (code === 'NOT_FOUND') {
-      return redirect('/welcome', 302);
-    }
-
-    return {
-      status: code,
-      response: {
-        error: code === 'VALIDATION' ? 'Validation error' : error.name,
-        message:
-          code === 'VALIDATION' ? JSON.parse(error.message) : error.message,
-        ...(envConfig.IS_DEVELOPMENT && error.stack && code !== 'VALIDATION'
-          ? { stack: error.stack }
-          : {}),
-      },
-    };
+  .get('/', ({ redirect }) => {
+    return redirect('/welcome');
   })
   .get(
     '/welcome',
@@ -85,14 +56,13 @@ export const app = new Elysia()
       return {
         message: 'Welcome to dotcreators API service',
         name: 'dotcreators-darkmoon',
-        version: 'v1.0.1',
+        version: 'v2.0.0',
         docs: '/docs',
       };
     },
     {}
   )
-  .use(apiEndpointsV1)
-  .use(apiEndpointsV2);
+  .use(API_ENDPOINTS_V2);
 
 if (!envConfig.IS_DEVELOPMENT) {
   app.use(
@@ -106,3 +76,5 @@ if (!envConfig.IS_DEVELOPMENT) {
 app.listen(8989);
 
 console.log(`🚀 Dotcreators API service is running.`);
+console.log('IS_DEVELOPMENT:', envConfig.IS_DEVELOPMENT);
+console.log('DATABASE_CONNECTION_URL:', drizzleConfig.DATABASE_CONNECTION_URL);

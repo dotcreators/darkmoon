@@ -1,9 +1,6 @@
 import Elysia, { error, StatusMap } from 'elysia';
-import {
-  SuggestionsQueryModel,
-  SuggestionsResponseModel,
-} from './suggestions.schema';
-import { ErrorResponseModel } from '../error.schema';
+import { SuggestionsQueryModel, SuggestionsResponseModel } from './suggestions.schema';
+import { ErrorResponseModel } from '../schemas/error.schema';
 import SuggestionsService from './suggestions.service';
 
 const suggestionsService = new SuggestionsService();
@@ -21,8 +18,7 @@ const suggestionsRoutes = new Elysia({
         status: StatusMap['Bad Request'],
         response: {
           error: 'Query error',
-          message:
-            'Maximum suggestions query must be greater than 0 and limited by 100',
+          message: 'Maximum suggestions query must be greater than 0 and limited by 100',
         },
       });
     } else if (query.page < 0) {

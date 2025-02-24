@@ -1,7 +1,9 @@
 import { artists, artistsSuggestions, artistsTrends } from './schema/artists';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { drizzleConfig } from './drizzle.config';
-import { IDatabaseClient } from '../databaseClient.interface';
+import { IDatabaseClient } from '../database-client.interface';
+import { and, asc, count, desc, eq, gte, like, sql, SQL } from 'drizzle-orm';
+import { GetSuggestionsQuery, GetSuggestionsResponse } from 'controllers/v2/suggestions/suggestions.schema';
 import {
   CreateArtistBody,
   CreateArtistBulkBody,
@@ -18,13 +20,7 @@ import {
   UpdateArtistInformationBulkBody,
   UpdateArtistInformationBulkResponse,
   UpdateArtistInformationResponse,
-} from 'controllers/v2/artists/artists.schema';
-import { and, asc, count, desc, eq, gte, like, sql, SQL } from 'drizzle-orm';
-import { envConfig } from 'env.config';
-import {
-  GetSuggestionsQuery,
-  GetSuggestionsResponse,
-} from 'controllers/v2/suggestions/suggestions.schema';
+} from 'controllers/v2/artists/schemas/artists.types';
 
 export default class DrizzleClient implements IDatabaseClient {
   private client;
@@ -33,7 +29,7 @@ export default class DrizzleClient implements IDatabaseClient {
     this.client = drizzle({
       connection: {
         connectionString: drizzleConfig.DATABASE_CONNECTION_URL,
-        ssl: envConfig.IS_DEVELOPMENT ? false : true,
+        ssl: true,
       },
       schema: { artists, artistsSuggestions, artistsTrends },
     });
@@ -72,18 +68,10 @@ export default class DrizzleClient implements IDatabaseClient {
       filterOptions.push(eq(artists.country, query.country));
     }
     if (query.tags && query.tags.length > 0) {
-      filterOptions.push(
-        and(
-          ...query.tags.map(
-            tag => sql`tags->'items' @> ${JSON.stringify([tag])}`
-          )
-        )!
-      );
+      filterOptions.push(and(...query.tags.map(tag => sql`tags->'items' @> ${JSON.stringify([tag])}`))!);
     }
 
-    const items = await this.client
-      .select({ count: count(artists.id) })
-      .from(artists);
+    const items = await this.client.select({ count: count(artists.id) }).from(artists);
 
     const result = await this.client.query.artists.findMany({
       limit: query.perPage,
@@ -101,10 +89,7 @@ export default class DrizzleClient implements IDatabaseClient {
     };
   }
 
-  async editArtist(
-    id: string,
-    body: EditArtistBody
-  ): Promise<EditArtistResponse | null> {
+  async editArtist(id: string, body: EditArtistBody): Promise<EditArtistResponse | null> {
     const result = await this.client
       .update(artists)
       .set({
@@ -136,15 +121,15 @@ export default class DrizzleClient implements IDatabaseClient {
       .returning();
     return result[0];
   }
-  async createArtist(
-    body: CreateArtistBody
-  ): Promise<CreateArtistResponse | null> {
+
+  async createArtist(body: CreateArtistBody): Promise<CreateArtistResponse | null> {
     const result = await this.client
       .insert(artists)
       .values({
         ...body,
         joinedAt: new Date(),
         updatedAt: new Date(),
+        url: `https://x.com/${body.username}`,
         weeklyTweetsTrend: 0,
         weeklyFollowersTrend: 0,
       })
@@ -157,6 +142,7 @@ export default class DrizzleClient implements IDatabaseClient {
 
     return result[0];
   }
+
   async updateArtistInformationBulk(
     body: UpdateArtistInformationBulkBody
   ): Promise<UpdateArtistInformationBulkResponse> {
@@ -184,9 +170,8 @@ export default class DrizzleClient implements IDatabaseClient {
 
     return { items: processedResults, errors: errorResults };
   }
-  async editArtistBulk(
-    body: EditArtistBulkBody
-  ): Promise<EditArtistBulkResponse> {
+
+  async editArtistBulk(body: EditArtistBulkBody): Promise<EditArtistBulkResponse> {
     const promises = body.map(profile => {
       return this.client
         .update(artists)
@@ -211,13 +196,12 @@ export default class DrizzleClient implements IDatabaseClient {
 
     return { items: processedResults, errors: errorResults };
   }
-  async createArtistBulk(
-    body: CreateArtistBulkBody
-  ): Promise<CreateArtistBulkResponse> {
+
+  async createArtistBulk(body: CreateArtistBulkBody): Promise<CreateArtistBulkResponse> {
     const promises = body.map(profile => {
       return this.client
         .insert(artists)
-        .values({ ...profile })
+        .values({ ...profile, url: `https://x.com/${profile.username}` })
         .returning()._.result[0];
     });
 
@@ -241,9 +225,7 @@ export default class DrizzleClient implements IDatabaseClient {
     return { items: processedResults, errors: errorResults };
   }
 
-  async getSuggestionsPaginated(
-    query: GetSuggestionsQuery
-  ): Promise<GetSuggestionsResponse> {
+  async getSuggestionsPaginated(query: GetSuggestionsQuery): Promise<GetSuggestionsResponse> {
     let filterOptions: SQL[] = [];
     let filterOrderBy: SQL;
 
@@ -263,26 +245,16 @@ export default class DrizzleClient implements IDatabaseClient {
     }
 
     if (query.username) {
-      filterOptions.push(
-        like(artistsSuggestions.username, `%${query.username}%`)
-      );
+      filterOptions.push(like(artistsSuggestions.username, `%${query.username}%`));
     }
     if (query.status) {
       filterOptions.push(eq(artistsSuggestions.status, query.status));
     }
     if (query.tags && query.tags.length > 0) {
-      filterOptions.push(
-        and(
-          ...query.tags.map(
-            tag => sql`tags->'items' @> ${JSON.stringify([tag])}`
-          )
-        )!
-      );
+      filterOptions.push(and(...query.tags.map(tag => sql`tags->'items' @> ${JSON.stringify([tag])}`))!);
     }
 
-    const items = await this.client
-      .select({ count: count(artistsSuggestions.id) })
-      .from(artistsSuggestions);
+    const items = await this.client.select({ count: count(artistsSuggestions.id) }).from(artistsSuggestions);
 
     const result = await this.client.query.artistsSuggestions.findMany({
       limit: query.perPage,

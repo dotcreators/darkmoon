@@ -1,6 +1,6 @@
 import { EmbedBuilder } from '@tycrek/discord-hookr';
 import { Webhook } from '@tycrek/discord-hookr/dist/webhook';
-import { IDiscordWebhook } from './discordWebhook.interface';
+import { IDiscordWebhook } from './discord-webhook.interface';
 import { webhookConfig } from './webhook.config';
 
 export class DiscordWebhook implements IDiscordWebhook {

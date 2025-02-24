@@ -2,7 +2,7 @@ import {
   IDatabaseClient,
   ISuggestionsDatabaseClient,
 } from 'utils/database/databaseClient.interface';
-import DrizzleClient from 'utils/database/drizzle/drizzleClient';
+import DrizzleClient from 'utils/database/drizzle/drizzle-client';
 import {
   GetSuggestionsQuery,
   GetSuggestionsResponse,

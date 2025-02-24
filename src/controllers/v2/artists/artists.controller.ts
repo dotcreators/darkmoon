@@ -1,12 +1,10 @@
 import { Elysia, error, StatusMap, t } from 'elysia';
 
-import { ErrorResponseModel } from '../error.schema';
-import {
-  ArtistsReponseModel,
-  ArtistsQueryModel,
-  ArtistsBodyModel,
-} from './artists.schema';
+import { ErrorResponseModel } from '../schemas/error.schema';
 import ArtistsService from './artists.service';
+import { ArtistsQueryModel } from './schemas/artists.query';
+import { ArtistsReponseModel } from './schemas/artists.response';
+import { ArtistsBodyModel } from './schemas/artists.body';
 
 const artistsService = new ArtistsService();
 
@@ -24,8 +22,7 @@ const artistsRoutes = new Elysia({
           status: StatusMap['Bad Request'],
           response: {
             error: 'Query error',
-            message:
-              'Maximum artists query must be greater than 0 and limited by 100',
+            message: 'Maximum artists query must be greater than 0 and limited by 100',
           },
         });
       } else if (query.page < 0) {
@@ -128,8 +125,7 @@ const artistsRoutes = new Elysia({
               status: StatusMap['Bad Request'],
               response: {
                 error: 'Artist error',
-                message:
-                  'Artist with provided twitterUserId is alredy existing',
+                message: 'Artist with provided twitterUserId is alredy existing',
               },
             });
           }
@@ -161,10 +157,7 @@ const artistsRoutes = new Elysia({
             });
           }
 
-          const result = await artistsService.updateArtistInformation(
-            params.id,
-            body
-          );
+          const result = await artistsService.updateArtistInformation(params.id, body);
 
           if (!result) {
             return error(404, {
@@ -209,8 +202,7 @@ const artistsRoutes = new Elysia({
               status: StatusMap['Bad Request'],
               response: {
                 error: 'Artist error',
-                message:
-                  'Artist with provided twitterUserId is alredy existing',
+                message: 'Artist with provided twitterUserId is alredy existing',
               },
             });
           }

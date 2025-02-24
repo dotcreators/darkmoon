@@ -37,13 +37,13 @@ export const artists = pgTable('artists', {
   country: text('country'),
   website: text('website'),
   bio: text('bio'),
-  createdAt: timestamp('createdAt', { withTimezone: true })
+  createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
     .defaultNow(),
-  joinedAt: timestamp('joinedAt', { withTimezone: true })
+  joinedAt: timestamp('joined_at', { withTimezone: true })
     .notNull()
     .defaultNow(),
-  updatedAt: timestamp('updatedAt', { withTimezone: true })
+  updatedAt: timestamp('updated_at', { withTimezone: true })
     .notNull()
     .defaultNow(),
 });

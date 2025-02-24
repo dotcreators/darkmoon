@@ -1,5 +1,5 @@
 import { Static, t } from 'elysia';
-import { ArtistSuggestionModel } from '../shared.schema';
+import { ArtistSuggestionModel } from '../schemas/shared.schema';
 
 export const SuggestionsQueryModel = {
   GetSuggestions: t.Object({

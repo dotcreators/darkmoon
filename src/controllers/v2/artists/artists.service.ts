@@ -1,3 +1,5 @@
+import { IArtistsDatabaseClient } from 'utils/database/database-client.interface';
+import DrizzleClient from 'utils/database/drizzle/drizzle-client';
 import {
   CreateArtistBody,
   CreateArtistBulkBody,
@@ -14,9 +16,7 @@ import {
   UpdateArtistInformationBulkBody,
   UpdateArtistInformationBulkResponse,
   UpdateArtistInformationResponse,
-} from './artists.schema';
-import { IArtistsDatabaseClient } from 'utils/database/databaseClient.interface';
-import DrizzleClient from 'utils/database/drizzle/drizzleClient';
+} from './schemas/artists.types';
 
 export default class ArtistsService {
   private databaseProvider: IArtistsDatabaseClient;
@@ -29,10 +29,7 @@ export default class ArtistsService {
     return await this.databaseProvider.getArtistPaginated(query);
   }
 
-  async editArtist(
-    id: string,
-    body: EditArtistBody
-  ): Promise<EditArtistResponse | null> {
+  async editArtist(id: string, body: EditArtistBody): Promise<EditArtistResponse | null> {
     return await this.databaseProvider.editArtist(id, body);
   }
 
@@ -47,9 +44,7 @@ export default class ArtistsService {
     return await this.databaseProvider.updateArtistInformation(id, body);
   }
 
-  async createArtist(
-    body: CreateArtistBody
-  ): Promise<CreateArtistResponse | null> {
+  async createArtist(body: CreateArtistBody): Promise<CreateArtistResponse | null> {
     return await this.databaseProvider.createArtist(body);
   }
 
@@ -59,15 +54,11 @@ export default class ArtistsService {
     return await this.databaseProvider.updateArtistInformationBulk(body);
   }
 
-  async createArtistBulk(
-    body: CreateArtistBulkBody
-  ): Promise<CreateArtistBulkResponse> {
+  async createArtistBulk(body: CreateArtistBulkBody): Promise<CreateArtistBulkResponse> {
     return await this.databaseProvider.createArtistBulk(body);
   }
 
-  async editArtistBulk(
-    body: EditArtistBulkBody
-  ): Promise<EditArtistBulkResponse> {
+  async editArtistBulk(body: EditArtistBulkBody): Promise<EditArtistBulkResponse> {
     return await this.databaseProvider.editArtistBulk(body);
   }
 }
