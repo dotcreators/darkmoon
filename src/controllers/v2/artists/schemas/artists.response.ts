@@ -1,7 +1,4 @@
-import {
-  ArtistProfileModel,
-  ResponseModel,
-} from 'controllers/v2/schemas/shared.schema';
+import { ArtistProfileModel, ResponseModel } from 'controllers/v2/schemas/shared.schema';
 import { t } from 'elysia';
 
 export const ArtistsReponseModel = {

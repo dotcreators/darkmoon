@@ -29,7 +29,7 @@ export default class DrizzleClient implements IDatabaseClient {
     this.client = drizzle({
       connection: {
         connectionString: drizzleConfig.DATABASE_CONNECTION_URL,
-        ssl: true,
+        ssl: false,
       },
       schema: { artists, artistsSuggestions, artistsTrends },
     });

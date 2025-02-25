@@ -1,10 +1,6 @@
-import { Static, t } from 'elysia';
+import { t } from 'elysia';
 
-export const TagsModel = t.Nullable(
-  t.Object({
-    items: t.Array(t.String(), { minItems: 0 }),
-  })
-);
+export const TagsModel = t.Array(t.String(), { minItems: 1 });
 
 export const ImagesModel = t.Object({
   avatar: t.String(),
