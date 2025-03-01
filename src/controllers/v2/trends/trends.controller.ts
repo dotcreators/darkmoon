@@ -35,7 +35,6 @@ const trendsRoutes = new Elysia({
     return await trendsService.getTrendsPaginated(query);
   },
   {
-    transform({ query }) {},
     query: TrendsQueryModel.GetTrend,
     response: {
       200: TrendsResponseModel.GetTrend,

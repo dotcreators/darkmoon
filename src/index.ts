@@ -13,8 +13,7 @@ export const app = new Elysia()
         info: {
           title: 'Dotcreators API Documentation',
           description:
-            'Dotcreators is service which allow users discover new creators, track growing trend and share talented pixel-related artists with others.\n\n' +
-            'Search in left menu specified endpoint to continue or just scroll down.',
+            'Dotcreators is service which allow users discover new creators, track growing trend and share talented pixel-related artists with others.',
           contact: {
             email: 'hi@anivire.xyz',
             url: 'https://github.com/dotcreators',
@@ -48,18 +47,14 @@ export const app = new Elysia()
   .get('/', ({ redirect }) => {
     return redirect('/welcome');
   })
-  .get(
-    '/welcome',
-    () => {
-      return {
-        message: 'Welcome to dotcreators API service',
-        name: 'dotcreators-darkmoon',
-        version: 'v2.0.0',
-        docs: '/docs',
-      };
-    },
-    {}
-  )
+  .get('/welcome', () => {
+    return {
+      message: 'Welcome to dotcreators API service',
+      name: 'dotcreators-darkmoon',
+      version: 'v2.0.0',
+      docs: '/docs',
+    };
+  })
   .use(API_ENDPOINTS_V2);
 
 if (!envConfig.IS_DEVELOPMENT) {
