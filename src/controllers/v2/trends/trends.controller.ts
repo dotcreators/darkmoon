@@ -1,25 +1,25 @@
 import Elysia, { error, StatusMap } from 'elysia';
+import TrendsService from './trends.service';
+import { TrendsQueryModel } from './schemas/trends.query';
 import { ErrorResponseModel } from '../schemas/error.schema';
-import SuggestionsService from './suggestions.service';
-import { SuggestionsQueryModel } from './schemas/suggestions.query';
-import { SuggestionsResponseModel } from './schemas/suggestions.response';
+import { TrendsResponseModel } from './schemas/trends.response';
 
-const suggestionsService = new SuggestionsService();
+const trendsService = new TrendsService();
 
-const suggestionsRoutes = new Elysia({
-  prefix: '/suggestions',
+const trendsRoutes = new Elysia({
+  prefix: '/trends',
   detail: {
     tags: ['v2'],
   },
 }).get(
   '/search',
   async ({ query }) => {
-    if (query.perPage > 100 || query.perPage < 0) {
+    if (query.perPage > 372 || query.perPage < 0) {
       return error(400, {
         status: StatusMap['Bad Request'],
         response: {
           error: 'Query error',
-          message: 'Maximum suggestions query must be greater than 0 and limited by 100',
+          message: 'Maximum artist trends query must be greater than 0 and limited by 372',
         },
       });
     } else if (query.page < 0) {
@@ -32,16 +32,17 @@ const suggestionsRoutes = new Elysia({
       });
     }
 
-    return await suggestionsService.getSuggestionsPaginated(query);
+    return await trendsService.getTrendsPaginated(query);
   },
   {
-    query: SuggestionsQueryModel.GetSuggestions,
+    transform({ query }) {},
+    query: TrendsQueryModel.GetTrend,
     response: {
-      200: SuggestionsResponseModel.GetSuggestions,
+      200: TrendsResponseModel.GetTrend,
       400: ErrorResponseModel.BadRequest,
       500: ErrorResponseModel.InternalServerError,
     },
   }
 );
 
-export default suggestionsRoutes;
+export default trendsRoutes;

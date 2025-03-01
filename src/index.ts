@@ -2,11 +2,9 @@ import { envConfig } from './env.config';
 import cookie from '@elysiajs/cookie';
 import cors from '@elysiajs/cors';
 import swagger from '@elysiajs/swagger';
-import { API_ENDPOINTS_V1 } from 'controllers/v1';
 import { API_ENDPOINTS_V2 } from 'controllers/v2';
 import { Elysia } from 'elysia';
 import { rateLimit } from 'elysia-rate-limit';
-import { drizzleConfig } from 'utils/database/drizzle/drizzle.config';
 
 export const app = new Elysia()
   .use(
@@ -75,6 +73,5 @@ if (!envConfig.IS_DEVELOPMENT) {
 
 app.listen(8989);
 
-console.log(`🚀 Dotcreators API service is running.`);
-console.log('IS_DEVELOPMENT:', envConfig.IS_DEVELOPMENT);
-console.log('DATABASE_CONNECTION_URL:', drizzleConfig.DATABASE_CONNECTION_URL);
+console.log(`Dotcreators API service is running`);
+console.log('Dotcreators API working in development mode:', envConfig.IS_DEVELOPMENT);

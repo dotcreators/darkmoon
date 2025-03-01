@@ -1,12 +1,6 @@
-import {
-  IDatabaseClient,
-  ISuggestionsDatabaseClient,
-} from 'utils/database/databaseClient.interface';
+import { ISuggestionsDatabaseClient } from 'utils/database/database-client.interface';
 import DrizzleClient from 'utils/database/drizzle/drizzle-client';
-import {
-  GetSuggestionsQuery,
-  GetSuggestionsResponse,
-} from './suggestions.schema';
+import { GetSuggestionsQuery, GetSuggestionsResponse } from './schemas/suggestions.types';
 
 export default class SuggestionsService {
   private client: ISuggestionsDatabaseClient;
@@ -15,9 +9,7 @@ export default class SuggestionsService {
     this.client = new DrizzleClient();
   }
 
-  async getSuggestionsPaginated(
-    query: GetSuggestionsQuery
-  ): Promise<GetSuggestionsResponse> {
-    return {} as GetSuggestionsResponse;
+  async getSuggestionsPaginated(query: GetSuggestionsQuery): Promise<GetSuggestionsResponse> {
+    return await this.client.getSuggestionsPaginated(query);
   }
 }

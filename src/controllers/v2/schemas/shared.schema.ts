@@ -17,30 +17,25 @@ export const ResponseModel = t.Object({
   ),
 });
 
-export const ArtistProfileModel = t.Object(
-  {
-    id: t.String(),
-    twitterUserId: t.String(),
-    username: t.String(),
-    name: t.Nullable(t.String()),
-    tweetsCount: t.Number(),
-    followersCount: t.Number(),
-    weeklyTweetsTrend: t.Number(),
-    weeklyFollowersTrend: t.Number(),
-    images: ImagesModel,
-    tags: TagsModel,
-    url: t.String(),
-    country: t.Nullable(t.String()),
-    website: t.Nullable(t.String()),
-    bio: t.Nullable(t.String()),
-    createdAt: t.Date({ format: 'date-time' }),
-    joinedAt: t.Date({ format: 'date-time' }),
-    updatedAt: t.Date({ format: 'date-time' }),
-  },
-  {
-    description: 'Returns artist profile',
-  }
-);
+export const ArtistProfileModel = t.Object({
+  id: t.String(),
+  twitterUserId: t.String(),
+  username: t.String(),
+  name: t.Nullable(t.String()),
+  tweetsCount: t.Number(),
+  followersCount: t.Number(),
+  weeklyTweetsTrend: t.Number(),
+  weeklyFollowersTrend: t.Number(),
+  images: ImagesModel,
+  tags: TagsModel,
+  url: t.String(),
+  country: t.Nullable(t.String()),
+  website: t.Nullable(t.String()),
+  bio: t.Nullable(t.String()),
+  createdAt: t.Date({ format: 'date-time' }),
+  joinedAt: t.Date({ format: 'date-time' }),
+  updatedAt: t.Date({ format: 'date-time' }),
+});
 
 export const ArtistSuggestionModel = t.Object({
   id: t.String(),
@@ -52,4 +47,12 @@ export const ArtistSuggestionModel = t.Object({
   country: t.Nullable(t.String()),
   createdAt: t.Date({ format: 'date-time' }),
   updatedAt: t.Date({ format: 'date-time' }),
+});
+
+export const ArtistTrendModel = t.Object({
+  id: t.String(),
+  twitterUserId: t.String(),
+  tweetsCount: t.Number(),
+  followersCount: t.Number(),
+  createdAt: t.Date({ format: 'date-time' }),
 });

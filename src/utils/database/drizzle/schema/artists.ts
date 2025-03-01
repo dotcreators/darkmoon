@@ -47,7 +47,9 @@ export const artistsSuggestions = pgTable('artistsSuggestions', {
 
 export const artistsTrends = pgTable('artistsTrends', {
   id: uuid('id').primaryKey().defaultRandom(),
-  artistId: text('artist_id').references(() => artists.twitterUserId),
+  twitterUserId: text('artist_id')
+    .references(() => artists.twitterUserId)
+    .notNull(),
   tweetsCount: integer('tweets_count').notNull(),
   followersCount: integer('followers_count').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),

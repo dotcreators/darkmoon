@@ -15,9 +15,10 @@ import {
   UpdateArtistInformationBulkResponse,
   UpdateArtistInformationResponse,
 } from 'controllers/v2/artists/schemas/artists.types';
-import { GetSuggestionsQuery, GetSuggestionsResponse } from 'controllers/v2/suggestions/suggestions.schema';
+import { GetSuggestionsQuery, GetSuggestionsResponse } from 'controllers/v2/suggestions/schemas/suggestions.types';
+import { GetTrendQuery, GetTrendsResponse } from 'controllers/v2/trends/schemas/trends.types';
 
-export interface IDatabaseClient extends IArtistsDatabaseClient, ISuggestionsDatabaseClient {}
+export interface IDatabaseClient extends IArtistsDatabaseClient, ISuggestionsDatabaseClient, ITrendsDatabaseClient {}
 
 export interface IArtistsDatabaseClient {
   getArtistPaginated(query: GetArtistQuery): Promise<GetArtistResponse>;
@@ -32,4 +33,8 @@ export interface IArtistsDatabaseClient {
 
 export interface ISuggestionsDatabaseClient {
   getSuggestionsPaginated(query: GetSuggestionsQuery): Promise<GetSuggestionsResponse>;
+}
+
+export interface ITrendsDatabaseClient {
+  getTrendsPaginated(query: GetTrendQuery): Promise<GetTrendsResponse>;
 }

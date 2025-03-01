@@ -3,7 +3,6 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { drizzleConfig } from './drizzle.config';
 import { IDatabaseClient } from '../database-client.interface';
 import { and, asc, count, desc, eq, gte, like, sql, SQL } from 'drizzle-orm';
-import { GetSuggestionsQuery, GetSuggestionsResponse } from 'controllers/v2/suggestions/suggestions.schema';
 import {
   CreateArtistBody,
   CreateArtistBulkBody,
@@ -21,6 +20,8 @@ import {
   UpdateArtistInformationBulkResponse,
   UpdateArtistInformationResponse,
 } from 'controllers/v2/artists/schemas/artists.types';
+import { GetSuggestionsQuery, GetSuggestionsResponse } from 'controllers/v2/suggestions/schemas/suggestions.types';
+import { GetTrendQuery, GetTrendsResponse } from 'controllers/v2/trends/schemas/trends.types';
 
 export default class DrizzleClient implements IDatabaseClient {
   private client;
@@ -29,7 +30,6 @@ export default class DrizzleClient implements IDatabaseClient {
     this.client = drizzle({
       connection: {
         connectionString: drizzleConfig.DATABASE_CONNECTION_URL,
-        ssl: false,
       },
       schema: { artists, artistsSuggestions, artistsTrends },
     });
@@ -83,8 +83,8 @@ export default class DrizzleClient implements IDatabaseClient {
     return {
       page: query.page,
       perPage: query.perPage,
-      totalPages: Math.ceil(items.length / query.perPage),
       totalItems: result.length,
+      totalPages: Math.ceil(items.length / query.perPage),
       items: result,
     };
   }
@@ -268,6 +268,28 @@ export default class DrizzleClient implements IDatabaseClient {
       perPage: query.perPage,
       totalPages: Math.ceil(items.length / query.perPage),
       totalItems: result.length,
+      items: result,
+    };
+  }
+
+  async getTrendsPaginated(query: GetTrendQuery): Promise<GetTrendsResponse> {
+    const items = await this.client
+      .select({ count: count(artistsTrends.id) })
+      .from(artistsTrends)
+      .where(eq(artistsTrends.twitterUserId, query.twitterUserId));
+
+    const result = await this.client.query.artistsTrends.findMany({
+      limit: query.perPage,
+      offset: (query.page - 1) * query.perPage,
+      where: eq(artistsTrends.twitterUserId, query.twitterUserId),
+      orderBy: desc(artistsTrends.createdAt),
+    });
+
+    return {
+      page: query.page,
+      perPage: query.perPage,
+      totalItems: items.length,
+      totalPages: Math.ceil(items.length / query.perPage),
       items: result,
     };
   }
