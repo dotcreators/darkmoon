@@ -71,7 +71,9 @@ export default class DrizzleClient implements IDatabaseClient {
       filterOptions.push(and(...query.tags.map(tag => sql`tags->'items' @> ${JSON.stringify([tag])}`))!);
     }
 
-    const items = await this.client.select({ count: count(artists.id) }).from(artists);
+    const countResult = await this.client.select({ count: count() }).from(artists).execute();
+
+    const totalItems = countResult[0]?.count || 0;
 
     const result = await this.client.query.artists.findMany({
       limit: query.perPage,
@@ -83,8 +85,8 @@ export default class DrizzleClient implements IDatabaseClient {
     return {
       page: query.page,
       perPage: query.perPage,
-      totalItems: result.length,
-      totalPages: Math.ceil(items.length / query.perPage),
+      totalItems: totalItems,
+      totalPages: Math.ceil(totalItems / query.perPage),
       items: result,
     };
   }
@@ -254,7 +256,9 @@ export default class DrizzleClient implements IDatabaseClient {
       filterOptions.push(and(...query.tags.map(tag => sql`tags->'items' @> ${JSON.stringify([tag])}`))!);
     }
 
-    const items = await this.client.select({ count: count(artistsSuggestions.id) }).from(artistsSuggestions);
+    const countResult = await this.client.select({ count: count() }).from(artistsSuggestions).execute();
+
+    const totalItems = countResult[0]?.count || 0;
 
     const result = await this.client.query.artistsSuggestions.findMany({
       limit: query.perPage,
@@ -266,17 +270,20 @@ export default class DrizzleClient implements IDatabaseClient {
     return {
       page: query.page,
       perPage: query.perPage,
-      totalPages: Math.ceil(items.length / query.perPage),
-      totalItems: result.length,
+      totalItems: totalItems,
+      totalPages: Math.ceil(totalItems / query.perPage),
       items: result,
     };
   }
 
   async getTrendsPaginated(query: GetTrendQuery): Promise<GetTrendsResponse> {
-    const items = await this.client
-      .select({ count: count(artistsTrends.id) })
+    const countResult = await this.client
+      .select({ count: count() })
       .from(artistsTrends)
-      .where(eq(artistsTrends.twitterUserId, query.twitterUserId));
+      .where(eq(artistsTrends.twitterUserId, query.twitterUserId))
+      .execute();
+
+    const totalItems = countResult[0]?.count || 0;
 
     const result = await this.client.query.artistsTrends.findMany({
       limit: query.perPage,
@@ -288,8 +295,8 @@ export default class DrizzleClient implements IDatabaseClient {
     return {
       page: query.page,
       perPage: query.perPage,
-      totalItems: items.length,
-      totalPages: Math.ceil(items.length / query.perPage),
+      totalItems: totalItems,
+      totalPages: Math.ceil(totalItems / query.perPage),
       items: result,
     };
   }
