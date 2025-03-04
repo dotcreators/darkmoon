@@ -41,11 +41,7 @@ export class DiscordWebhook implements IDiscordWebhook {
    * @param message The content of the message
    */
   public sendLogMessage(title: string, message: string): void {
-    const embed = new EmbedBuilder()
-      .setColor('#FF902B')
-      .setTitle(title)
-      .setDescription(message)
-      .setTimestamp();
+    const embed = new EmbedBuilder().setColor('#FF902B').setTitle(title).setDescription(message).setTimestamp();
 
     this.logHook.addEmbed(embed);
     this.logHook.send().catch(e => {
@@ -69,17 +65,11 @@ export class DiscordWebhook implements IDiscordWebhook {
     const embed = new EmbedBuilder()
       .setColor('#FF902B')
       .setTitle(username)
-      .setURL(
-        'https://dashboard.dotcreators.xyz/dashboard/suggestions?page=1&limit=50&requestStatus=suggested'
-      )
+      .setURL('https://dashboard.dotcreators.xyz/dashboard/suggestions?page=1&perPage=50&requestStatus=suggested')
       .setThumbnail({ url: avatarUrl })
       .addField({
         name: 'Tags',
-        value: tags
-          ? tags
-              .map(tag => tag.charAt(0).toUpperCase() + tag.slice(1))
-              .join(', ')
-          : 'Tags not provided',
+        value: tags ? tags.map(tag => tag.charAt(0).toUpperCase() + tag.slice(1)).join(', ') : 'Tags not provided',
         inline: true,
       })
       .addField({

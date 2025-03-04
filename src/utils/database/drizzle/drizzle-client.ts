@@ -281,6 +281,7 @@ export default class DrizzleClient implements IDatabaseClient {
       .select({ count: count() })
       .from(artistsTrends)
       .where(eq(artistsTrends.twitterUserId, query.twitterUserId))
+      .orderBy(desc(artistsTrends.createdAt))
       .execute();
 
     const totalItems = countResult[0]?.count || 0;
@@ -289,7 +290,6 @@ export default class DrizzleClient implements IDatabaseClient {
       limit: query.perPage,
       offset: (query.page - 1) * query.perPage,
       where: eq(artistsTrends.twitterUserId, query.twitterUserId),
-      orderBy: desc(artistsTrends.createdAt),
     });
 
     return {

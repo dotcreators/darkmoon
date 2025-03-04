@@ -37,7 +37,7 @@ export const app = new Elysia()
   )
   .use(
     cors({
-      origin: !envConfig.IS_DEVELOPMENT ? /(.*\.)?dotcreators\.xyz$/ : true,
+      origin: true,
       methods: ['GET', 'POST', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
