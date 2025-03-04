@@ -2,7 +2,7 @@ import { artists, artistsSuggestions, artistsTrends } from './schema/artists';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { drizzleConfig } from './drizzle.config';
 import { IDatabaseClient } from '../database-client.interface';
-import { and, asc, count, desc, eq, gte, like, sql, SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, like, max, min, sql, SQL } from 'drizzle-orm';
 import {
   CreateArtistBody,
   CreateArtistBulkBody,
@@ -281,16 +281,18 @@ export default class DrizzleClient implements IDatabaseClient {
       .select({ count: count() })
       .from(artistsTrends)
       .where(eq(artistsTrends.twitterUserId, query.twitterUserId))
-      .orderBy(desc(artistsTrends.createdAt))
       .execute();
 
     const totalItems = countResult[0]?.count || 0;
 
-    const result = await this.client.query.artistsTrends.findMany({
-      limit: query.perPage,
-      offset: (query.page - 1) * query.perPage,
-      where: eq(artistsTrends.twitterUserId, query.twitterUserId),
-    });
+    const result = await this.client
+      .select()
+      .from(artistsTrends)
+      .where(eq(artistsTrends.twitterUserId, query.twitterUserId))
+      .orderBy(desc(artistsTrends.createdAt))
+      .limit(query.perPage)
+      .offset((query.page - 1) * query.perPage)
+      .execute();
 
     return {
       page: query.page,
