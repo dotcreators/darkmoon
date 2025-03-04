@@ -299,7 +299,7 @@ export default class DrizzleClient implements IDatabaseClient {
       perPage: query.perPage,
       totalItems: totalItems,
       totalPages: Math.ceil(totalItems / query.perPage),
-      items: result,
+      items: result.reverse(),
     };
   }
 }
