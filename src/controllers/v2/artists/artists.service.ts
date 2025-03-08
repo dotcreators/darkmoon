@@ -12,6 +12,7 @@ import {
   GetArtistQuery,
   GetArtistRandomResponse,
   GetArtistResponse,
+  GetArtistWithTrendsResponse,
   UpdateArtistInformationBody,
   UpdateArtistInformationBulkBody,
   UpdateArtistInformationBulkResponse,
@@ -27,6 +28,10 @@ export default class ArtistsService {
 
   async getArtistsPaginated(query: GetArtistQuery): Promise<GetArtistResponse> {
     return await this.databaseProvider.getArtistPaginated(query);
+  }
+
+  async getArtistsWithTrendsPaginated(query: GetArtistQuery): Promise<GetArtistWithTrendsResponse> {
+    return await this.databaseProvider.getArtistWithTrendsPaginated(query);
   }
 
   async editArtist(id: string, body: EditArtistBody): Promise<EditArtistResponse | null> {

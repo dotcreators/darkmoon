@@ -15,6 +15,7 @@ import {
   GetArtistQuery,
   GetArtistRandomResponse,
   GetArtistResponse,
+  GetArtistWithTrendsResponse,
   UpdateArtistInformationBody,
   UpdateArtistInformationBulkBody,
   UpdateArtistInformationBulkResponse,
@@ -81,6 +82,112 @@ export default class DrizzleClient implements IDatabaseClient {
       orderBy: filterOrderBy,
       where: filterOptions.length > 0 ? and(...filterOptions) : undefined,
     });
+
+    return {
+      page: query.page,
+      perPage: query.perPage,
+      totalItems: totalItems,
+      totalPages: Math.ceil(totalItems / query.perPage),
+      items: result,
+    };
+  }
+
+  async getArtistWithTrendsPaginated(query: GetArtistQuery): Promise<GetArtistWithTrendsResponse> {
+    let filterOptions: SQL[] = [];
+    let filterOrderBy: SQL;
+
+    switch (query.sortBy) {
+      case 'username':
+        filterOrderBy = asc(artists.username);
+        break;
+      case 'followers':
+        filterOrderBy = desc(artists.followersCount);
+        break;
+      case 'posts':
+        filterOrderBy = desc(artists.tweetsCount);
+        break;
+      case 'new':
+        filterOrderBy = desc(artists.createdAt);
+        break;
+      case 'trending':
+        filterOptions.push(gte(artists.followersCount, 300));
+        filterOrderBy = desc(artists.weeklyFollowersTrend);
+        break;
+      default:
+        filterOrderBy = asc(artists.followersCount);
+        break;
+    }
+
+    if (query.username) {
+      filterOptions.push(like(artists.username, `%${query.username}%`));
+    }
+    if (query.country) {
+      filterOptions.push(eq(artists.country, query.country));
+    }
+    if (query.tags && query.tags.length > 0) {
+      filterOptions.push(and(...query.tags.map(tag => sql`tags->'items' @> ${JSON.stringify([tag])}`))!);
+    }
+
+    const countResult = await this.client
+      .select({ count: count() })
+      .from(artists)
+      .where(filterOptions.length > 0 ? and(...filterOptions) : undefined)
+      .execute();
+
+    const totalItems = countResult[0]?.count || 0;
+
+    const artistsResult = await this.client
+      .select()
+      .from(artists)
+      .where(filterOptions.length > 0 ? and(...filterOptions) : undefined)
+      .orderBy(filterOrderBy)
+      .limit(query.perPage)
+      .offset((query.page - 1) * query.perPage)
+      .execute();
+
+    const artistIds = artistsResult.map(artist => artist.twitterUserId);
+
+    const trendsResult = await this.client
+      .select({
+        id: artistsTrends.id,
+        twitterUserId: artistsTrends.twitterUserId,
+        tweetsCount: artistsTrends.tweetsCount,
+        followersCount: artistsTrends.followersCount,
+        createdAt: artistsTrends.createdAt,
+        rowNumber:
+          sql<number>`ROW_NUMBER() OVER (PARTITION BY ${artistsTrends.twitterUserId} ORDER BY ${artistsTrends.createdAt} DESC)`.as(
+            'row_number'
+          ),
+      })
+      .from(artistsTrends)
+      .where(sql`${artistsTrends.twitterUserId} IN (${sql.join(artistIds, sql`, `)})`)
+      .execute();
+
+    const filteredTrends = trendsResult
+      .filter(trend => trend.rowNumber <= 7)
+      .map(trend => ({
+        id: trend.id,
+        twitterUserId: trend.twitterUserId,
+        tweetsCount: trend.tweetsCount,
+        followersCount: trend.followersCount,
+        createdAt: trend.createdAt,
+      }));
+
+    const trendsByArtist = filteredTrends.reduce(
+      (acc, trend) => {
+        if (!acc[trend.twitterUserId]) {
+          acc[trend.twitterUserId] = [];
+        }
+        acc[trend.twitterUserId].push(trend);
+        return acc;
+      },
+      {} as Record<string, typeof filteredTrends>
+    );
+
+    const result = artistsResult.map(artist => ({
+      artist,
+      trends: trendsByArtist[artist.twitterUserId] || [],
+    }));
 
     return {
       page: query.page,

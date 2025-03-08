@@ -5,6 +5,7 @@ import { ArtistsBodyModel } from './artists.body';
 
 export type GetArtistQuery = Static<typeof ArtistsQueryModel.GetArtist>;
 export type GetArtistResponse = Static<typeof ArtistsReponseModel.GetArtist>;
+export type GetArtistWithTrendsResponse = Static<typeof ArtistsReponseModel.GetArtistWithTrends>;
 export type GetArtistRandomResponse = Static<typeof ArtistsReponseModel.GetRandomArtist>;
 export type EditArtistBody = Static<typeof ArtistsBodyModel.EditArtist>;
 export type EditArtistResponse = Static<typeof ArtistsReponseModel.EditArtist>;

@@ -10,6 +10,7 @@ import {
   GetArtistQuery,
   GetArtistRandomResponse,
   GetArtistResponse,
+  GetArtistWithTrendsResponse,
   UpdateArtistInformationBody,
   UpdateArtistInformationBulkBody,
   UpdateArtistInformationBulkResponse,
@@ -22,6 +23,7 @@ export interface IDatabaseClient extends IArtistsDatabaseClient, ISuggestionsDat
 
 export interface IArtistsDatabaseClient {
   getArtistPaginated(query: GetArtistQuery): Promise<GetArtistResponse>;
+  getArtistWithTrendsPaginated(query: GetArtistQuery): Promise<GetArtistWithTrendsResponse>;
   createArtist(body: CreateArtistBody): Promise<CreateArtistResponse | null>;
   updateArtistInformation(id: string, body: UpdateArtistInformationBody): Promise<UpdateArtistInformationResponse>;
   editArtist(id: string, body: EditArtistBody): Promise<EditArtistResponse | null>;
