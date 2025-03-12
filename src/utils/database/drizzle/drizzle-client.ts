@@ -2,7 +2,7 @@ import { artists, artistsSuggestions, artistsTrends } from './schema/artists';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { drizzleConfig } from './drizzle.config';
 import { IDatabaseClient } from '../database-client.interface';
-import { and, asc, count, desc, eq, gte, like, max, min, sql, SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, isNotNull, like, max, min, sql, SQL } from 'drizzle-orm';
 import {
   CreateArtistBody,
   CreateArtistBulkBody,
@@ -55,6 +55,7 @@ export default class DrizzleClient implements IDatabaseClient {
         break;
       case 'trending':
         filterOptions.push(gte(artists.followersCount, 300));
+        filterOptions.push(isNotNull(artists.weeklyFollowersTrend));
         filterOrderBy = desc(artists.weeklyFollowersTrend);
         break;
       default:
