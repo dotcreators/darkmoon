@@ -2,7 +2,7 @@ import { artists, artistsSuggestions, artistsTrends } from './schema/artists';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { drizzleConfig } from './drizzle.config';
 import { IDatabaseClient } from '../database-client.interface';
-import { and, asc, count, desc, eq, gte, isNotNull, like, max, min, sql, SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, isNotNull, like, ne, sql, SQL } from 'drizzle-orm';
 import {
   CreateArtistBody,
   CreateArtistBulkBody,
@@ -73,6 +73,8 @@ export default class DrizzleClient implements IDatabaseClient {
       filterOptions.push(and(...query.tags.map(tag => sql`tags->'items' @> ${JSON.stringify([tag])}`))!);
     }
 
+    filterOptions.push(ne(artists.isEnabled, false));
+
     const countResult = await this.client.select({ count: count() }).from(artists).execute();
 
     const totalItems = countResult[0]?.count || 0;
@@ -128,6 +130,8 @@ export default class DrizzleClient implements IDatabaseClient {
     if (query.tags && query.tags.length > 0) {
       filterOptions.push(and(...query.tags.map(tag => sql`tags->'items' @> ${JSON.stringify([tag])}`))!);
     }
+
+    filterOptions.push(ne(artists.isEnabled, false));
 
     const countResult = await this.client
       .select({ count: count() })
@@ -216,6 +220,7 @@ export default class DrizzleClient implements IDatabaseClient {
       .select()
       .from(artists)
       .orderBy(sql`RANDOM()`)
+      .where(and(ne(artists.isEnabled, false), gte(artists.followersCount, 300)))
       .limit(1);
     return result[0];
   }

@@ -1,4 +1,4 @@
-import { integer, pgTable, real, text, timestamp, uuid, varchar, customType } from 'drizzle-orm/pg-core';
+import { integer, pgTable, real, text, timestamp, uuid, varchar, customType, boolean } from 'drizzle-orm/pg-core';
 
 type Tags = { items: string[] };
 type Images = { avatar: string; banner?: string };
@@ -28,6 +28,8 @@ export const artists = pgTable('artists', {
   country: text('country'),
   website: text('website'),
   bio: text('bio'),
+  isEnabled: boolean('is_enabled').notNull().default(true),
+  ranking: integer('ranking').notNull().default(0),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   joinedAt: timestamp('joined_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
