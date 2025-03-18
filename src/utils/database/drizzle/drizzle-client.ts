@@ -75,7 +75,11 @@ export default class DrizzleClient implements IDatabaseClient {
 
     filterOptions.push(ne(artists.isEnabled, false));
 
-    const countResult = await this.client.select({ count: count() }).from(artists).execute();
+    const countResult = await this.client
+      .select({ count: count() })
+      .from(artists)
+      .where(ne(artists.isEnabled, false))
+      .execute();
 
     const totalItems = countResult[0]?.count || 0;
 
