@@ -47,7 +47,7 @@ export default class DrizzleClient implements IDatabaseClient {
       case 'followers':
         filterOrderBy = desc(artists.followersCount);
         break;
-      case 'posts':
+      case 'tweets':
         filterOrderBy = desc(artists.tweetsCount);
         break;
       case 'new':
