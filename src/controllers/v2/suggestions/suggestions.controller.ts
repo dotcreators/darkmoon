@@ -9,7 +9,7 @@ const suggestionsService = new SuggestionsService();
 const suggestionsRoutes = new Elysia({
   prefix: '/suggestions',
   detail: {
-    tags: ['v2'],
+    tags: ['Suggestions'],
   },
 }).get(
   '/search',
@@ -40,6 +40,9 @@ const suggestionsRoutes = new Elysia({
       200: SuggestionsResponseModel.GetSuggestions,
       400: ErrorResponseModel.BadRequest,
       500: ErrorResponseModel.InternalServerError,
+    },
+    detail: {
+      summary: 'Search artist suggestions',
     },
   }
 );

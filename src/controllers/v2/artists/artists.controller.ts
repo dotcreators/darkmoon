@@ -11,7 +11,7 @@ const artistsService = new ArtistsService();
 const artistsRoutes = new Elysia({
   prefix: '/artists',
   detail: {
-    tags: ['v2'],
+    tags: ['Artists'],
   },
 })
   .get(
@@ -49,6 +49,9 @@ const artistsRoutes = new Elysia({
         400: ErrorResponseModel.BadRequest,
         500: ErrorResponseModel.InternalServerError,
       },
+      detail: {
+        summary: 'Search artists',
+      },
     }
   )
   .get(
@@ -85,6 +88,9 @@ const artistsRoutes = new Elysia({
         200: ArtistsReponseModel.GetArtistWithTrends,
         400: ErrorResponseModel.BadRequest,
         500: ErrorResponseModel.InternalServerError,
+      },
+      detail: {
+        summary: 'Search artists (trend includes)',
       },
     }
   )
@@ -124,6 +130,10 @@ const artistsRoutes = new Elysia({
         404: ErrorResponseModel.NotFound,
         500: ErrorResponseModel.InternalServerError,
       },
+      detail: {
+        summary: 'Edit artist',
+        hide: true,
+      },
     }
   )
   .get(
@@ -136,6 +146,9 @@ const artistsRoutes = new Elysia({
         200: ArtistsReponseModel.GetRandomArtist,
         400: ErrorResponseModel.BadRequest,
         500: ErrorResponseModel.InternalServerError,
+      },
+      detail: {
+        summary: 'Random artist',
       },
     }
   )
@@ -179,6 +192,10 @@ const artistsRoutes = new Elysia({
             400: ErrorResponseModel.BadRequest,
             500: ErrorResponseModel.InternalServerError,
           },
+          detail: {
+            summary: 'Create artist',
+            hide: true,
+          },
         }
       )
       .patch(
@@ -217,6 +234,10 @@ const artistsRoutes = new Elysia({
             404: ErrorResponseModel.NotFound,
             500: ErrorResponseModel.InternalServerError,
           },
+          detail: {
+            summary: 'Update artist',
+            hide: true,
+          },
         }
       )
       .post(
@@ -252,6 +273,10 @@ const artistsRoutes = new Elysia({
             200: ArtistsReponseModel.CreateArtistBulk,
             400: ErrorResponseModel.BadRequest,
             500: ErrorResponseModel.InternalServerError,
+          },
+          detail: {
+            summary: 'Bulk create artists',
+            hide: true,
           },
         }
       )

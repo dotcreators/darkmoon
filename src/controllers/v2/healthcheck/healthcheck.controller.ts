@@ -3,13 +3,11 @@ import Elysia from 'elysia';
 const healthcheckRoutes = new Elysia({
   prefix: '/health-check',
   detail: {
-    tags: ['v2'],
+    tags: ['Healh-check'],
   },
-})
-  .get('/', async () => {
-    return true;
-  })
-  .get('/status', async () => {
+}).get(
+  '/status',
+  async () => {
     const response = await fetch('https://uptime.betterstack.com/api/v2/status-pages/211117', {
       headers: {
         Authorization: `Bearer ${process.env.UPTIME_API_TOKEN}`,
@@ -22,6 +20,8 @@ const healthcheckRoutes = new Elysia({
     }
 
     return { status: null };
-  });
+  },
+  { detail: { summary: 'Uptime status', description: 'Get overall status of dotcreators infrastructure' } }
+);
 
 export { healthcheckRoutes };

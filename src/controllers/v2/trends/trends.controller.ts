@@ -9,7 +9,7 @@ const trendsService = new TrendsService();
 const trendsRoutes = new Elysia({
   prefix: '/trends',
   detail: {
-    tags: ['v2'],
+    tags: ['Trends'],
   },
 }).get(
   '/search',
@@ -40,6 +40,9 @@ const trendsRoutes = new Elysia({
       200: TrendsResponseModel.GetTrend,
       400: ErrorResponseModel.BadRequest,
       500: ErrorResponseModel.InternalServerError,
+    },
+    detail: {
+      summary: 'Search artist trends',
     },
   }
 );
