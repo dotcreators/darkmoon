@@ -21,7 +21,7 @@
     "elysia-rate-limit": "^4.1.0",
     "pg": "^8.13.0",
     "prettier": "^3.5.0",
-    "twitter-openapi-typescript": "^0.0.34"
+    "twitter-openapi-typescript": "^0.0.54"
   },
   "devDependencies": {
     "@types/pg": "^8.11.10",
