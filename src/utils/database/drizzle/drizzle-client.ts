@@ -12,6 +12,7 @@ import {
   EditArtistBulkBody,
   EditArtistBulkResponse,
   EditArtistResponse,
+  GetArtistByUserIdResponse,
   GetArtistQuery,
   GetArtistRandomResponse,
   GetArtistResponse,
@@ -207,6 +208,11 @@ export default class DrizzleClient implements IDatabaseClient {
     };
   }
 
+  async getArtistByUserId(twitterUserId: string): Promise<GetArtistByUserIdResponse> {
+    const r = await this.client.select().from(artists).where(eq(artists.twitterUserId, twitterUserId)).limit(1);
+    return r[0];
+  }
+
   async editArtist(id: string, body: EditArtistBody): Promise<EditArtistResponse | null> {
     const result = await this.client
       .update(artists)
@@ -220,13 +226,13 @@ export default class DrizzleClient implements IDatabaseClient {
   }
 
   async getRandomArtist(): Promise<GetArtistRandomResponse> {
-    const result = await this.client
+    const r = await this.client
       .select()
       .from(artists)
       .orderBy(sql`RANDOM()`)
       .where(and(ne(artists.isEnabled, false), gte(artists.followersCount, 300)))
       .limit(1);
-    return result[0];
+    return r[0];
   }
 
   async updateArtistInformation(

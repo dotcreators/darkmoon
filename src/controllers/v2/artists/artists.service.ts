@@ -9,6 +9,7 @@ import {
   EditArtistBulkBody,
   EditArtistBulkResponse,
   EditArtistResponse,
+  GetArtistByUserIdResponse,
   GetArtistQuery,
   GetArtistRandomResponse,
   GetArtistResponse,
@@ -40,6 +41,10 @@ export default class ArtistsService {
 
   async getRandomArtist(): Promise<GetArtistRandomResponse> {
     return await this.databaseProvider.getRandomArtist();
+  }
+
+  async getArtistByUserId(twitterUserId: string): Promise<GetArtistByUserIdResponse> {
+    return await this.databaseProvider.getArtistByUserId(twitterUserId);
   }
 
   async updateArtistInformation(

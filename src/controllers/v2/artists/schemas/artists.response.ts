@@ -28,7 +28,7 @@ export const ArtistsReponseModel = {
     },
     { description: 'Returns paginated artists profiles' }
   ),
-  GetRandomArtist: ArtistProfileModel,
+  GetArtistSingle: ArtistProfileModel,
   CreateArtist: ArtistProfileModel,
   EditArtist: ArtistProfileModel,
   UpdateArtistInformation: ArtistProfileModel,

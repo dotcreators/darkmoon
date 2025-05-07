@@ -5,6 +5,7 @@ import ArtistsService from './artists.service';
 import { ArtistsQueryModel } from './schemas/artists.query';
 import { ArtistsReponseModel } from './schemas/artists.response';
 import { ArtistsBodyModel } from './schemas/artists.body';
+import { ArtistsParamsMode } from './schemas/artists.params';
 
 const artistsService = new ArtistsService();
 
@@ -94,45 +95,20 @@ const artistsRoutes = new Elysia({
       },
     }
   )
-  .patch(
-    '/edit/:id/',
-    async ({ params, body }) => {
-      if (!body) {
-        return error(400, {
-          status: StatusMap['Bad Request'],
-          response: {
-            error: 'Body error',
-            message: 'None of any editable artist fields are provided',
-          },
-        });
-      }
-
-      const result = await artistsService.editArtist(params.id, body);
-
-      if (!result) {
-        return error(404, {
-          status: StatusMap['Bad Request'],
-          response: {
-            error: 'Edit error',
-            message: 'Unable to find artist profile with specified ID',
-          },
-        });
-      }
-
-      return result;
+  .get(
+    '/search/:id',
+    async ({ params }) => {
+      return await artistsService.getArtistByUserId(params.id);
     },
     {
-      body: ArtistsBodyModel.EditArtist,
-      params: t.Object({ id: t.String() }),
+      params: ArtistsParamsMode.GetArtistByUserId,
       response: {
-        200: ArtistsReponseModel.EditArtist,
+        200: ArtistsReponseModel.GetArtistSingle,
         400: ErrorResponseModel.BadRequest,
-        404: ErrorResponseModel.NotFound,
         500: ErrorResponseModel.InternalServerError,
       },
       detail: {
-        summary: 'Edit artist',
-        hide: true,
+        summary: 'Search single artist by twitter user id',
       },
     }
   )
@@ -143,7 +119,7 @@ const artistsRoutes = new Elysia({
     },
     {
       response: {
-        200: ArtistsReponseModel.GetRandomArtist,
+        200: ArtistsReponseModel.GetArtistSingle,
         400: ErrorResponseModel.BadRequest,
         500: ErrorResponseModel.InternalServerError,
       },
@@ -194,6 +170,48 @@ const artistsRoutes = new Elysia({
           },
           detail: {
             summary: 'Create artist',
+            hide: true,
+          },
+        }
+      )
+      .patch(
+        '/edit/:id/',
+        async ({ params, body }) => {
+          if (!body) {
+            return error(400, {
+              status: StatusMap['Bad Request'],
+              response: {
+                error: 'Body error',
+                message: 'None of any editable artist fields are provided',
+              },
+            });
+          }
+
+          const result = await artistsService.editArtist(params.id, body);
+
+          if (!result) {
+            return error(404, {
+              status: StatusMap['Bad Request'],
+              response: {
+                error: 'Edit error',
+                message: 'Unable to find artist profile with specified ID',
+              },
+            });
+          }
+
+          return result;
+        },
+        {
+          body: ArtistsBodyModel.EditArtist,
+          params: t.Object({ id: t.String() }),
+          response: {
+            200: ArtistsReponseModel.EditArtist,
+            400: ErrorResponseModel.BadRequest,
+            404: ErrorResponseModel.NotFound,
+            500: ErrorResponseModel.InternalServerError,
+          },
+          detail: {
+            summary: 'Edit artist',
             hide: true,
           },
         }
