@@ -79,7 +79,7 @@ export default class DrizzleClient implements IDatabaseClient {
     const countResult = await this.client
       .select({ count: count() })
       .from(artists)
-      .where(ne(artists.isEnabled, false))
+      .where(filterOptions.length > 0 ? and(...filterOptions) : undefined)
       .execute();
 
     const totalItems = countResult[0]?.count || 0;
@@ -95,7 +95,7 @@ export default class DrizzleClient implements IDatabaseClient {
       page: query.page,
       perPage: query.perPage,
       totalItems: totalItems,
-      totalPages: Math.ceil(totalItems / query.perPage),
+      totalPages: totalItems === 0 ? 1 : Math.ceil(totalItems / query.perPage),
       items: result,
     };
   }
