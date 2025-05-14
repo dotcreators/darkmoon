@@ -2,7 +2,7 @@ import { artists, artistsSuggestions, artistsTrends } from './schema/artists';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { drizzleConfig } from './drizzle.config';
 import { IDatabaseClient } from '../database-client.interface';
-import { and, asc, count, desc, eq, gte, isNotNull, like, ne, sql, SQL } from 'drizzle-orm';
+import { and, arrayContains, asc, count, desc, eq, gte, isNotNull, like, ne, sql, SQL } from 'drizzle-orm';
 import {
   CreateArtistBody,
   CreateArtistBulkBody,
@@ -70,8 +70,9 @@ export default class DrizzleClient implements IDatabaseClient {
     if (query.country) {
       filterOptions.push(eq(artists.country, query.country.toLocaleLowerCase()));
     }
-    if (query.tags && query.tags.length > 0) {
-      filterOptions.push(and(...query.tags.map(tag => sql`tags->'items' @> ${JSON.stringify([tag])}`))!);
+    if (query.tags && query.tags.length !== 0) {
+      console.log(query.tags);
+      filterOptions.push(arrayContains(artists.tags, query.tags));
     }
 
     filterOptions.push(ne(artists.isEnabled, false));
