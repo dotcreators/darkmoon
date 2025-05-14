@@ -68,7 +68,7 @@ export default class DrizzleClient implements IDatabaseClient {
       filterOptions.push(like(artists.username, `%${query.username}%`));
     }
     if (query.country) {
-      filterOptions.push(eq(artists.country, query.country));
+      filterOptions.push(eq(artists.country, query.country.toLocaleLowerCase()));
     }
     if (query.tags && query.tags.length > 0) {
       filterOptions.push(and(...query.tags.map(tag => sql`tags->'items' @> ${JSON.stringify([tag])}`))!);
