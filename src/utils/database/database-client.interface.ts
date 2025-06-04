@@ -8,6 +8,7 @@ import {
   EditArtistBulkResponse,
   EditArtistResponse,
   GetArtistByUserIdResponse,
+  GetArtistByUsernameResponse,
   GetArtistQuery,
   GetArtistRandomResponse,
   GetArtistResponse,
@@ -30,6 +31,7 @@ export interface IArtistsDatabaseClient {
   editArtist(id: string, body: EditArtistBody): Promise<EditArtistResponse | null>;
   getRandomArtist(): Promise<GetArtistRandomResponse>;
   getArtistByUserId(twitterUserId: string): Promise<GetArtistByUserIdResponse>;
+  getArtistByUsername(username: string): Promise<GetArtistByUsernameResponse>;
   editArtistBulk(body: EditArtistBulkBody): Promise<EditArtistBulkResponse>;
   updateArtistInformationBulk(body: UpdateArtistInformationBulkBody): Promise<UpdateArtistInformationBulkResponse>;
   createArtistBulk(body: CreateArtistBulkBody): Promise<CreateArtistBulkResponse>;

@@ -113,6 +113,23 @@ const artistsRoutes = new Elysia({
     }
   )
   .get(
+    '/search/username/:username',
+    async ({ params }) => {
+      return await artistsService.getArtistByUsername(params.username);
+    },
+    {
+      params: ArtistsParamsMode.GetArtistByUsername,
+      response: {
+        200: ArtistsReponseModel.GetArtistSingle,
+        400: ErrorResponseModel.BadRequest,
+        500: ErrorResponseModel.InternalServerError,
+      },
+      detail: {
+        summary: 'Search single artist by twitter user id',
+      },
+    }
+  )
+  .get(
     '/random',
     async () => {
       return await artistsService.getRandomArtist();

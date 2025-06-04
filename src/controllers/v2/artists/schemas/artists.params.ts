@@ -7,4 +7,10 @@ export const ArtistsParamsMode = {
     },
     { description: 'Get artist profiles by twitter user id' }
   ),
+  GetArtistByUsername: t.Object(
+    {
+      username: t.String(),
+    },
+    { description: 'Get artist profiles by twitter username' }
+  ),
 };

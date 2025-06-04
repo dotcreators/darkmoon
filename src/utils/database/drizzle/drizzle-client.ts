@@ -13,6 +13,7 @@ import {
   EditArtistBulkResponse,
   EditArtistResponse,
   GetArtistByUserIdResponse,
+  GetArtistByUsernameResponse,
   GetArtistQuery,
   GetArtistRandomResponse,
   GetArtistResponse,
@@ -211,6 +212,11 @@ export default class DrizzleClient implements IDatabaseClient {
 
   async getArtistByUserId(twitterUserId: string): Promise<GetArtistByUserIdResponse> {
     const r = await this.client.select().from(artists).where(eq(artists.twitterUserId, twitterUserId)).limit(1);
+    return r[0];
+  }
+
+  async getArtistByUsername(username: string): Promise<GetArtistByUsernameResponse> {
+    const r = await this.client.select().from(artists).where(eq(artists.username, username)).limit(1);
     return r[0];
   }
 
