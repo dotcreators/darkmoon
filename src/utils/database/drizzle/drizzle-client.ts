@@ -2,7 +2,7 @@ import { artists, artistsSuggestions, artistsTrends } from './schema/artists';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { drizzleConfig } from './drizzle.config';
 import { IDatabaseClient } from '../database-client.interface';
-import { and, arrayContains, asc, count, desc, eq, gte, isNotNull, like, ne, sql, SQL } from 'drizzle-orm';
+import { and, arrayContains, asc, count, desc, eq, gte, ilike, isNotNull, like, ne, or, sql, SQL } from 'drizzle-orm';
 import {
   CreateArtistBody,
   CreateArtistBulkBody,
@@ -66,7 +66,10 @@ export default class DrizzleClient implements IDatabaseClient {
     }
 
     if (query.username) {
-      filterOptions.push(like(artists.username, `%${query.username}%`));
+      const sanitizedUsername = query.username.trim();
+      filterOptions.push(
+        or(ilike(artists.username, `%${sanitizedUsername}%`)!, ilike(artists.name, `%${sanitizedUsername}%`))!
+      );
     }
     if (query.country) {
       filterOptions.push(eq(artists.country, query.country.toLocaleLowerCase()));
