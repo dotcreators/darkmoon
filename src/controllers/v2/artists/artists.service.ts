@@ -1,15 +1,28 @@
+import { IArtistsDatabaseClient } from 'utils/database/database-client.interface';
+import DrizzleClient from 'utils/database/drizzle/drizzle-client';
 import {
+  CreateArtistBody,
+  CreateArtistBulkBody,
+  CreateArtistBulkResponse,
+  CreateArtistResponse,
   EditArtistBody,
+  EditArtistBulkBody,
+  EditArtistBulkResponse,
   EditArtistResponse,
+  GetArtistByUserIdResponse,
+  GetArtistByUsernameResponse,
   GetArtistQuery,
+  GetArtistRandomResponse,
   GetArtistResponse,
-  GetArtistUsernamesResponse,
-} from './artists.schema';
-import { IDatabaseClient } from 'utils/database/databaseClient.interface';
-import DrizzleClient from 'utils/database/drizzle/drizzleClient';
+  GetArtistWithTrendsResponse,
+  UpdateArtistInformationBody,
+  UpdateArtistInformationBulkBody,
+  UpdateArtistInformationBulkResponse,
+  UpdateArtistInformationResponse,
+} from './schemas/artists.types';
 
 export default class ArtistsService {
-  private databaseProvider: IDatabaseClient;
+  private databaseProvider: IArtistsDatabaseClient;
 
   constructor() {
     this.databaseProvider = new DrizzleClient();
@@ -19,8 +32,10 @@ export default class ArtistsService {
     return await this.databaseProvider.getArtistPaginated(query);
   }
 
-  async getArtistsUsernames(): Promise<GetArtistUsernamesResponse> {
-    return await this.databaseProvider.getArtistsUsernames();
+  async getArtistsWithTrendsPaginated(
+    query: GetArtistQuery
+  ): Promise<GetArtistWithTrendsResponse> {
+    return await this.databaseProvider.getArtistWithTrendsPaginated(query);
   }
 
   async editArtist(
@@ -30,10 +45,50 @@ export default class ArtistsService {
     return await this.databaseProvider.editArtist(id, body);
   }
 
-  getRandomArtist() {}
-  updateArtistStats() {}
-  updateArtistStatsBulk() {}
-  createArtist() {}
-  createArtistBulk() {}
-  editArtistBulk() {}
+  async getRandomArtist(): Promise<GetArtistRandomResponse> {
+    return await this.databaseProvider.getRandomArtist();
+  }
+
+  async getArtistByUserId(
+    twitterUserId: string
+  ): Promise<GetArtistByUserIdResponse> {
+    return await this.databaseProvider.getArtistByUserId(twitterUserId);
+  }
+
+  async getArtistByUsername(
+    username: string
+  ): Promise<GetArtistByUsernameResponse> {
+    return await this.databaseProvider.getArtistByUsername(username);
+  }
+
+  async updateArtistInformation(
+    id: string,
+    body: UpdateArtistInformationBody
+  ): Promise<UpdateArtistInformationResponse> {
+    return await this.databaseProvider.updateArtistInformation(id, body);
+  }
+
+  async createArtist(
+    body: CreateArtistBody
+  ): Promise<CreateArtistResponse | null> {
+    return await this.databaseProvider.createArtist(body);
+  }
+
+  async updateArtistInformationBulk(
+    body: UpdateArtistInformationBulkBody
+  ): Promise<UpdateArtistInformationBulkResponse> {
+    return await this.databaseProvider.updateArtistInformationBulk(body);
+  }
+
+  async createArtistBulk(
+    body: CreateArtistBulkBody
+  ): Promise<CreateArtistBulkResponse> {
+    return await this.databaseProvider.createArtistBulk(body);
+  }
+
+  async editArtistBulk(
+    body: EditArtistBulkBody
+  ): Promise<EditArtistBulkResponse> {
+    return await this.databaseProvider.editArtistBulk(body);
+  }
 }

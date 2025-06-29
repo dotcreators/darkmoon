@@ -1,15 +1,10 @@
-import { Elysia, StatusMap } from 'elysia';
-import artistsRoutes from './controllers/v1/artists/artists.controller';
-import swagger from '@elysiajs/swagger';
-import suggestionsRoutes from './controllers/v1/suggestions/suggestions.controller';
-import cors from '@elysiajs/cors';
-import fetchRoutes from './controllers/v1/fetch/fetch.controller';
-import trendsRoutes from './controllers/v1/trends/trends.controller';
-import authRoutes from './controllers/v1/auth/auth.controller';
-import { rateLimit } from 'elysia-rate-limit';
-import cookie from '@elysiajs/cookie';
 import { envConfig } from './env.config';
-import artistsRoutesV2 from './controllers/v2/artists/artists.controller';
+import cookie from '@elysiajs/cookie';
+import cors from '@elysiajs/cors';
+import swagger from '@elysiajs/swagger';
+import { API_ENDPOINTS_V2 } from 'controllers/v2';
+import { Elysia } from 'elysia';
+import { rateLimit } from 'elysia-rate-limit';
 
 export const app = new Elysia()
   .use(
@@ -18,31 +13,16 @@ export const app = new Elysia()
         info: {
           title: 'Dotcreators API Documentation',
           description:
-            'Dotcreators is service which allow users discover new creators, track growing trend and share talented pixel-related artists with others.\n\n' +
-            'Search in left menu specified endpoint to continue or just scroll down.',
+            'Dotcreators is service which allow users discover new creators, track growing trend and share talented pixel-related artists with others.',
           contact: {
             email: 'hi@anivire.xyz',
             url: 'https://github.com/dotcreators',
           },
-          version: '1.0.1',
+          version: '2.0.0',
         },
-        tags: [
-          { name: 'Artists', description: 'Artists related endpoints' },
-          {
-            name: 'Suggestions',
-            description: 'Artist suggestions related endpoints',
-          },
-          {
-            name: 'Fetch',
-            description: 'Getting X/Twitter artist profiles related endpoints',
-          },
-          {
-            name: 'Trends',
-            description: 'Artist trends related endpoints',
-          },
-        ],
       },
       path: '/docs',
+      exclude: ['/', '/welcome'],
     })
   )
   .use(
@@ -57,32 +37,25 @@ export const app = new Elysia()
   )
   .use(
     cors({
-      origin: !envConfig.IS_DEVELOPMENT ? /(.*\.)?dotcreators\.xyz$/ : true,
+      origin: true,
       methods: ['GET', 'POST', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: true,
       maxAge: 500,
     })
   )
-  .onError(({ error, code }) => {
+  .get('/', ({ redirect }) => {
+    return redirect('/welcome');
+  })
+  .get('/welcome', () => {
     return {
-      status: code,
-      response: {
-        error: code === 'VALIDATION' ? 'Validation error' : error.name,
-        message:
-          code === 'VALIDATION' ? JSON.parse(error.message) : error.message,
-        ...(envConfig.IS_DEVELOPMENT && error.stack && code !== 'VALIDATION'
-          ? { stack: error.stack }
-          : {}),
-      },
+      message: 'Welcome to dotcreators API service',
+      name: 'dotcreators-darkmoon',
+      version: 'v2.0.0',
+      docs: '/docs',
     };
   })
-  .group('/api/v1', app => app.use(artistsRoutes))
-  .group('/api/v1', app => app.use(suggestionsRoutes))
-  .group('/api/v1', app => app.use(fetchRoutes))
-  .group('/api/v1', app => app.use(trendsRoutes))
-  .group('/api/v1', app => app.use(authRoutes))
-  .group('/v2', app => app.use(artistsRoutesV2));
+  .use(API_ENDPOINTS_V2);
 
 if (!envConfig.IS_DEVELOPMENT) {
   app.use(
@@ -95,6 +68,5 @@ if (!envConfig.IS_DEVELOPMENT) {
 
 app.listen(8989);
 
-console.log(
-  `🚀 Dotcreators API service is running at ${app.server?.hostname}:${app.server?.port}`
-);
+console.log(`Dotcreators API service is running`);
+console.log('Dotcreators API working in development mode:', envConfig.IS_DEVELOPMENT);

@@ -1,11 +1,11 @@
 {
   "name": "dotcreators-darkmoon",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Backend service written with Elysia.js",
   "author": "anivire",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
+<<<<<<< HEAD
     "start": "bunx prisma db pull && bunx prisma generate && bun run --watch src/index.ts",
     "dev:prisma": "bunx prisma db pull && bunx prisma generate"
   },
@@ -18,13 +18,31 @@
     "@supabase/supabase-js": "^2.48.1",
     "@the-convocation/twitter-scraper": "^0.12.0",
     "arctic": "^1.9.2",
+=======
+    "start": "bun run src/index.ts",
+    "build:drizzle-schema": "bunx drizzle-kit generate",
+    "build:force-push-schema": "bunx drizzle-kit push"
+  },
+  "dependencies": {
+    "@elysiajs/cookie": "^0.8.0",
+    "@elysiajs/cors": "^1.1.1",
+    "@elysiajs/eden": "^1.1.3",
+    "@elysiajs/swagger": "^1.1.5",
+>>>>>>> v2-api-endpoints
     "discord-webhook-node": "^1.1.8",
+    "dotenv": "^16.4.7",
     "drizzle-orm": "^0.35.2",
     "elysia": "1.1.22",
     "elysia-rate-limit": "^4.1.0",
+<<<<<<< HEAD
     "lucia": "^3.2.2",
     "prisma": "^5.22.0",
     "twitter-openapi-typescript": "0.0.41"
+=======
+    "pg": "^8.13.0",
+    "prettier": "^3.5.0",
+    "twitter-openapi-typescript": "^0.0.54"
+>>>>>>> v2-api-endpoints
   },
   "devDependencies": {
     "eslint": "^9.19.0",
