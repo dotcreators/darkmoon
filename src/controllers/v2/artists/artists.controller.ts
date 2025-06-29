@@ -54,6 +54,19 @@ const artistsRoutesV2 = new Elysia({
       },
     }
   )
+  .get(
+    '/usernames',
+    async () => {
+      return await artistsService.getArtistsUsernames();
+    },
+    {
+      response: {
+        200: ArtistsReponseModel.GetArtistUsernames,
+        400: ErrorResponseModel.BadRequest,
+        500: ErrorResponseModel.InternalServerError,
+      },
+    }
+  )
   .patch(
     '/:id/edit',
     async ({ params, body }) => {

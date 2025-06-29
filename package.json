@@ -6,34 +6,29 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
+    "start": "bunx prisma db pull && bunx prisma generate && bun run --watch src/index.ts",
     "dev:prisma": "bunx prisma db pull && bunx prisma generate"
   },
   "dependencies": {
     "@elysiajs/cookie": "^0.8.0",
-    "@elysiajs/cors": "^1.1.1",
-    "@elysiajs/eden": "^1.1.3",
-    "@elysiajs/swagger": "^1.1.5",
+    "@elysiajs/cors": "^1.2.0",
+    "@elysiajs/swagger": "^1.2.0",
     "@lucia-auth/adapter-prisma": "^4.0.1",
-    "@prisma/client": "^5.21.1",
-    "@supabase/supabase-js": "^2.45.5",
+    "@prisma/client": "^5.22.0",
+    "@supabase/supabase-js": "^2.48.1",
     "@the-convocation/twitter-scraper": "^0.12.0",
-    "@tycrek/discord-hookr": "^0.1.0",
     "arctic": "^1.9.2",
     "discord-webhook-node": "^1.1.8",
     "drizzle-orm": "^0.35.2",
     "elysia": "1.1.22",
     "elysia-rate-limit": "^4.1.0",
-    "lucia": "^3.2.1",
-    "pg": "^8.13.0",
-    "pocketbase": "^0.21.5",
-    "prisma": "^5.21.1",
-    "twitter-openapi-typescript": "^0.0.34"
+    "lucia": "^3.2.2",
+    "prisma": "^5.22.0",
+    "twitter-openapi-typescript": "0.0.41"
   },
   "devDependencies": {
-    "@types/pg": "^8.11.10",
-    "bun-types": "latest",
-    "drizzle-kit": "^0.26.2",
-    "eslint": "^9.13.0"
+    "eslint": "^9.19.0",
+    "bun-types": "latest"
   },
   "module": "src/index.js"
 }

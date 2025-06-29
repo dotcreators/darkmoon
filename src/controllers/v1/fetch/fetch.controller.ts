@@ -37,6 +37,7 @@ const fetchRoutes = new Elysia({
         e.message !== 'rest_id not found.' &&
         e.message !== 'User not found.'
       ) {
+        console.log(e);
         return {
           status: 'error',
           response: 'User not found',

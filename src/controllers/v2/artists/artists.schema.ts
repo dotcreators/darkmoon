@@ -59,12 +59,21 @@ export const ArtistsReponseModel = {
     },
     { description: 'Returns paginated artists profiles' }
   ),
+  GetArtistUsernames: t.Object(
+    {
+      items: t.Array(t.Object({ username: t.String() }), { minItems: 0 }),
+    },
+    { description: 'Returns artists usernames' }
+  ),
   GetRandomArtist: ArtistProfileModel,
   EditArtist: ArtistProfileModel,
 };
 
 export type GetArtistQuery = Static<typeof ArtistsQueryModel.GetArtist>;
 export type GetArtistResponse = Static<typeof ArtistsReponseModel.GetArtist>;
+export type GetArtistUsernamesResponse = Static<
+  typeof ArtistsReponseModel.GetArtistUsernames
+>;
 
 export type GetArtistRandomResponse = Static<
   typeof ArtistsReponseModel.GetRandomArtist

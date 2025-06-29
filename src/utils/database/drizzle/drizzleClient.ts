@@ -7,6 +7,7 @@ import {
   EditArtistResponse,
   GetArtistQuery,
   GetArtistResponse,
+  GetArtistUsernamesResponse,
 } from 'controllers/v2/artists/artists.schema';
 import { and, asc, count, desc, eq, gte, like, sql, SQL } from 'drizzle-orm';
 import { envConfig } from 'env.config';
@@ -85,6 +86,17 @@ export default class DrizzleClient implements IDatabaseClient {
       items: result,
     };
   }
+
+  async getArtistsUsernames(): Promise<GetArtistUsernamesResponse> {
+    const result = await this.client.query.artists.findMany({
+      columns: { username: true },
+    });
+
+    return {
+      items: result,
+    };
+  }
+
   async editArtist(
     id: string,
     body: EditArtistBody

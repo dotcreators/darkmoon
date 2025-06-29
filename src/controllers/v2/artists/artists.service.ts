@@ -3,6 +3,7 @@ import {
   EditArtistResponse,
   GetArtistQuery,
   GetArtistResponse,
+  GetArtistUsernamesResponse,
 } from './artists.schema';
 import { IDatabaseClient } from 'utils/database/databaseClient.interface';
 import DrizzleClient from 'utils/database/drizzle/drizzleClient';
@@ -16,6 +17,10 @@ export default class ArtistsService {
 
   async getArtistsPaginated(query: GetArtistQuery): Promise<GetArtistResponse> {
     return await this.databaseProvider.getArtistPaginated(query);
+  }
+
+  async getArtistsUsernames(): Promise<GetArtistUsernamesResponse> {
+    return await this.databaseProvider.getArtistsUsernames();
   }
 
   async editArtist(
