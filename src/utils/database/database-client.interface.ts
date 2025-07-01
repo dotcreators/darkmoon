@@ -12,6 +12,7 @@ import {
   GetArtistQuery,
   GetArtistRandomResponse,
   GetArtistResponse,
+  GetArtistUsernamesResponse,
   GetArtistWithTrendsResponse,
   UpdateArtistInformationBody,
   UpdateArtistInformationBulkBody,
@@ -32,6 +33,7 @@ export interface IArtistsDatabaseClient {
   getRandomArtist(): Promise<GetArtistRandomResponse>;
   getArtistByUserId(twitterUserId: string): Promise<GetArtistByUserIdResponse>;
   getArtistByUsername(username: string): Promise<GetArtistByUsernameResponse>;
+  getArtistUsernames(): Promise<GetArtistUsernamesResponse>;
   editArtistBulk(body: EditArtistBulkBody): Promise<EditArtistBulkResponse>;
   updateArtistInformationBulk(body: UpdateArtistInformationBulkBody): Promise<UpdateArtistInformationBulkResponse>;
   createArtistBulk(body: CreateArtistBulkBody): Promise<CreateArtistBulkResponse>;

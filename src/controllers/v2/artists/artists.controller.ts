@@ -92,6 +92,7 @@ const artistsRoutes = new Elysia({
       },
       detail: {
         summary: 'Search artists (trend includes)',
+        hide: true,
       },
     }
   )
@@ -125,7 +126,24 @@ const artistsRoutes = new Elysia({
         500: ErrorResponseModel.InternalServerError,
       },
       detail: {
-        summary: 'Search single artist by twitter user id',
+        summary: 'Search single artist by twitter username',
+      },
+    }
+  )
+  .get(
+    '/usernames',
+    async () => {
+      return await artistsService.getArtistUsernames();
+    },
+    {
+      response: {
+        200: ArtistsReponseModel.GetArtistUsernames,
+        400: ErrorResponseModel.BadRequest,
+        500: ErrorResponseModel.InternalServerError,
+      },
+      detail: {
+        summary: 'Get all artist usernames',
+        hide: true,
       },
     }
   )

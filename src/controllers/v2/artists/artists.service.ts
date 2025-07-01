@@ -14,6 +14,7 @@ import {
   GetArtistQuery,
   GetArtistRandomResponse,
   GetArtistResponse,
+  GetArtistUsernamesResponse,
   GetArtistWithTrendsResponse,
   UpdateArtistInformationBody,
   UpdateArtistInformationBulkBody,
@@ -50,6 +51,10 @@ export default class ArtistsService {
 
   async getArtistByUsername(username: string): Promise<GetArtistByUsernameResponse> {
     return await this.databaseProvider.getArtistByUsername(username);
+  }
+
+  async getArtistUsernames(): Promise<GetArtistUsernamesResponse> {
+    return await this.databaseProvider.getArtistUsernames();
   }
 
   async updateArtistInformation(

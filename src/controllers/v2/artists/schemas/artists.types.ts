@@ -8,6 +8,7 @@ export type GetArtistResponse = Static<typeof ArtistsReponseModel.GetArtist>;
 export type GetArtistWithTrendsResponse = Static<typeof ArtistsReponseModel.GetArtistWithTrends>;
 export type GetArtistByUserIdResponse = Static<typeof ArtistsReponseModel.GetArtistSingle>;
 export type GetArtistByUsernameResponse = Static<typeof ArtistsReponseModel.GetArtistSingle>;
+export type GetArtistUsernamesResponse = Static<typeof ArtistsReponseModel.GetArtistUsernames>;
 export type GetArtistRandomResponse = Static<typeof ArtistsReponseModel.GetArtistSingle>;
 export type EditArtistBody = Static<typeof ArtistsBodyModel.EditArtist>;
 export type EditArtistResponse = Static<typeof ArtistsReponseModel.EditArtist>;

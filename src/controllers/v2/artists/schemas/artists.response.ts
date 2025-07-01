@@ -12,6 +12,7 @@ export const ArtistsReponseModel = {
     },
     { description: 'Returns paginated artists profiles' }
   ),
+  GetArtistUsernames: t.Object({ items: t.Array(t.String()) }, { description: 'Returns paginated artists profiles' }),
   GetArtistWithTrends: t.Object(
     {
       page: t.Number(),

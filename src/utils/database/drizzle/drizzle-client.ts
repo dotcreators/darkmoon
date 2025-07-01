@@ -17,6 +17,7 @@ import {
   GetArtistQuery,
   GetArtistRandomResponse,
   GetArtistResponse,
+  GetArtistUsernamesResponse,
   GetArtistWithTrendsResponse,
   UpdateArtistInformationBody,
   UpdateArtistInformationBulkBody,
@@ -75,7 +76,6 @@ export default class DrizzleClient implements IDatabaseClient {
       filterOptions.push(eq(artists.country, query.country.toLocaleLowerCase()));
     }
     if (query.tags && query.tags.length !== 0) {
-      console.log(query.tags);
       filterOptions.push(arrayContains(artists.tags, query.tags));
     }
 
@@ -221,6 +221,14 @@ export default class DrizzleClient implements IDatabaseClient {
   async getArtistByUsername(username: string): Promise<GetArtistByUsernameResponse> {
     const r = await this.client.select().from(artists).where(eq(artists.username, username)).limit(1);
     return r[0];
+  }
+
+  async getArtistUsernames(): Promise<GetArtistUsernamesResponse> {
+    const r = await this.client
+      .select({ username: artists.username })
+      .from(artists)
+      .where(ne(artists.isEnabled, false));
+    return { items: r.map(item => item.username) };
   }
 
   async editArtist(id: string, body: EditArtistBody): Promise<EditArtistResponse | null> {
