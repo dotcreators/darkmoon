@@ -5,7 +5,7 @@ import swagger from '@elysiajs/swagger';
 import { API_ENDPOINTS_V2 } from 'controllers/v2';
 import { Elysia } from 'elysia';
 
-const ALLOWED_ORIGIN = /^https:\/\/([a-z0-9-]+\.)*dotcreators\.xyz$/;
+const ALLOWED_ORIGINS = [/^https:\/\/([a-z0-9-]+\.)*dotcreators\.xyz$/, /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/];
 
 export const app = new Elysia()
   .use(
@@ -38,7 +38,7 @@ export const app = new Elysia()
   )
   .use(
     cors({
-      origin: envConfig.IS_DEVELOPMENT ? true : ALLOWED_ORIGIN,
+      origin: envConfig.IS_DEVELOPMENT ? true : ALLOWED_ORIGINS,
       methods: ['GET', 'POST', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
       credentials: false,
