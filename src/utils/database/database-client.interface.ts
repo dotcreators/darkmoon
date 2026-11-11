@@ -28,11 +28,14 @@ export interface IArtistsDatabaseClient {
   getArtistPaginated(query: GetArtistQuery): Promise<GetArtistResponse>;
   getArtistWithTrendsPaginated(query: GetArtistQuery): Promise<GetArtistWithTrendsResponse>;
   createArtist(body: CreateArtistBody): Promise<CreateArtistResponse | null>;
-  updateArtistInformation(id: string, body: UpdateArtistInformationBody): Promise<UpdateArtistInformationResponse>;
+  updateArtistInformation(
+    id: string,
+    body: UpdateArtistInformationBody
+  ): Promise<UpdateArtistInformationResponse | null>;
   editArtist(id: string, body: EditArtistBody): Promise<EditArtistResponse | null>;
-  getRandomArtist(): Promise<GetArtistRandomResponse>;
-  getArtistByUserId(twitterUserId: string): Promise<GetArtistByUserIdResponse>;
-  getArtistByUsername(username: string): Promise<GetArtistByUsernameResponse>;
+  getRandomArtist(): Promise<GetArtistRandomResponse | null>;
+  getArtistByUserId(twitterUserId: string): Promise<GetArtistByUserIdResponse | null>;
+  getArtistByUsername(username: string): Promise<GetArtistByUsernameResponse | null>;
   getArtistUsernames(): Promise<GetArtistUsernamesResponse>;
   editArtistBulk(body: EditArtistBulkBody): Promise<EditArtistBulkResponse>;
   updateArtistInformationBulk(body: UpdateArtistInformationBulkBody): Promise<UpdateArtistInformationBulkResponse>;

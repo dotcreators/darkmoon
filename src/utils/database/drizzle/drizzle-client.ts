@@ -2,7 +2,23 @@ import { artists, artistsSuggestions, artistsTrends } from './schema/artists';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { drizzleConfig } from './drizzle.config';
 import { IDatabaseClient } from '../database-client.interface';
-import { and, arrayContains, asc, count, desc, eq, gte, ilike, isNotNull, like, ne, or, sql, SQL } from 'drizzle-orm';
+import {
+  and,
+  arrayContains,
+  asc,
+  count,
+  desc,
+  eq,
+  gte,
+  ilike,
+  inArray,
+  isNotNull,
+  lte,
+  ne,
+  or,
+  sql,
+  SQL,
+} from 'drizzle-orm';
 import {
   CreateArtistBody,
   CreateArtistBulkBody,
@@ -27,6 +43,11 @@ import {
 import { GetSuggestionsQuery, GetSuggestionsResponse } from 'controllers/v2/suggestions/schemas/suggestions.types';
 import { GetTrendQuery, GetTrendsResponse } from 'controllers/v2/trends/schemas/trends.types';
 
+const getErrorReason = (reason: unknown): string => {
+  const error = reason instanceof Error && reason.cause instanceof Error ? reason.cause : reason;
+  return error instanceof Error ? error.message : String(error);
+};
+
 export default class DrizzleClient implements IDatabaseClient {
   private client;
 
@@ -39,8 +60,8 @@ export default class DrizzleClient implements IDatabaseClient {
     });
   }
 
-  async getArtistPaginated(query: GetArtistQuery): Promise<GetArtistResponse> {
-    let filterOptions: SQL[] = [];
+  private buildArtistFilters(query: GetArtistQuery): { filterOptions: SQL[]; filterOrderBy: SQL } {
+    const filterOptions: SQL[] = [];
     let filterOrderBy: SQL;
 
     switch (query.sortBy) {
@@ -81,6 +102,12 @@ export default class DrizzleClient implements IDatabaseClient {
 
     filterOptions.push(ne(artists.isEnabled, false));
 
+    return { filterOptions, filterOrderBy };
+  }
+
+  async getArtistPaginated(query: GetArtistQuery): Promise<GetArtistResponse> {
+    const { filterOptions, filterOrderBy } = this.buildArtistFilters(query);
+
     const countResult = await this.client
       .select({ count: count() })
       .from(artists)
@@ -106,42 +133,7 @@ export default class DrizzleClient implements IDatabaseClient {
   }
 
   async getArtistWithTrendsPaginated(query: GetArtistQuery): Promise<GetArtistWithTrendsResponse> {
-    let filterOptions: SQL[] = [];
-    let filterOrderBy: SQL;
-
-    switch (query.sortBy) {
-      case 'username':
-        filterOrderBy = asc(artists.username);
-        break;
-      case 'followers':
-        filterOrderBy = desc(artists.followersCount);
-        break;
-      case 'posts':
-        filterOrderBy = desc(artists.tweetsCount);
-        break;
-      case 'new':
-        filterOrderBy = desc(artists.createdAt);
-        break;
-      case 'trending':
-        filterOptions.push(gte(artists.followersCount, 300));
-        filterOrderBy = desc(artists.weeklyFollowersTrend);
-        break;
-      default:
-        filterOrderBy = asc(artists.followersCount);
-        break;
-    }
-
-    if (query.username) {
-      filterOptions.push(like(artists.username, `%${query.username}%`));
-    }
-    if (query.country) {
-      filterOptions.push(eq(artists.country, query.country));
-    }
-    if (query.tags && query.tags.length > 0) {
-      filterOptions.push(and(...query.tags.map(tag => sql`tags->'items' @> ${JSON.stringify([tag])}`))!);
-    }
-
-    filterOptions.push(ne(artists.isEnabled, false));
+    const { filterOptions, filterOrderBy } = this.buildArtistFilters(query);
 
     const countResult = await this.client
       .select({ count: count() })
@@ -162,31 +154,7 @@ export default class DrizzleClient implements IDatabaseClient {
 
     const artistIds = artistsResult.map(artist => artist.twitterUserId);
 
-    const trendsResult = await this.client
-      .select({
-        id: artistsTrends.id,
-        twitterUserId: artistsTrends.twitterUserId,
-        tweetsCount: artistsTrends.tweetsCount,
-        followersCount: artistsTrends.followersCount,
-        createdAt: artistsTrends.createdAt,
-        rowNumber:
-          sql<number>`ROW_NUMBER() OVER (PARTITION BY ${artistsTrends.twitterUserId} ORDER BY ${artistsTrends.createdAt} DESC)`.as(
-            'row_number'
-          ),
-      })
-      .from(artistsTrends)
-      .where(sql`${artistsTrends.twitterUserId} IN (${sql.join(artistIds, sql`, `)})`)
-      .execute();
-
-    const filteredTrends = trendsResult
-      .filter(trend => trend.rowNumber <= 7)
-      .map(trend => ({
-        id: trend.id,
-        twitterUserId: trend.twitterUserId,
-        tweetsCount: trend.tweetsCount,
-        followersCount: trend.followersCount,
-        createdAt: trend.createdAt,
-      }));
+    const filteredTrends = artistIds.length === 0 ? [] : await this.getLatestTrendsByArtistIds(artistIds, 7);
 
     const trendsByArtist = filteredTrends.reduce(
       (acc, trend) => {
@@ -208,19 +176,49 @@ export default class DrizzleClient implements IDatabaseClient {
       page: query.page,
       perPage: query.perPage,
       totalItems: totalItems,
-      totalPages: Math.ceil(totalItems / query.perPage),
+      totalPages: totalItems === 0 ? 1 : Math.ceil(totalItems / query.perPage),
       items: result,
     };
   }
 
-  async getArtistByUserId(twitterUserId: string): Promise<GetArtistByUserIdResponse> {
-    const r = await this.client.select().from(artists).where(eq(artists.twitterUserId, twitterUserId)).limit(1);
-    return r[0];
+  private async getLatestTrendsByArtistIds(artistIds: string[], limit: number) {
+    const rankedTrends = this.client
+      .select({
+        id: artistsTrends.id,
+        twitterUserId: artistsTrends.twitterUserId,
+        tweetsCount: artistsTrends.tweetsCount,
+        followersCount: artistsTrends.followersCount,
+        createdAt: artistsTrends.createdAt,
+        rowNumber:
+          sql<number>`ROW_NUMBER() OVER (PARTITION BY ${artistsTrends.twitterUserId} ORDER BY ${artistsTrends.createdAt} DESC)`.as(
+            'row_number'
+          ),
+      })
+      .from(artistsTrends)
+      .where(inArray(artistsTrends.twitterUserId, artistIds))
+      .as('ranked_trends');
+
+    return await this.client
+      .select({
+        id: rankedTrends.id,
+        twitterUserId: rankedTrends.twitterUserId,
+        tweetsCount: rankedTrends.tweetsCount,
+        followersCount: rankedTrends.followersCount,
+        createdAt: rankedTrends.createdAt,
+      })
+      .from(rankedTrends)
+      .where(lte(rankedTrends.rowNumber, limit))
+      .execute();
   }
 
-  async getArtistByUsername(username: string): Promise<GetArtistByUsernameResponse> {
+  async getArtistByUserId(twitterUserId: string): Promise<GetArtistByUserIdResponse | null> {
+    const r = await this.client.select().from(artists).where(eq(artists.twitterUserId, twitterUserId)).limit(1);
+    return r[0] ?? null;
+  }
+
+  async getArtistByUsername(username: string): Promise<GetArtistByUsernameResponse | null> {
     const r = await this.client.select().from(artists).where(eq(artists.username, username)).limit(1);
-    return r[0];
+    return r[0] ?? null;
   }
 
   async getArtistUsernames(): Promise<GetArtistUsernamesResponse> {
@@ -243,26 +241,26 @@ export default class DrizzleClient implements IDatabaseClient {
     return result.length !== 1 ? null : result[0];
   }
 
-  async getRandomArtist(): Promise<GetArtistRandomResponse> {
+  async getRandomArtist(): Promise<GetArtistRandomResponse | null> {
     const r = await this.client
       .select()
       .from(artists)
       .orderBy(sql`RANDOM()`)
       .where(and(ne(artists.isEnabled, false), gte(artists.followersCount, 300)))
       .limit(1);
-    return r[0];
+    return r[0] ?? null;
   }
 
   async updateArtistInformation(
     id: string,
     body: UpdateArtistInformationBody
-  ): Promise<UpdateArtistInformationResponse> {
+  ): Promise<UpdateArtistInformationResponse | null> {
     const result = await this.client
       .update(artists)
       .set({ ...body })
       .where(eq(artists.twitterUserId, id))
       .returning();
-    return result[0];
+    return result[0] ?? null;
   }
 
   async createArtist(body: CreateArtistBody): Promise<CreateArtistResponse | null> {
@@ -279,7 +277,7 @@ export default class DrizzleClient implements IDatabaseClient {
       .onConflictDoNothing()
       .returning();
 
-    if (result.length < 0) {
+    if (result.length === 0) {
       return null;
     }
 
@@ -294,7 +292,8 @@ export default class DrizzleClient implements IDatabaseClient {
         .update(artists)
         .set({ ...profile.data })
         .where(eq(artists.id, profile.id))
-        .returning()._.result[0];
+        .returning()
+        .execute();
     });
 
     const results = await Promise.allSettled(promises);
@@ -303,9 +302,9 @@ export default class DrizzleClient implements IDatabaseClient {
     const processedResults = results
       .map((result, index) => {
         if (result.status === 'fulfilled') {
-          return result.value;
+          return result.value[0] ?? null;
         } else {
-          errorResults.push({ id: body[index].id, reason: result.reason });
+          errorResults.push({ id: body[index].id, reason: getErrorReason(result.reason) });
           return null;
         }
       })
@@ -320,7 +319,8 @@ export default class DrizzleClient implements IDatabaseClient {
         .update(artists)
         .set({ ...profile.data })
         .where(eq(artists.id, profile.id))
-        .returning()._.result[0];
+        .returning()
+        .execute();
     });
 
     const results = await Promise.allSettled(promises);
@@ -329,9 +329,9 @@ export default class DrizzleClient implements IDatabaseClient {
     const processedResults = results
       .map((result, index) => {
         if (result.status === 'fulfilled') {
-          return result.value;
+          return result.value[0] ?? null;
         } else {
-          errorResults.push({ id: body[index].id, reason: result.reason });
+          errorResults.push({ id: body[index].id, reason: getErrorReason(result.reason) });
           return null;
         }
       })
@@ -344,8 +344,9 @@ export default class DrizzleClient implements IDatabaseClient {
     const promises = body.map(profile => {
       return this.client
         .insert(artists)
-        .values({ ...profile, url: `https://x.com/${profile.username}` })
-        .returning()._.result[0];
+        .values({ ...profile, createdAt: new Date(profile.createdAt), url: `https://x.com/${profile.username}` })
+        .returning()
+        .execute();
     });
 
     const results = await Promise.allSettled(promises);
@@ -354,11 +355,11 @@ export default class DrizzleClient implements IDatabaseClient {
     const processedResults = results
       .map((result, index) => {
         if (result.status === 'fulfilled') {
-          return result.value;
+          return result.value[0] ?? null;
         } else {
           errorResults.push({
             id: body[index].twitterUserId,
-            reason: result.reason,
+            reason: getErrorReason(result.reason),
           });
           return null;
         }
@@ -369,7 +370,7 @@ export default class DrizzleClient implements IDatabaseClient {
   }
 
   async getSuggestionsPaginated(query: GetSuggestionsQuery): Promise<GetSuggestionsResponse> {
-    let filterOptions: SQL[] = [];
+    const filterOptions: SQL[] = [];
     let filterOrderBy: SQL;
 
     switch (query.sortBy) {
@@ -388,16 +389,20 @@ export default class DrizzleClient implements IDatabaseClient {
     }
 
     if (query.username) {
-      filterOptions.push(like(artistsSuggestions.username, `%${query.username}%`));
+      filterOptions.push(ilike(artistsSuggestions.username, `%${query.username.trim()}%`));
     }
     if (query.status) {
       filterOptions.push(eq(artistsSuggestions.status, query.status));
     }
     if (query.tags && query.tags.length > 0) {
-      filterOptions.push(and(...query.tags.map(tag => sql`tags->'items' @> ${JSON.stringify([tag])}`))!);
+      filterOptions.push(arrayContains(artistsSuggestions.tags, query.tags));
     }
 
-    const countResult = await this.client.select({ count: count() }).from(artistsSuggestions).execute();
+    const countResult = await this.client
+      .select({ count: count() })
+      .from(artistsSuggestions)
+      .where(filterOptions.length > 0 ? and(...filterOptions) : undefined)
+      .execute();
 
     const totalItems = countResult[0]?.count || 0;
 

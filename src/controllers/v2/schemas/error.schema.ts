@@ -17,6 +17,7 @@ const createErrorResponse = (description: string) =>
 
 export const ErrorResponseModel = {
   BadRequest: createErrorResponse('Bad Request'),
+  Unauthorized: createErrorResponse('Unauthorized'),
   NotFound: createErrorResponse('Not Found'),
   InternalServerError: createErrorResponse('Internal Server Error'),
 };

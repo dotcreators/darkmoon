@@ -1,4 +1,4 @@
-import Elysia, { error, StatusMap } from 'elysia';
+import Elysia, { status, StatusMap } from 'elysia';
 import { ErrorResponseModel } from '../schemas/error.schema';
 import SuggestionsService from './suggestions.service';
 import { SuggestionsQueryModel } from './schemas/suggestions.query';
@@ -14,16 +14,16 @@ const suggestionsRoutes = new Elysia({
 }).get(
   '/search',
   async ({ query }) => {
-    if (query.perPage > 100 || query.perPage < 0) {
-      return error(400, {
+    if (!Number.isInteger(query.perPage) || query.perPage > 100 || query.perPage < 1) {
+      return status(400, {
         status: StatusMap['Bad Request'],
         response: {
           error: 'Query error',
           message: 'Maximum suggestions query must be greater than 0 and limited by 100',
         },
       });
-    } else if (query.page < 0) {
-      return error(400, {
+    } else if (!Number.isInteger(query.page) || query.page < 1) {
+      return status(400, {
         status: StatusMap['Bad Request'],
         response: {
           error: 'Query error',

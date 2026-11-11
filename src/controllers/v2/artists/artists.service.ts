@@ -41,15 +41,15 @@ export default class ArtistsService {
     return await this.databaseProvider.editArtist(id, body);
   }
 
-  async getRandomArtist(): Promise<GetArtistRandomResponse> {
+  async getRandomArtist(): Promise<GetArtistRandomResponse | null> {
     return await this.databaseProvider.getRandomArtist();
   }
 
-  async getArtistByUserId(twitterUserId: string): Promise<GetArtistByUserIdResponse> {
+  async getArtistByUserId(twitterUserId: string): Promise<GetArtistByUserIdResponse | null> {
     return await this.databaseProvider.getArtistByUserId(twitterUserId);
   }
 
-  async getArtistByUsername(username: string): Promise<GetArtistByUsernameResponse> {
+  async getArtistByUsername(username: string): Promise<GetArtistByUsernameResponse | null> {
     return await this.databaseProvider.getArtistByUsername(username);
   }
 
@@ -60,7 +60,7 @@ export default class ArtistsService {
   async updateArtistInformation(
     id: string,
     body: UpdateArtistInformationBody
-  ): Promise<UpdateArtistInformationResponse> {
+  ): Promise<UpdateArtistInformationResponse | null> {
     return await this.databaseProvider.updateArtistInformation(id, body);
   }
 

@@ -1,4 +1,4 @@
-import { integer, pgTable, real, text, timestamp, uuid, varchar, customType, boolean } from 'drizzle-orm/pg-core';
+import { integer, pgTable, text, timestamp, uuid, varchar, customType, boolean } from 'drizzle-orm/pg-core';
 
 type Tags = { items: string[] };
 type Images = { avatar: string; banner?: string };
@@ -13,6 +13,16 @@ const typedJsonb = <TData>(name: string) =>
     },
   })(name);
 
+const finiteReal = customType<{ data: number; driverData: number | string }>({
+  dataType() {
+    return 'real';
+  },
+  fromDriver(value): number {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  },
+});
+
 export const artists = pgTable('artists', {
   id: uuid('id').primaryKey().defaultRandom(),
   twitterUserId: text('twitter_user_id').notNull().unique(),
@@ -20,8 +30,8 @@ export const artists = pgTable('artists', {
   name: varchar('name', { length: 255 }),
   tweetsCount: integer('tweets_count').notNull(),
   followersCount: integer('followers_count').notNull(),
-  weeklyTweetsTrend: real('weekly_tweets_trend').notNull().default(0),
-  weeklyFollowersTrend: real('weekly_followers_trend').notNull().default(0),
+  weeklyTweetsTrend: finiteReal('weekly_tweets_trend').notNull().default(0),
+  weeklyFollowersTrend: finiteReal('weekly_followers_trend').notNull().default(0),
   images: typedJsonb<Images>('images').notNull(),
   tags: text('tags').array().notNull(),
   url: text('url').notNull(),

@@ -34,7 +34,7 @@ const healthcheckRoutes = new Elysia({
 
       const r = await twitterClient.getUserApi().getUserByScreenName({ screenName: 'aniv1re' });
 
-      if (r && r.data && r.data.user) {
+      if (r && r.data && r.data.user && r.data.user.legacy) {
         return { status: 'Success', other: r.data.user.legacy.screenName };
       }
 

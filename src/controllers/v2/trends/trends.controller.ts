@@ -1,4 +1,4 @@
-import Elysia, { error, StatusMap } from 'elysia';
+import Elysia, { status, StatusMap } from 'elysia';
 import TrendsService from './trends.service';
 import { TrendsQueryModel } from './schemas/trends.query';
 import { ErrorResponseModel } from '../schemas/error.schema';
@@ -14,16 +14,16 @@ const trendsRoutes = new Elysia({
 }).get(
   '/search',
   async ({ query }) => {
-    if (query.perPage > 372 || query.perPage < 0) {
-      return error(400, {
+    if (!Number.isInteger(query.perPage) || query.perPage > 372 || query.perPage < 1) {
+      return status(400, {
         status: StatusMap['Bad Request'],
         response: {
           error: 'Query error',
           message: 'Maximum artist trends query must be greater than 0 and limited by 372',
         },
       });
-    } else if (query.page < 0) {
-      return error(400, {
+    } else if (!Number.isInteger(query.page) || query.page < 1) {
+      return status(400, {
         status: StatusMap['Bad Request'],
         response: {
           error: 'Query error',

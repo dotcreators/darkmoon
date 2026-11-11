@@ -4,7 +4,8 @@ import cors from '@elysiajs/cors';
 import swagger from '@elysiajs/swagger';
 import { API_ENDPOINTS_V2 } from 'controllers/v2';
 import { Elysia } from 'elysia';
-import { rateLimit } from 'elysia-rate-limit';
+
+const ALLOWED_ORIGIN = /^https:\/\/([a-z0-9-]+\.)*dotcreators\.xyz$/;
 
 export const app = new Elysia()
   .use(
@@ -37,10 +38,10 @@ export const app = new Elysia()
   )
   .use(
     cors({
-      origin: true,
+      origin: envConfig.IS_DEVELOPMENT ? true : ALLOWED_ORIGIN,
       methods: ['GET', 'POST', 'PATCH'],
       allowedHeaders: ['Content-Type', 'Authorization'],
-      credentials: true,
+      credentials: false,
       maxAge: 500,
     })
   )
@@ -56,15 +57,6 @@ export const app = new Elysia()
     };
   })
   .use(API_ENDPOINTS_V2);
-
-if (!envConfig.IS_DEVELOPMENT) {
-  app.use(
-    rateLimit({
-      max: 100,
-      errorResponse: 'Rate-limit reached',
-    })
-  );
-}
 
 app.listen(8989);
 

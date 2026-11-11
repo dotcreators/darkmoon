@@ -1,4 +1,4 @@
-import { Elysia, error, StatusMap, t } from 'elysia';
+import { Elysia, status, StatusMap, t } from 'elysia';
 
 import { ErrorResponseModel } from '../schemas/error.schema';
 import ArtistsService from './artists.service';
@@ -6,8 +6,21 @@ import { ArtistsQueryModel } from './schemas/artists.query';
 import { ArtistsReponseModel } from './schemas/artists.response';
 import { ArtistsBodyModel } from './schemas/artists.body';
 import { ArtistsParamsMode } from './schemas/artists.params';
+import { isAdminAuthorized } from 'utils/auth/admin-auth';
 
 const artistsService = new ArtistsService();
+
+const requireAdmin = ({ headers }: { headers: Record<string, string | undefined> }) => {
+  if (!isAdminAuthorized(headers.authorization)) {
+    return status(401, {
+      status: StatusMap.Unauthorized,
+      response: {
+        error: 'Authorization error',
+        message: 'Valid admin token is required',
+      },
+    });
+  }
+};
 
 const artistsRoutes = new Elysia({
   prefix: '/artists',
@@ -18,16 +31,16 @@ const artistsRoutes = new Elysia({
   .get(
     '/search',
     async ({ query }) => {
-      if (query.perPage > 100 || query.perPage < 0) {
-        return error(400, {
+      if (!Number.isInteger(query.perPage) || query.perPage > 100 || query.perPage < 1) {
+        return status(400, {
           status: StatusMap['Bad Request'],
           response: {
             error: 'Query error',
             message: 'Maximum artists query must be greater than 0 and limited by 100',
           },
         });
-      } else if (query.page < 0) {
-        return error(400, {
+      } else if (!Number.isInteger(query.page) || query.page < 1) {
+        return status(400, {
           status: StatusMap['Bad Request'],
           response: {
             error: 'Query error',
@@ -58,16 +71,16 @@ const artistsRoutes = new Elysia({
   .get(
     '/search/include-trends',
     async ({ query }) => {
-      if (query.perPage > 100 || query.perPage < 0) {
-        return error(400, {
+      if (!Number.isInteger(query.perPage) || query.perPage > 100 || query.perPage < 1) {
+        return status(400, {
           status: StatusMap['Bad Request'],
           response: {
             error: 'Query error',
             message: 'Maximum artists query must be greater than 0 and limited by 100',
           },
         });
-      } else if (query.page < 0) {
-        return error(400, {
+      } else if (!Number.isInteger(query.page) || query.page < 1) {
+        return status(400, {
           status: StatusMap['Bad Request'],
           response: {
             error: 'Query error',
@@ -99,13 +112,26 @@ const artistsRoutes = new Elysia({
   .get(
     '/search/:id',
     async ({ params }) => {
-      return await artistsService.getArtistByUserId(params.id);
+      const artist = await artistsService.getArtistByUserId(params.id);
+
+      if (!artist) {
+        return status(404, {
+          status: StatusMap['Not Found'],
+          response: {
+            error: 'Search error',
+            message: 'Unable to find artist profile',
+          },
+        });
+      }
+
+      return artist;
     },
     {
       params: ArtistsParamsMode.GetArtistByUserId,
       response: {
         200: ArtistsReponseModel.GetArtistSingle,
         400: ErrorResponseModel.BadRequest,
+        404: ErrorResponseModel.NotFound,
         500: ErrorResponseModel.InternalServerError,
       },
       detail: {
@@ -116,13 +142,26 @@ const artistsRoutes = new Elysia({
   .get(
     '/search/username/:username',
     async ({ params }) => {
-      return await artistsService.getArtistByUsername(params.username);
+      const artist = await artistsService.getArtistByUsername(params.username);
+
+      if (!artist) {
+        return status(404, {
+          status: StatusMap['Not Found'],
+          response: {
+            error: 'Search error',
+            message: 'Unable to find artist profile',
+          },
+        });
+      }
+
+      return artist;
     },
     {
       params: ArtistsParamsMode.GetArtistByUsername,
       response: {
         200: ArtistsReponseModel.GetArtistSingle,
         400: ErrorResponseModel.BadRequest,
+        404: ErrorResponseModel.NotFound,
         500: ErrorResponseModel.InternalServerError,
       },
       detail: {
@@ -150,189 +189,210 @@ const artistsRoutes = new Elysia({
   .get(
     '/random',
     async () => {
-      return await artistsService.getRandomArtist();
+      const artist = await artistsService.getRandomArtist();
+
+      if (!artist) {
+        return status(404, {
+          status: StatusMap['Not Found'],
+          response: {
+            error: 'Search error',
+            message: 'Unable to find artist profile',
+          },
+        });
+      }
+
+      return artist;
     },
     {
       response: {
         200: ArtistsReponseModel.GetArtistSingle,
         400: ErrorResponseModel.BadRequest,
+        404: ErrorResponseModel.NotFound,
         500: ErrorResponseModel.InternalServerError,
       },
       detail: {
         summary: 'Random artist',
       },
     }
-  )
-  // TODO: create authentication implementation
-  .guard({}, app =>
-    app
-      .post(
-        '/create',
-        async ({ body }) => {
-          if (!body) {
-            return error(400, {
-              status: StatusMap['Bad Request'],
-              response: {
-                error: 'Body error',
-                message: 'None of all artist fields are provided',
-              },
-            });
-          }
-
-          const result = await artistsService.createArtist(body);
-
-          if (!result) {
-            return error(400, {
-              status: StatusMap['Bad Request'],
-              response: {
-                error: 'Artist error',
-                message: 'Artist with provided twitterUserId is alredy existing',
-              },
-            });
-          }
-
-          return result;
-        },
-        {
-          // transform({ body }) {
-          //   body.createdAt = new Date(body.createdAt);
-          // },
-          body: ArtistsBodyModel.CreateArtist,
-          response: {
-            200: ArtistsReponseModel.CreateArtist,
-            400: ErrorResponseModel.BadRequest,
-            500: ErrorResponseModel.InternalServerError,
-          },
-          detail: {
-            summary: 'Create artist',
-            hide: true,
-          },
-        }
-      )
-      .patch(
-        '/edit/:id/',
-        async ({ params, body }) => {
-          if (!body) {
-            return error(400, {
-              status: StatusMap['Bad Request'],
-              response: {
-                error: 'Body error',
-                message: 'None of any editable artist fields are provided',
-              },
-            });
-          }
-
-          const result = await artistsService.editArtist(params.id, body);
-
-          if (!result) {
-            return error(404, {
-              status: StatusMap['Bad Request'],
-              response: {
-                error: 'Edit error',
-                message: 'Unable to find artist profile with specified ID',
-              },
-            });
-          }
-
-          return result;
-        },
-        {
-          body: ArtistsBodyModel.EditArtist,
-          params: t.Object({ id: t.String() }),
-          response: {
-            200: ArtistsReponseModel.EditArtist,
-            400: ErrorResponseModel.BadRequest,
-            404: ErrorResponseModel.NotFound,
-            500: ErrorResponseModel.InternalServerError,
-          },
-          detail: {
-            summary: 'Edit artist',
-            hide: true,
-          },
-        }
-      )
-      .patch(
-        '/update/:id/',
-        async ({ params, body }) => {
-          if (!body) {
-            return error(400, {
-              status: StatusMap['Bad Request'],
-              response: {
-                error: 'Body error',
-                message: 'None of any editable artist fields are provided',
-              },
-            });
-          }
-
-          const result = await artistsService.updateArtistInformation(params.id, body);
-
-          if (!result) {
-            return error(404, {
-              status: StatusMap['Bad Request'],
-              response: {
-                error: 'Edit error',
-                message: 'Unable to find artist profile with specified ID',
-              },
-            });
-          }
-
-          return result;
-        },
-        {
-          body: ArtistsBodyModel.UpdateArtistInformations,
-          params: t.Object({ id: t.String() }),
-          response: {
-            200: ArtistsReponseModel.UpdateArtistInformation,
-            400: ErrorResponseModel.BadRequest,
-            404: ErrorResponseModel.NotFound,
-            500: ErrorResponseModel.InternalServerError,
-          },
-          detail: {
-            summary: 'Update artist',
-            hide: true,
-          },
-        }
-      )
-      .post(
-        '/create/bulk',
-        async ({ body }) => {
-          if (!body) {
-            return error(400, {
-              status: StatusMap['Bad Request'],
-              response: {
-                error: 'Body error',
-                message: 'None of all artist fields are provided',
-              },
-            });
-          }
-
-          const result = await artistsService.createArtistBulk(body);
-
-          if (result.items.length === 0) {
-            return error(400, {
-              status: StatusMap['Bad Request'],
-              response: {
-                error: 'Artist error',
-                message: 'Artist with provided twitterUserId is alredy existing',
-              },
-            });
-          }
-
-          return result;
-        },
-        {
-          body: ArtistsBodyModel.CreateArtistBulk,
-          response: {
-            200: ArtistsReponseModel.CreateArtistBulk,
-            400: ErrorResponseModel.BadRequest,
-            500: ErrorResponseModel.InternalServerError,
-          },
-          detail: {
-            summary: 'Bulk create artists',
-            hide: true,
-          },
-        }
-      )
   );
 
-export default artistsRoutes;
+const artistsAdminRoutes = new Elysia({
+  prefix: '/artists',
+  detail: {
+    tags: ['Artists'],
+  },
+})
+  .onBeforeHandle(requireAdmin)
+  .post(
+    '/create',
+    async ({ body }) => {
+      if (!body) {
+        return status(400, {
+          status: StatusMap['Bad Request'],
+          response: {
+            error: 'Body error',
+            message: 'None of all artist fields are provided',
+          },
+        });
+      }
+
+      const result = await artistsService.createArtist(body);
+
+      if (!result) {
+        return status(400, {
+          status: StatusMap['Bad Request'],
+          response: {
+            error: 'Artist error',
+            message: 'Artist with provided twitterUserId is alredy existing',
+          },
+        });
+      }
+
+      return result;
+    },
+    {
+      // transform({ body }) {
+      //   body.createdAt = new Date(body.createdAt);
+      // },
+      body: ArtistsBodyModel.CreateArtist,
+      response: {
+        200: ArtistsReponseModel.CreateArtist,
+        400: ErrorResponseModel.BadRequest,
+        401: ErrorResponseModel.Unauthorized,
+        500: ErrorResponseModel.InternalServerError,
+      },
+      detail: {
+        summary: 'Create artist',
+        hide: true,
+      },
+    }
+  )
+  .patch(
+    '/edit/:id/',
+    async ({ params, body }) => {
+      if (!body) {
+        return status(400, {
+          status: StatusMap['Bad Request'],
+          response: {
+            error: 'Body error',
+            message: 'None of any editable artist fields are provided',
+          },
+        });
+      }
+
+      const result = await artistsService.editArtist(params.id, body);
+
+      if (!result) {
+        return status(404, {
+          status: StatusMap['Not Found'],
+          response: {
+            error: 'Edit error',
+            message: 'Unable to find artist profile with specified ID',
+          },
+        });
+      }
+
+      return result;
+    },
+    {
+      body: ArtistsBodyModel.EditArtist,
+      params: t.Object({ id: t.String() }),
+      response: {
+        200: ArtistsReponseModel.EditArtist,
+        400: ErrorResponseModel.BadRequest,
+        401: ErrorResponseModel.Unauthorized,
+        404: ErrorResponseModel.NotFound,
+        500: ErrorResponseModel.InternalServerError,
+      },
+      detail: {
+        summary: 'Edit artist',
+        hide: true,
+      },
+    }
+  )
+  .patch(
+    '/update/:id/',
+    async ({ params, body }) => {
+      if (!body) {
+        return status(400, {
+          status: StatusMap['Bad Request'],
+          response: {
+            error: 'Body error',
+            message: 'None of any editable artist fields are provided',
+          },
+        });
+      }
+
+      const result = await artistsService.updateArtistInformation(params.id, body);
+
+      if (!result) {
+        return status(404, {
+          status: StatusMap['Not Found'],
+          response: {
+            error: 'Edit error',
+            message: 'Unable to find artist profile with specified ID',
+          },
+        });
+      }
+
+      return result;
+    },
+    {
+      body: ArtistsBodyModel.UpdateArtistInformations,
+      params: t.Object({ id: t.String() }),
+      response: {
+        200: ArtistsReponseModel.UpdateArtistInformation,
+        400: ErrorResponseModel.BadRequest,
+        401: ErrorResponseModel.Unauthorized,
+        404: ErrorResponseModel.NotFound,
+        500: ErrorResponseModel.InternalServerError,
+      },
+      detail: {
+        summary: 'Update artist',
+        hide: true,
+      },
+    }
+  )
+  .post(
+    '/create/bulk',
+    async ({ body }) => {
+      if (!body) {
+        return status(400, {
+          status: StatusMap['Bad Request'],
+          response: {
+            error: 'Body error',
+            message: 'None of all artist fields are provided',
+          },
+        });
+      }
+
+      const result = await artistsService.createArtistBulk(body);
+
+      if (result.items.length === 0) {
+        return status(400, {
+          status: StatusMap['Bad Request'],
+          response: {
+            error: 'Artist error',
+            message: 'Artist with provided twitterUserId is alredy existing',
+          },
+        });
+      }
+
+      return result;
+    },
+    {
+      body: ArtistsBodyModel.CreateArtistBulk,
+      response: {
+        200: ArtistsReponseModel.CreateArtistBulk,
+        400: ErrorResponseModel.BadRequest,
+        401: ErrorResponseModel.Unauthorized,
+        500: ErrorResponseModel.InternalServerError,
+      },
+      detail: {
+        summary: 'Bulk create artists',
+        hide: true,
+      },
+    }
+  );
+
+export default new Elysia().use(artistsRoutes).use(artistsAdminRoutes);
