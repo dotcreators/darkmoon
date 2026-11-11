@@ -35,6 +35,7 @@ export const ArtistProfileModel = t.Object({
   country: t.Nullable(t.String()),
   website: t.Nullable(t.String()),
   bio: t.Nullable(t.String()),
+  trackingStatus: t.String(),
   createdAt: t.Date({ format: 'date-time' }),
   joinedAt: t.Date({ format: 'date-time' }),
   updatedAt: t.Date({ format: 'date-time' }),
